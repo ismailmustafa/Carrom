@@ -38,7 +38,7 @@ var game;
     function getTranslations() {
         return {
             RULES_OF_TICTACTOE: {
-                en: "Rules of TicTacToe",
+                en: "Rules of BattleTetris",
                 iw: "חוקי המשחק",
             },
             RULES_SLIDE1: {
