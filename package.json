@@ -29,7 +29,8 @@
     "karma-jasmine": "*",
     "load-grunt-tasks": "*",
     "typescript": "*",
-    "protractor": "*"
+    "protractor": "*",
+    "almost-equal": "*"
   },
   "scripts": {
     "postinstall": "webdriver-manager update",
