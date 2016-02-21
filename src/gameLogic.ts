@@ -40,7 +40,7 @@ module gameLogic {
   // Coin initializer properties
   export const FIRSTLAYER = 6;
   export const SECONDLAYER = 12;
-  export const COINSIZE = 1;
+  export const COINSIZE = 2;
   
   // Board dimensions
   export const BOARDWIDTH = 40;
@@ -66,25 +66,38 @@ module gameLogic {
     //    board[i][j] = '';
     //}
   
-    function calculateFirstLayer(queen : Coin) : Coin[] {
-        let coins : Coin[] = [];
-      // Calculate first ring of coins
-        let color : boolean = false;
-        for (let i = 0; i < FIRSTLAYER; i++) {
-            let x = Math.cos(i*((2*Math.PI)/FIRSTLAYER)) * queen.size;
-            let y = Math.sin(i*((2*Math.PI)/FIRSTLAYER)) * queen.size;
-            let coinType = color ? CoinType.Black : CoinType.White;
-            color = !color;
-            let coin : Coin = {xPos:x,
-                               yPos:y,
-                               size:COINSIZE,
-                               type:coinType};
-            coins.push(coin);      
-        }
-        return coins;
- }
+  export function calculateFirstLayer(queen : Coin) : Coin[] {
+    let coins : Coin[] = [];
+    // Calculate first ring of coins
+    let color : boolean = false;
+    for (let i = 0; i < FIRSTLAYER; i++) {
+        //let x = Math.cos(i*((2*Math.PI)/FIRSTLAYER)) * queen.size + BOARDWIDTH/2;
+        //let y = Math.sin(i*((2*Math.PI)/FIRSTLAYER)) * queen.size + BOARDHEIGHT/2;
+        let x = Math.cos(i*((2*Math.PI)/FIRSTLAYER)) + BOARDWIDTH/2;
+        let y = Math.sin(i*((2*Math.PI)/FIRSTLAYER)) + BOARDHEIGHT/2;
+        
+        let coinType = color ? CoinType.Black : CoinType.White;
+        color = !color;
+        let coin : Coin = {xPos:x,
+                            yPos:y,
+                            size:COINSIZE,
+                            type:coinType};
+        coins.push(coin);      
+    }
+    return coins;
+  }
   
-  function getInitialSize(): BoardSize {
+  function compare(x : number, y : number) : boolean {
+    if (Math.abs(x - y) < 0.00001) return true;
+    else return false;
+  }
+  
+  function sign(x : number) {
+    if (x < 0) return -1;
+    else return 1;
+  }
+  
+  export function getInitialSize(): BoardSize {
       let boardSize : BoardSize = {width: BOARDWIDTH, 
                                    height: BOARDHEIGHT,
                                    centerX: BOARDWIDTH/2,
