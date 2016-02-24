@@ -42,12 +42,6 @@ describe("In Carrom Game Logic", function() {
     else return false;
   }
   
-  function testSomeValue(): number {
-    return 1;
-  }
-  
-  it("should do something", function() {
-    testInitialBoardState();
   });
   
 });

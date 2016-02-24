@@ -61,6 +61,13 @@ module gameLogic {
     let board: Board = [];
     
     // set the position of the queen
+
+  // Return initial board 
+  function getInitialBoard(): Board {
+    let boardSize : BoardSize = getInitialSize();
+    let board: Board = [];
+    
+    // set the position of hte queen
     // insert that qqueen into board
     let queen : Coin = {xPos:boardSize.centerX,
                         yPos:boardSize.centerY,
@@ -110,7 +117,9 @@ module gameLogic {
     return c;
   }
   
-  export function getInitialSize(): BoardSize {
+ }
+  
+  function getInitialSize(): BoardSize {
       let boardSize : BoardSize = {width: BOARDWIDTH, 
                                    height: BOARDHEIGHT,
                                    centerX: BOARDWIDTH/2,
