@@ -14,58 +14,60 @@ var gameLogic;
     // Coin initializer properties
     gameLogic.FIRSTLAYER = 6;
     gameLogic.SECONDLAYER = 12;
-    gameLogic.COINSIZE = 2;
+    gameLogic.COINSIZE = 1;
     // Board dimensions
     gameLogic.BOARDWIDTH = 40;
     gameLogic.BOARDHEIGHT = 40;
+    // Starting coin layer 
+    gameLogic.NUMBEROFSIDES = 6;
+    gameLogic.HEXSIZE = gameLogic.COINSIZE * 2;
     // Return initial board 
     function getInitialBoard() {
         var boardSize = getInitialSize();
         var board = [];
-        // set the position of hte queen
+        // set the position of the queen
         // insert that qqueen into board
         var queen = { xPos: boardSize.centerX,
             yPos: boardSize.centerY,
             size: gameLogic.COINSIZE,
             type: CoinType.Queen };
-        board.push(queen);
-        return board;
-    }
-    // Second ring
-    //for (let j = 0; j < COLS; j++) {
-    //    board[i][j] = '';
-    //}
-    function calculateFirstLayer(queen) {
+        // Initialize two layers
         var coins = [];
-        // Calculate first ring of coins
+        coins.push(queen);
+        var numberOfSides = 6;
         var color = false;
-        for (var i = 0; i < gameLogic.FIRSTLAYER; i++) {
-            //let x = Math.cos(i*((2*Math.PI)/FIRSTLAYER)) * queen.size + BOARDWIDTH/2;
-            //let y = Math.sin(i*((2*Math.PI)/FIRSTLAYER)) * queen.size + BOARDHEIGHT/2;
-            var x = Math.cos(i * ((2 * Math.PI) / gameLogic.FIRSTLAYER)) + gameLogic.BOARDWIDTH / 2;
-            var y = Math.sin(i * ((2 * Math.PI) / gameLogic.FIRSTLAYER)) + gameLogic.BOARDHEIGHT / 2;
+        var circles = [];
+        for (var i = 1; i <= gameLogic.NUMBEROFSIDES; i++) {
+            var c = getCoordinates(boardSize.centerX, boardSize.centerY, i, gameLogic.HEXSIZE);
+            var c2 = getCoordinates(boardSize.centerX, boardSize.centerY, i, gameLogic.HEXSIZE * 2);
+            circles.push(c2);
             var coinType = color ? CoinType.Black : CoinType.White;
             color = !color;
-            var coin = { xPos: x,
-                yPos: y,
-                size: gameLogic.COINSIZE,
-                type: coinType };
-            coins.push(coin);
+            coins.push(createCoin(c, coinType));
+            coins.push(createCoin(c2, coinType));
+        }
+        color = false;
+        for (var i = 0; i < circles.length; i++) {
+            var c = { xPos: (circles[i].xPos + circles[(i + 1) % gameLogic.NUMBEROFSIDES].xPos) / 2.0,
+                yPos: (circles[i].yPos + circles[(i + 1) % gameLogic.NUMBEROFSIDES].yPos) / 2.0 };
+            var coinType = color ? CoinType.Black : CoinType.White;
+            color = !color;
+            coins.push(createCoin(c, coinType));
         }
         return coins;
     }
-    gameLogic.calculateFirstLayer = calculateFirstLayer;
-    function compare(x, y) {
-        if (Math.abs(x - y) < 0.00001)
-            return true;
-        else
-            return false;
+    gameLogic.getInitialBoard = getInitialBoard;
+    function createCoin(c, coinType) {
+        var coin = { xPos: c.xPos,
+            yPos: c.yPos,
+            size: gameLogic.COINSIZE,
+            type: coinType };
+        return coin;
     }
-    function sign(x) {
-        if (x < 0)
-            return -1;
-        else
-            return 1;
+    function getCoordinates(centerX, centerY, index, hexSize) {
+        var c = { xPos: centerX + hexSize * Math.cos(index * 2 * Math.PI / gameLogic.NUMBEROFSIDES),
+            yPos: centerY + hexSize * Math.sin(index * 2 * Math.PI / gameLogic.NUMBEROFSIDES) };
+        return c;
     }
     function getInitialSize() {
         var boardSize = { width: gameLogic.BOARDWIDTH,
