@@ -155,8 +155,8 @@
 //   }
 // }
 
-// angular.module('myApp', ['ngTouch', 'ui.bootstrap', 'gameServices'])
-//   .run(function () {
-//     $rootScope['game'] = game;
-//     game.init();
-//   });
+angular.module('myApp', ['ngTouch', 'ui.bootstrap'])
+  .run(function () {
+    // $rootScope['game'] = game;
+    // game.init();
+  });
