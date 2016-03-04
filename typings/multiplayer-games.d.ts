@@ -1,7 +1,8 @@
-// declare var $rootScope: angular.IScope;
-// declare var $location: angular.ILocationService;
-// declare var $timeout: angular.ITimeoutService;
-// declare var $interval: angular.IIntervalService;
+declare var $rootScope: angular.IScope;
+declare var $location: angular.ILocationService;
+declare var $timeout: angular.ITimeoutService;
+declare var $interval: angular.IIntervalService;
+declare var $window: angular.IWindowService;
 
 // // IState should be defined by the game, e.g., TicTacToe defines it as:
 // // interface IState { board: Board; delta: BoardDelta; }
@@ -68,10 +69,10 @@
 // }
 // declare var translate: ITranslateService;
 
-// interface IResizeGameAreaService {
-//   setWidthToHeight(widthToHeightRatio: number): void;
-// }
-// declare var resizeGameAreaService: IResizeGameAreaService;
+interface IResizeGameAreaService {
+  setWidthToHeight(widthToHeightRatio: number): void;
+}
+declare var resizeGameAreaService: IResizeGameAreaService;
 
 // interface ILog {
 //   info(... args: any[]):void;

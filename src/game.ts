@@ -3,7 +3,72 @@
 //   [index: string]: SupportedLanguages;
 // }
 
-// module game {
+module game {
+  export let a = "adsd";
+  export let state : IState;
+  export let board : Board;
+  
+  // Change these
+  let innerBoardWidth = 800;
+  let innerBoardHeight = innerBoardWidth;
+  
+  let coinDiameter = (3.18/74.0) * innerBoardWidth;
+  let startingCircleDiameter = (17.0/74.0)*innerBoardWidth;
+  let borderThickness = (7.6/74.0) * innerBoardWidth;
+  let outerBoardWidth = innerBoardWidth + 2*borderThickness;
+  let outerBoardHeight = innerBoardHeight + 2*borderThickness;
+  
+  // Coin Pockets
+  let coinPocketDiameter = (4.45/74.0) * innerBoardWidth;
+  let coinPocketTopLeftX = borderThickness + (coinPocketDiameter/2);
+  let coinPocketTopLeftY = borderThickness + (coinPocketDiameter/2);
+  
+  let coinPocketTopRightX = borderThickness + innerBoardWidth - (coinPocketDiameter/2);
+  let coinPocketTopRightY = borderThickness + (coinPocketDiameter/2);
+  
+  let coinPocketBottomLeftX = borderThickness + (coinPocketDiameter/2);
+  let coinPocketBottomLeftY = borderThickness + innerBoardHeight - (coinPocketDiameter/2);
+  
+  let coinPocketBottomRightX = borderThickness + innerBoardWidth - (coinPocketDiameter/2);
+  let coinPocketBottomRightY = borderThickness + innerBoardHeight - (coinPocketDiameter/2);
+  
+  export let settings : {[setting : string] : number} = {
+    "numCoins" : 19,
+    "numBlack" : 9,
+    "numWhite" : 9,
+    "numQueen" : 1,
+    "firstLayer" : 6,
+    "secondLayer" : 12,
+    "coinDiameter" : coinDiameter,
+    "innerBoardWidth" : innerBoardWidth,
+    "innerBoardHeight" : innerBoardHeight,
+    "outerBoardWidth" : outerBoardWidth,
+    "outerBoardHeight" : outerBoardHeight,
+    "numberOfSides" : 6,
+    "hexSize" : (coinDiameter/2)*2,
+    "startingCircleDiameter" : startingCircleDiameter,
+    "boardCenterX" : outerBoardWidth/2.0,
+    "boardCenterY": outerBoardHeight/2.0,
+    "borderThickness" : borderThickness,
+    "coinPocketDiameter" : coinPocketDiameter,
+    "coinPocketTopLeftX" : coinPocketTopLeftX,
+    "coinPocketTopLeftY" : coinPocketTopLeftY,
+    "coinPocketTopRightX" : coinPocketTopRightX,
+    "coinPocketTopRightY" : coinPocketTopRightY,
+    "coinPocketBottomLeftX" : coinPocketBottomLeftX,
+    "coinPocketBottomLeftY" : coinPocketBottomLeftY,
+    "coinPocketBottomRightX" : coinPocketBottomRightX,
+    "coinPocketBottomRightY" : coinPocketBottomRightY
+  };
+  
+  export function init() {
+    resizeGameAreaService.setWidthToHeight(1);
+    state = gameLogic.getInitialState(settings);
+    board = state.board;
+    console.log(board);
+  } 
+  
+}
 //   // I export all variables to make it easy to debug in the browser by
 //   // simply typing in the console:
 //   // game.state
@@ -155,8 +220,9 @@
 //   }
 // }
 
-angular.module('myApp', ['ngTouch', 'ui.bootstrap'])
+angular.module('myApp', ['ngTouch', 'ui.bootstrap', 'gameServices'])
   .run(function () {
-    // $rootScope['game'] = game;
-    // game.init();
+    $rootScope['game'] = game;
+    game.init();
   });
+  

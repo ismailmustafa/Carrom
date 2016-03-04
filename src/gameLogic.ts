@@ -10,7 +10,7 @@ interface BoardSize {
 interface Striker {
     xPos: number;
     yPos: number;
-    size: number;
+    diameter: number;
 }
 
 interface Coordinate {
@@ -18,42 +18,21 @@ interface Coordinate {
   yPos : number;
 }
 
-enum CoinType {
-    Queen,
-    Black,
-    White
-}
-
 interface Coin {
     coordinate : Coordinate;
-    //xPos: number;
-    //yPos: number;
-    size: number;
-    type: CoinType;
+    diameter: number;
+    color: string;
 }
 interface IState {
     board: Board;
-    boardSize : BoardSize;
 }
 
 module gameLogic {
-  // Coin counts
   
-  let coinSize = 1;
-  export let settings : {[setting : string] : number} = {
-    "numCoins" : 19,
-    "numBlack" : 9,
-    "numWhite" : 9,
-    "numQueen" : 1,
-    "firstLayer" : 6,
-    "secondLayer" : 12,
-    "coinSize" : coinSize,
-    "boardWidth" : 40,
-    "boardHeight" : 40,
-    "numberOfSides" : 6,
-    "hexSize" : coinSize*2
-  };
-
+  const QUEENCOLOR = "pink";
+  const COLOR1 = "black";
+  const COLOR2 = "white";
+  
   // Return initial board 
   export function getInitialBoard(gameSettings : {[setting : string] : number}): Board {
     let boardSize : BoardSize = getInitialSize(gameSettings);
@@ -64,8 +43,8 @@ module gameLogic {
     let queenCoordinate : Coordinate = {xPos: boardSize.centerX,
                                         yPos: boardSize.centerY};
     let queen : Coin = {coordinate:queenCoordinate,
-                        size:gameSettings["coinSize"],
-                        type:CoinType.Queen};
+                        diameter:gameSettings["coinDiameter"],
+                        color:QUEENCOLOR};
 
     // Initialize two layers
     let coins : Coin[] = [];
@@ -73,34 +52,40 @@ module gameLogic {
     let numberOfSides = 6;
     
     let color : boolean = false;
+    let outerColor : boolean =  false;
+    
     let circles : Coordinate[] = [];
     for (let i = 1; i <= gameSettings["numberOfSides"]; i++) {
       let c = getCoordinates(gameSettings, boardSize.centerX, boardSize.centerY, i, gameSettings["hexSize"]);
       let c2 = getCoordinates(gameSettings, boardSize.centerX, boardSize.centerY, i, gameSettings["hexSize"]*2);
       circles.push(c2);
-      let coinType = color ? CoinType.Black : CoinType.White;
+      
+      let coinColor = color ? COLOR1 : COLOR2;
+      let outerCoinColor = outerColor ? COLOR1 : COLOR2;
+      
       color = !color;
-      coins.push(createCoin(gameSettings, c, coinType)); 
-      coins.push(createCoin(gameSettings, c2, coinType));
+      coins.push(createCoin(gameSettings, c, coinColor)); 
+      coins.push(createCoin(gameSettings, c2, outerCoinColor));
     }
     
-    color = false;
+    //color = false;
+    outerColor = !outerColor;
     for (let i = 0; i < circles.length; i++) {
       let c : Coordinate = {xPos: (circles[i].xPos + circles[(i+1)%gameSettings["numberOfSides"]].xPos)/2.0,
                             yPos: (circles[i].yPos + circles[(i+1)%gameSettings["numberOfSides"]].yPos)/2.0};
-      let coinType = color ? CoinType.Black : CoinType.White;
-      color = !color;
-      coins.push(createCoin(gameSettings, c, coinType)); 
+      let coinColor = outerColor ? COLOR1 : COLOR2;
+      
+      coins.push(createCoin(gameSettings, c, coinColor)); 
     }
     return coins;
   }
   
-  function createCoin(gameSettings : {[setting : string] : number}, c : Coordinate, coinType : CoinType) : Coin {
+  function createCoin(gameSettings : {[setting : string] : number}, c : Coordinate, coinColor : string) : Coin {
     let coinCoordinate : Coordinate = {xPos:c.xPos,
                                    yPos:c.yPos};
     let coin : Coin = {coordinate:coinCoordinate,
-                         size:gameSettings["coinSize"],
-                         type:coinType};
+                         diameter:gameSettings["coinDiameter"],
+                         color:coinColor};
     return coin;
   }
   
@@ -112,14 +97,14 @@ module gameLogic {
   }
   
   export function getInitialSize(gameSettings : {[setting : string] : number}): BoardSize {
-      let boardSize : BoardSize = {width: gameSettings["boardWidth"], 
-                                   height: gameSettings["boardHeight"],
-                                   centerX: gameSettings["boardWidth"]/2,
-                                   centerY: gameSettings["boardHeight"]/2};
+      let boardSize : BoardSize = {width: gameSettings["outerBoardWidth"], 
+                                   height: gameSettings["outerBoardHeight"],
+                                   centerX: gameSettings["outerBoardWidth"]/2,
+                                   centerY: gameSettings["outerBoardHeight"]/2};
       return boardSize;
   }
 
-  export function getInitialState(): IState {
-    return {board: getInitialBoard(gameLogic.settings), boardSize: getInitialSize(gameLogic.settings)};
+  export function getInitialState(gameSettings : {[setting : string] : number}): IState {
+    return {board: getInitialBoard(gameSettings)};
   }
 }

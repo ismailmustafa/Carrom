@@ -9,8 +9,8 @@ describe("In Carrom Game Logic", function() {
     "firstLayer" : 6,
     "secondLayer" : 12,
     "coinSize" : coinSize,
-    "boardWidth" : 40,
-    "boardHeight" : 40,
+    "outerBoardWidth" : 40,
+    "outerBoardHeight" : 40,
     "numberOfSides" : 6,
     "hexSize" : coinSize*2
   };
@@ -45,6 +45,7 @@ describe("In Carrom Game Logic", function() {
     for (let i = 0; i < coins.length; i++) {
       let xPosValidate = compare(testCoordinates[i].xPos, coins[i].coordinate.xPos);
       let yPosValidate = compare(testCoordinates[i].yPos, coins[i].coordinate.yPos);
+      //console.log(coins[i].coordinate.xPos + " " + coins[i].coordinate.yPos);
       expect(xPosValidate).toBeTruthy();
       expect(yPosValidate).toBeTruthy();
       if (!xPosValidate || !yPosValidate) {
