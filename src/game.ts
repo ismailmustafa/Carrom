@@ -86,6 +86,7 @@ module game {
   
   // Outer striker placement lines
   let outerStrikerPlacementLineThickness = (0.3/74.0)*innerBoardWidth;
+  let innerStrikerPlacementLineThickness = (0.15/74.0)*innerBoardWidth;
   
   let leftOuterStrikerPlacementLineStartX = borderThickness + (10.15/74.0)*innerBoardWidth;
   let leftOuterStrikerPlacementLineStartY = (outerBoardHeight/2) - strikerPlacementLineLengthToCenterOfOuterStrikerCircles/2; 
@@ -106,6 +107,8 @@ module game {
   let bottomOuterStrikerPlacementLineStartY = outerBoardHeight - topOuterStrikerPlacementLineStartY;
   let bottomOuterStrikerPlacementLineEndX = topOuterStrikerPlacementLineEndX;
   let bottomOuterStrikerPlacementLineEndY = bottomOuterStrikerPlacementLineStartY;
+  
+  let innerStrikerPlacementLineOffset = outerStrikerCircleDiameter;
   
   export let settings : {[setting : string] : number} = {
     "numCoins" : 19,
@@ -172,6 +175,8 @@ module game {
     "strikerCircleBottomLeft2X" : strikerCircleBottomLeft2X,
     "strikerCircleBottomLeft2Y" : strikerCircleBottomLeft2Y,
     "outerStrikerPlacementLineThickness" : outerStrikerPlacementLineThickness,
+    "innerStrikerPlacementLineThickness" : innerStrikerPlacementLineThickness,
+    "innerStrikerPlacementLineOffset" : innerStrikerPlacementLineOffset,
     "leftOuterStrikerPlacementLineStartX" : leftOuterStrikerPlacementLineStartX,
     "leftOuterStrikerPlacementLineStartY" : leftOuterStrikerPlacementLineStartY,
     "leftOuterStrikerPlacementLineEndX" : leftOuterStrikerPlacementLineEndX, 
