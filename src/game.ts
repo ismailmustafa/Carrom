@@ -55,10 +55,11 @@ module game {
   
   let diagonalLineThickness = (0.15/74.0)*innerBoardWidth;
   
-  // Outer striker circles (1 == leftmost, 2 == rightmost)
+  // Outer and Inner striker circles (1 == leftmost, 2 == rightmost)
   //    Striker placement line measurements and striker circle properties
   let strikerPlacementLineLength = (47.0/74.0) * innerBoardWidth;
   let outerStrikerCircleDiameter = (3.18/74.0) * innerBoardWidth;
+  let innerStrikerCircleDiameter = (2.45/74.0) * innerBoardWidth;
   let strikerPlacementLineLengthToCenterOfOuterStrikerCircles = strikerPlacementLineLength - outerStrikerCircleDiameter;
   let outerStrikerCircleThickness = (0.15/74.0) * innerBoardWidth;
   
@@ -81,8 +82,6 @@ module game {
   let strikerCircleBottomLeft1Y = outerBoardHeight - strikerCircleTopLeft1Y;
   let strikerCircleBottomLeft2X = strikerCircleTopLeft2X;
   let strikerCircleBottomLeft2Y = outerBoardHeight - strikerCircleTopLeft2Y;
-  
-  
   
   export let settings : {[setting : string] : number} = {
     "numCoins" : 19,
@@ -129,6 +128,7 @@ module game {
     "diagonalLineBottomLeftEndY" : diagonalLineBottomLeftEndY,
     "diagonalLineThickness" : diagonalLineThickness,
     "outerStrikerCircleDiameter" : outerStrikerCircleDiameter,
+    "innerStrikerCircleDiameter" : innerStrikerCircleDiameter,
     "outerStrikerCircleThickness" : outerStrikerCircleThickness,
     "strikerCircleTopLeft1X" : strikerCircleTopLeft1X,
     "strikerCircleTopLeft1Y" : strikerCircleTopLeft1Y,
