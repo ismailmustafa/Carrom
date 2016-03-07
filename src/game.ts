@@ -53,6 +53,36 @@ module game {
   let diagonalLineBottomLeftEndX = diagonalLineTopLeftEndX;
   let diagonalLineBottomLeftEndY = diagonalLineBottomRightEndX;
   
+  let diagonalLineThickness = (0.15/74.0)*innerBoardWidth;
+  
+  // Outer striker circles (1 == leftmost, 2 == rightmost)
+  //    Striker placement line measurements and striker circle properties
+  let strikerPlacementLineLength = (47.0/74.0) * innerBoardWidth;
+  let outerStrikerCircleDiameter = (3.18/74.0) * innerBoardWidth;
+  let strikerPlacementLineLengthToCenterOfOuterStrikerCircles = strikerPlacementLineLength - outerStrikerCircleDiameter;
+  let outerStrikerCircleThickness = (0.15/74.0) * innerBoardWidth;
+  
+  let strikerCircleTopLeft1X = borderThickness + (10.15/74.0)*innerBoardWidth + (outerStrikerCircleDiameter/2);
+  let strikerCircleTopLeft1Y = (outerBoardHeight/2) - (strikerPlacementLineLengthToCenterOfOuterStrikerCircles/2);
+  let strikerCircleTopLeft2X = strikerCircleTopLeft1Y;
+  let strikerCircleTopLeft2Y = strikerCircleTopLeft1X;
+  
+  let strikerCircleTopRight1X = outerBoardWidth - strikerCircleTopLeft2X;
+  let strikerCircleTopRight1Y = strikerCircleTopLeft2Y;
+  let strikerCircleTopRight2X = outerBoardWidth - strikerCircleTopLeft1X;
+  let strikerCircleTopRight2Y = strikerCircleTopLeft1Y;
+  
+  let strikerCircleBottomRight1X = strikerCircleTopRight1X;
+  let strikerCircleBottomRight1Y = outerBoardHeight - strikerCircleTopRight1Y;
+  let strikerCircleBottomRight2X = strikerCircleTopRight2X;
+  let strikerCircleBottomRight2Y = outerBoardHeight - strikerCircleTopRight2Y;
+  
+  let strikerCircleBottomLeft1X = strikerCircleTopLeft1X;
+  let strikerCircleBottomLeft1Y = outerBoardHeight - strikerCircleTopLeft1Y;
+  let strikerCircleBottomLeft2X = strikerCircleTopLeft2X;
+  let strikerCircleBottomLeft2Y = outerBoardHeight - strikerCircleTopLeft2Y;
+  
+  
   
   export let settings : {[setting : string] : number} = {
     "numCoins" : 19,
@@ -96,7 +126,26 @@ module game {
     "diagonalLineBottomLeftStartX" : diagonalLineBottomLeftStartX,
     "diagonalLineBottomLeftStartY" : diagonalLineBottomLeftStartY,
     "diagonalLineBottomLeftEndX" : diagonalLineBottomLeftEndX,
-    "diagonalLineBottomLeftEndY" : diagonalLineBottomLeftEndY
+    "diagonalLineBottomLeftEndY" : diagonalLineBottomLeftEndY,
+    "diagonalLineThickness" : diagonalLineThickness,
+    "outerStrikerCircleDiameter" : outerStrikerCircleDiameter,
+    "outerStrikerCircleThickness" : outerStrikerCircleThickness,
+    "strikerCircleTopLeft1X" : strikerCircleTopLeft1X,
+    "strikerCircleTopLeft1Y" : strikerCircleTopLeft1Y,
+    "strikerCircleTopLeft2X" : strikerCircleTopLeft2X,
+    "strikerCircleTopLeft2Y" : strikerCircleTopLeft2Y,
+    "strikerCircleTopRight1X" : strikerCircleTopRight1X,
+    "strikerCircleTopRight1Y" : strikerCircleTopRight1Y,
+    "strikerCircleTopRight2X" : strikerCircleTopRight2X,
+    "strikerCircleTopRight2Y" : strikerCircleTopRight2Y,
+    "strikerCircleBottomRight1X" : strikerCircleBottomRight1X,
+    "strikerCircleBottomRight1Y" : strikerCircleBottomRight1Y,
+    "strikerCircleBottomRight2X" : strikerCircleBottomRight2X,
+    "strikerCircleBottomRight2Y" : strikerCircleBottomRight2Y,
+    "strikerCircleBottomLeft1X" : strikerCircleBottomLeft1X,
+    "strikerCircleBottomLeft1Y" : strikerCircleBottomLeft1Y,
+    "strikerCircleBottomLeft2X" : strikerCircleBottomLeft2X,
+    "strikerCircleBottomLeft2Y" : strikerCircleBottomLeft2Y
   };
   
   export function init() {
