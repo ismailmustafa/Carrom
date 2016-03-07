@@ -32,6 +32,28 @@ module game {
   let coinPocketBottomRightX = borderThickness + innerBoardWidth - (coinPocketDiameter/2);
   let coinPocketBottomRightY = borderThickness + innerBoardHeight - (coinPocketDiameter/2);
   
+  // Diagonal Lines
+  let diagonalLineTopLeftStartX = borderThickness + coinPocketDiameter + (((5.0/74.0)*innerBoardWidth)/Math.sqrt(2));
+  let diagonalLineTopLeftStartY = diagonalLineTopLeftStartX;
+  let diagonalLineTopLeftEndX = diagonalLineTopLeftStartX + (((26.70/74.0)*innerBoardWidth)/Math.sqrt(2));
+  let diagonalLineTopLeftEndY = diagonalLineTopLeftEndX;
+  
+  let diagonalLineTopRightStartX = outerBoardWidth - borderThickness - coinPocketDiameter - (((5.0/74.0)*innerBoardWidth)/Math.sqrt(2));
+  let diagonalLineTopRightStartY = diagonalLineTopLeftStartX;
+  let diagonalLineTopRightEndX = diagonalLineTopRightStartX - (((26.70/74.0)*innerBoardWidth)/Math.sqrt(2));
+  let diagonalLineTopRightEndY = diagonalLineTopLeftEndX;
+  
+  let diagonalLineBottomRightStartX = outerBoardWidth - borderThickness - coinPocketDiameter - (((5.0/74.0)*innerBoardWidth)/Math.sqrt(2));
+  let diagonalLineBottomRightStartY = diagonalLineBottomRightStartX;
+  let diagonalLineBottomRightEndX = diagonalLineBottomRightStartX - (((26.70/74.0)*innerBoardWidth)/Math.sqrt(2));
+  let diagonalLineBottomRightEndY = diagonalLineBottomRightEndX;
+  
+  let diagonalLineBottomLeftStartX = diagonalLineTopLeftStartX;
+  let diagonalLineBottomLeftStartY = diagonalLineBottomRightStartX;
+  let diagonalLineBottomLeftEndX = diagonalLineTopLeftEndX;
+  let diagonalLineBottomLeftEndY = diagonalLineBottomRightEndX;
+  
+  
   export let settings : {[setting : string] : number} = {
     "numCoins" : 19,
     "numBlack" : 9,
@@ -58,7 +80,23 @@ module game {
     "coinPocketBottomLeftX" : coinPocketBottomLeftX,
     "coinPocketBottomLeftY" : coinPocketBottomLeftY,
     "coinPocketBottomRightX" : coinPocketBottomRightX,
-    "coinPocketBottomRightY" : coinPocketBottomRightY
+    "coinPocketBottomRightY" : coinPocketBottomRightY,
+    "diagonalLineTopLeftStartX" : diagonalLineTopLeftStartX,
+    "diagonalLineTopLeftStartY" : diagonalLineTopLeftStartY,
+    "diagonalLineTopLeftEndX" : diagonalLineTopLeftEndX,
+    "diagonalLineTopLeftEndY" : diagonalLineTopLeftEndY,
+    "diagonalLineTopRightStartX" : diagonalLineTopRightStartX,
+    "diagonalLineTopRightStartY" : diagonalLineTopRightStartY,
+    "diagonalLineTopRightEndX" : diagonalLineTopRightEndX,
+    "diagonalLineTopRightEndY" : diagonalLineTopRightEndY,
+    "diagonalLineBottomRightStartX" : diagonalLineBottomRightStartX,
+    "diagonalLineBottomRightStartY" : diagonalLineBottomRightStartY,
+    "diagonalLineBottomRightEndX" : diagonalLineBottomRightEndX,
+    "diagonalLineBottomRightEndY" : diagonalLineBottomRightEndY,
+    "diagonalLineBottomLeftStartX" : diagonalLineBottomLeftStartX,
+    "diagonalLineBottomLeftStartY" : diagonalLineBottomLeftStartY,
+    "diagonalLineBottomLeftEndX" : diagonalLineBottomLeftEndX,
+    "diagonalLineBottomLeftEndY" : diagonalLineBottomLeftEndY
   };
   
   export function init() {

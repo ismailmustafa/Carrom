@@ -121,6 +121,13 @@
       <!--Generate Starting coin positions-->
       <circle ng-repeat="coin in game.board" fill='{{coin.color}}' stroke="#000000" stroke-width="1" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" ng-attr-cx='{{coin.coordinate.xPos}}' ng-attr-cy='{{coin.coordinate.yPos}}' ng-attr-r='{{coin.diameter/2}}' id="svg_47"/>
       
+      <!--Diagonal Lines-->
+      <line fill="none" stroke="#000000" stroke-width="5" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" ng-attr-x1='{{game.settings.diagonalLineTopLeftStartX}}' ng-attr-y1='{{game.settings.diagonalLineTopLeftStartY}}' ng-attr-x2='{{game.settings.diagonalLineTopLeftEndX}}' ng-attr-y2='{{game.settings.diagonalLineTopLeftEndY}}' id="svg_30"/>
+      <line fill="none" stroke="#000000" stroke-width="5" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" ng-attr-x1='{{game.settings.diagonalLineTopRightStartX}}' ng-attr-y1='{{game.settings.diagonalLineTopRightStartY}}' ng-attr-x2='{{game.settings.diagonalLineTopRightEndX}}' ng-attr-y2='{{game.settings.diagonalLineTopRightEndY}}' id="svg_30"/>
+      <line fill="none" stroke="#000000" stroke-width="5" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" ng-attr-x1='{{game.settings.diagonalLineBottomRightStartX}}' ng-attr-y1='{{game.settings.diagonalLineBottomRightStartY}}' ng-attr-x2='{{game.settings.diagonalLineBottomRightEndX}}' ng-attr-y2='{{game.settings.diagonalLineBottomRightEndY}}' id="svg_30"/>
+      <line fill="none" stroke="#000000" stroke-width="5" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" ng-attr-x1='{{game.settings.diagonalLineBottomLeftStartX}}' ng-attr-y1='{{game.settings.diagonalLineBottomLeftStartY}}' ng-attr-x2='{{game.settings.diagonalLineBottomLeftEndX}}' ng-attr-y2='{{game.settings.diagonalLineBottomLeftEndY}}' id="svg_30"/>
+      
+      
       <!--<circle fill="none" stroke="#000000" stroke-width="5" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" cx="266" cy="212" r="47.70744" id="svg_22"/>-->
       <!--<circle fill="#FF0000" stroke="#000000" stroke-width="5" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" cx="113.99999" cy="391.5" r="27.80288" id="svg_13"/>
       <circle fill="#FF0000" stroke="#000000" stroke-width="5" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" cx="526.99999" cy="385.5" r="27.80288" id="svg_14"/>
