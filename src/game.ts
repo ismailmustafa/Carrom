@@ -20,6 +20,7 @@ module game {
   
   // Coin Pockets
   let coinPocketDiameter = (4.45/74.0) * innerBoardWidth;
+  let coinPocketThickness = (0.15/74.0) * innerBoardWidth;
   let coinPocketTopLeftX = borderThickness + (coinPocketDiameter/2);
   let coinPocketTopLeftY = borderThickness + (coinPocketDiameter/2);
   
@@ -61,7 +62,7 @@ module game {
   let outerStrikerCircleDiameter = (3.18/74.0) * innerBoardWidth;
   let innerStrikerCircleDiameter = (2.45/74.0) * innerBoardWidth;
   let strikerPlacementLineLengthToCenterOfOuterStrikerCircles = strikerPlacementLineLength - outerStrikerCircleDiameter;
-  let outerStrikerCircleThickness = (0.15/74.0) * innerBoardWidth;
+  let outerStrikerCircleThickness = (0.3/74.0) * innerBoardWidth;
   
   let strikerCircleTopLeft1X = borderThickness + (10.15/74.0)*innerBoardWidth + (outerStrikerCircleDiameter/2);
   let strikerCircleTopLeft1Y = (outerBoardHeight/2) - (strikerPlacementLineLengthToCenterOfOuterStrikerCircles/2);
@@ -83,6 +84,29 @@ module game {
   let strikerCircleBottomLeft2X = strikerCircleTopLeft2X;
   let strikerCircleBottomLeft2Y = outerBoardHeight - strikerCircleTopLeft2Y;
   
+  // Outer striker placement lines
+  let outerStrikerPlacementLineThickness = (0.3/74.0)*innerBoardWidth;
+  
+  let leftOuterStrikerPlacementLineStartX = borderThickness + (10.15/74.0)*innerBoardWidth;
+  let leftOuterStrikerPlacementLineStartY = (outerBoardHeight/2) - strikerPlacementLineLengthToCenterOfOuterStrikerCircles/2; 
+  let leftOuterStrikerPlacementLineEndX = leftOuterStrikerPlacementLineStartX;
+  let leftOuterStrikerPlacementLineEndY = outerBoardHeight - leftOuterStrikerPlacementLineStartY;
+  
+  let rightOuterStrikerPlacementLineStartX = outerBoardWidth - leftOuterStrikerPlacementLineStartX;
+  let rightOuterStrikerPlacementLineStartY = leftOuterStrikerPlacementLineStartY;
+  let rightOuterStrikerPlacementLineEndX = rightOuterStrikerPlacementLineStartX;
+  let rightOuterStrikerPlacementLineEndY = leftOuterStrikerPlacementLineEndY;
+  
+  let topOuterStrikerPlacementLineStartX = leftOuterStrikerPlacementLineStartY;
+  let topOuterStrikerPlacementLineStartY = leftOuterStrikerPlacementLineStartX;
+  let topOuterStrikerPlacementLineEndX = outerBoardWidth - topOuterStrikerPlacementLineStartX;
+  let topOuterStrikerPlacementLineEndY = topOuterStrikerPlacementLineStartY;
+  
+  let bottomOuterStrikerPlacementLineStartX = topOuterStrikerPlacementLineStartX;
+  let bottomOuterStrikerPlacementLineStartY = outerBoardHeight - topOuterStrikerPlacementLineStartY;
+  let bottomOuterStrikerPlacementLineEndX = topOuterStrikerPlacementLineEndX;
+  let bottomOuterStrikerPlacementLineEndY = bottomOuterStrikerPlacementLineStartY;
+  
   export let settings : {[setting : string] : number} = {
     "numCoins" : 19,
     "numBlack" : 9,
@@ -102,6 +126,7 @@ module game {
     "boardCenterY": outerBoardHeight/2.0,
     "borderThickness" : borderThickness,
     "coinPocketDiameter" : coinPocketDiameter,
+    "coinPocketThickness" : coinPocketThickness,
     "coinPocketTopLeftX" : coinPocketTopLeftX,
     "coinPocketTopLeftY" : coinPocketTopLeftY,
     "coinPocketTopRightX" : coinPocketTopRightX,
@@ -145,7 +170,24 @@ module game {
     "strikerCircleBottomLeft1X" : strikerCircleBottomLeft1X,
     "strikerCircleBottomLeft1Y" : strikerCircleBottomLeft1Y,
     "strikerCircleBottomLeft2X" : strikerCircleBottomLeft2X,
-    "strikerCircleBottomLeft2Y" : strikerCircleBottomLeft2Y
+    "strikerCircleBottomLeft2Y" : strikerCircleBottomLeft2Y,
+    "outerStrikerPlacementLineThickness" : outerStrikerPlacementLineThickness,
+    "leftOuterStrikerPlacementLineStartX" : leftOuterStrikerPlacementLineStartX,
+    "leftOuterStrikerPlacementLineStartY" : leftOuterStrikerPlacementLineStartY,
+    "leftOuterStrikerPlacementLineEndX" : leftOuterStrikerPlacementLineEndX, 
+    "leftOuterStrikerPlacementLineEndY" : leftOuterStrikerPlacementLineEndY,
+    "rightOuterStrikerPlacementLineStartX" : rightOuterStrikerPlacementLineStartX,
+    "rightOuterStrikerPlacementLineStartY" : rightOuterStrikerPlacementLineStartY,
+    "rightOuterStrikerPlacementLineEndX" : rightOuterStrikerPlacementLineEndX, 
+    "rightOuterStrikerPlacementLineEndY" : rightOuterStrikerPlacementLineEndY,
+    "topOuterStrikerPlacementLineStartX" : topOuterStrikerPlacementLineStartX,
+    "topOuterStrikerPlacementLineStartY" : topOuterStrikerPlacementLineStartY,
+    "topOuterStrikerPlacementLineEndX" : topOuterStrikerPlacementLineEndX, 
+    "topOuterStrikerPlacementLineEndY" : topOuterStrikerPlacementLineEndY,
+    "bottomOuterStrikerPlacementLineStartX" : bottomOuterStrikerPlacementLineStartX,
+    "bottomOuterStrikerPlacementLineStartY" : bottomOuterStrikerPlacementLineStartY,
+    "bottomOuterStrikerPlacementLineEndX" : bottomOuterStrikerPlacementLineEndX, 
+    "bottomOuterStrikerPlacementLineEndY" : bottomOuterStrikerPlacementLineEndY 
   };
   
   export function init() {
