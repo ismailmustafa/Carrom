@@ -110,6 +110,23 @@ module game {
   
   let innerStrikerPlacementLineOffset = outerStrikerCircleDiameter;
   
+  // Inner corner circles
+  let innerCornerCircleDiameter = (6.35/74.0)*innerBoardWidth;
+  let innerCornerCircleThickness = (0.15/74.0)*innerBoardWidth;
+  
+  let innerCornerCircleTopLeftX = diagonalLineTopLeftEndX - (innerCornerCircleDiameter/2)/Math.sqrt(2);
+  let innerCornerCircleTopLeftY = innerCornerCircleTopLeftX;
+  
+  let innerCornerCircleTopRightX = outerBoardWidth - innerCornerCircleTopLeftX;
+  let innerCornerCircleTopRightY = innerCornerCircleTopLeftY;
+  
+  let innerCornerCircleBottomRightX = innerCornerCircleTopRightX;
+  let innerCornerCircleBottomRightY = outerBoardHeight - innerCornerCircleTopRightY;
+  
+  let innerCornerCircleBottomLeftX = innerCornerCircleTopLeftX;
+  let innerCornerCircleBottomLeftY = outerBoardHeight - innerCornerCircleTopLeftY;
+  
+  
   export let settings : {[setting : string] : number} = {
     "numCoins" : 19,
     "numBlack" : 9,
@@ -192,7 +209,17 @@ module game {
     "bottomOuterStrikerPlacementLineStartX" : bottomOuterStrikerPlacementLineStartX,
     "bottomOuterStrikerPlacementLineStartY" : bottomOuterStrikerPlacementLineStartY,
     "bottomOuterStrikerPlacementLineEndX" : bottomOuterStrikerPlacementLineEndX, 
-    "bottomOuterStrikerPlacementLineEndY" : bottomOuterStrikerPlacementLineEndY 
+    "bottomOuterStrikerPlacementLineEndY" : bottomOuterStrikerPlacementLineEndY,
+    "innerCornerCircleDiameter" : innerCornerCircleDiameter,
+    "innerCornerCircleThickness" : innerCornerCircleThickness,
+    "innerCornerCircleTopLeftX" : innerCornerCircleTopLeftX,
+    "innerCornerCircleTopLeftY" : innerCornerCircleTopLeftY,
+    "innerCornerCircleTopRightX" : innerCornerCircleTopRightX,
+    "innerCornerCircleTopRightY" : innerCornerCircleTopRightY,
+    "innerCornerCircleBottomRightX" : innerCornerCircleBottomRightX,
+    "innerCornerCircleBottomRightY" : innerCornerCircleBottomRightY,
+    "innerCornerCircleBottomLeftX" : innerCornerCircleBottomLeftX,
+    "innerCornerCircleBottomLeftY" : innerCornerCircleBottomLeftY
   };
   
   export function init() {
