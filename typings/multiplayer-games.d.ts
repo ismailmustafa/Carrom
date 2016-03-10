@@ -3,6 +3,7 @@ declare var $location: angular.ILocationService;
 declare var $timeout: angular.ITimeoutService;
 declare var $interval: angular.IIntervalService;
 declare var $window: angular.IWindowService;
+declare var $document: angular.IDocumentService;
 
 // // IState should be defined by the game, e.g., TicTacToe defines it as:
 // // interface IState { board: Board; delta: BoardDelta; }

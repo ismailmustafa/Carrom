@@ -99,7 +99,7 @@
 
   <!--BOARD DRAWING-->
   <div id="gameArea">
-    <svg ng-attr-width='{{game.settings.outerBoardWidth + 100}}' ng-attr-height='{{game.settings.outerBoardHeight + 100}}' xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+    <svg ng-attr-width='{{game.settings.outerBoardWidth}}' ng-attr-height='{{game.settings.outerBoardHeight}}' xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
     <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
     <g>
       <title>Layer 1</title>
@@ -160,45 +160,9 @@
       <line fill="none" stroke="#000000" ng-attr-stroke-width='{{game.settings.innerStrikerPlacementLineThickness}}' stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" ng-attr-x1='{{game.settings.topOuterStrikerPlacementLineStartX}}' ng-attr-y1='{{game.settings.topOuterStrikerPlacementLineStartY + game.settings.innerStrikerPlacementLineOffset}}' ng-attr-x2='{{game.settings.topOuterStrikerPlacementLineEndX}}' ng-attr-y2='{{game.settings.topOuterStrikerPlacementLineEndY + game.settings.innerStrikerPlacementLineOffset}}' id="svg_30"/>
       <line fill="none" stroke="#000000" ng-attr-stroke-width='{{game.settings.innerStrikerPlacementLineThickness}}' stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" ng-attr-x1='{{game.settings.bottomOuterStrikerPlacementLineStartX}}' ng-attr-y1='{{game.settings.bottomOuterStrikerPlacementLineStartY - game.settings.innerStrikerPlacementLineOffset}}' ng-attr-x2='{{game.settings.bottomOuterStrikerPlacementLineEndX}}' ng-attr-y2='{{game.settings.bottomOuterStrikerPlacementLineEndY - game.settings.innerStrikerPlacementLineOffset}}' id="svg_30"/>
       
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
       <!--Generate Starting coin positions-->
       <circle ng-repeat="coin in game.board" fill='{{coin.color}}' stroke="#000000" stroke-width="1" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" ng-attr-cx='{{coin.coordinate.xPos}}' ng-attr-cy='{{coin.coordinate.yPos}}' ng-attr-r='{{coin.diameter/2}}' id="svg_47"/>
       
-      
-      <!--<circle fill="none" stroke="#000000" stroke-width="5" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" cx="266" cy="212" r="47.70744" id="svg_22"/>-->
-      <!--<circle fill="#FF0000" stroke="#000000" stroke-width="5" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" cx="113.99999" cy="391.5" r="27.80288" id="svg_13"/>
-      <circle fill="#FF0000" stroke="#000000" stroke-width="5" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" cx="526.99999" cy="385.5" r="27.80288" id="svg_14"/>
-      <circle fill="#FF0000" stroke="#000000" stroke-width="5" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" cx="519.99999" cy="104.5" r="27.80288" id="svg_16"/>
-      <circle fill="#000000" stroke="#000000" stroke-width="5" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" cx="51" cy="52" r="47.16991" id="svg_39"/>
-      <circle fill="#FF0000" stroke="#000000" stroke-width="5" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" cx="116.99999" cy="106.5" r="27.80288" id="svg_17"/>
-      <line fill="none" stroke="#000000" stroke-width="5" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" x1="81" y1="76" x2="290" y2="229" id="svg_18"/>
-      <line fill="none" stroke="#000000" stroke-width="5" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" x1="556" y1="59" x2="396" y2="222" id="svg_19"/>
-      <line fill="none" stroke="#000000" stroke-width="5" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" x1="88" y1="109" x2="88" y2="387.06474" id="svg_33"/>
-      <line fill="none" stroke="#000000" stroke-width="5" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" x1="74" y1="425" x2="288" y2="278" id="svg_20"/>
-      <line fill="none" stroke="#000000" stroke-width="5" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" x1="115" y1="367" x2="526.01946" y2="367" id="svg_28"/>
-      <line fill="none" stroke="#000000" stroke-width="5" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" x1="555" y1="417" x2="382" y2="265" id="svg_21"/>
-      <circle fill="none" stroke="#000000" stroke-width="5" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" cx="404" cy="211.5" r="47.70744" id="svg_24"/>
-      <circle fill="none" stroke="#000000" stroke-width="5" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" cx="280" cy="289.5" r="47.70744" id="svg_25"/>
-      <circle fill="none" stroke="#000000" stroke-width="5" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" cx="394" cy="277.5" r="47.70744" id="svg_26"/>
-      <line fill="none" stroke="#000000" stroke-width="5" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" x1="112.49026" y1="416.5" x2="523.50973" y2="416.5" id="svg_30"/>
-      <line fill="none" stroke="#000000" stroke-width="5" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" x1="105.49026" y1="76.5" x2="516.50973" y2="76.5" id="svg_31"/>
-      <line fill="none" stroke="#000000" stroke-width="5" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" x1="547" y1="104.46764" x2="547" y2="382.53238" id="svg_35"/>
-      <line fill="none" stroke="#000000" stroke-width="5" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" x1="115.49026" y1="135.5" x2="526.50973" y2="135.5" id="svg_32"/>
-      <line fill="none" stroke="#000000" stroke-width="5" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" x1="140" y1="106.46764" x2="140" y2="384.53238" id="svg_34"/>
-      <line fill="none" stroke="#000000" stroke-width="5" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" x1="493" y1="101.46762" x2="493" y2="379.53236" id="svg_36"/>
-      <circle fill="#000000" stroke="#000000" stroke-width="5" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" cx="581" cy="57.5" r="47.16991" id="svg_40"/>
-      <circle fill="#000000" stroke="#000000" stroke-width="5" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" cx="53" cy="428.5" r="47.16991" id="svg_42"/>
-      <circle fill="#000000" stroke="#000000" stroke-width="5" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" cx="583" cy="420.5" r="47.16991" id="svg_43"/>-->
     </g>
     </svg>
   </div>
