@@ -228,7 +228,7 @@ module game {
   
   export function init() {
 
-    resizeGameAreaService.setWidthToHeight(1);
+    // resizeGameAreaService.setWidthToHeight(1);
     var heightOutput = window.innerHeight;
     var widthOutput = window.innerWidth;
       
@@ -403,8 +403,40 @@ module game {
 //   }
 // }
 
+
 angular.module('myApp', ['ngTouch', 'ui.bootstrap', 'gameServices'])
   .run(function () {
     $rootScope['game'] = game;
-    game.init();
+    // game.init();
+
+    // Matter.js module aliases
+    var Engine = Matter.Engine,
+      World = Matter.World,
+      Bodies = Matter.Bodies;
+
+    // create a Matter.js engine
+    var engine = Engine.create(document.getElementById("gameArea"));
+    // var parent = document.getElementById("gameArea");
+    // var canvas = parent.getElementsByTagName('canvas')[0]
+
+    var c = $("#gameArea canvas");    
+
+    var _sceneWidth = document.documentElement.clientWidth;
+    var _sceneHeight = document.documentElement.clientHeight;
+    var offset = 5;
+
+    // create two boxes and a ground
+    var boxA = Bodies.rectangle(_sceneWidth * 0.5, -offset, _sceneWidth + 0.5, 50.5, { isStatic: true });
+    var boxB = Bodies.rectangle(450, 50, 80, 80);
+    var ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
+
+    // add all of the bodies to the world
+    World.add(engine.world, [ground]);
+
+    // run the engine
+    Engine.run(engine);
+    
+
+    // respondCanvas();
+
   });

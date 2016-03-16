@@ -127,7 +127,8 @@ module.exports = function(grunt) {
         src: [
           'ts_output_readonly_do_NOT_change_manually/src/gameLogic.js',
           'ts_output_readonly_do_NOT_change_manually/src/game.js',
-          'ts_output_readonly_do_NOT_change_manually/src/aiService.js'],
+          'ts_output_readonly_do_NOT_change_manually/src/aiService.js'
+          ],
         dest: 'dist/js/everything.js',
       },
     },
@@ -173,6 +174,8 @@ module.exports = function(grunt) {
             'http://ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular-touch.min.js',
             'http://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.12.1/ui-bootstrap-tpls.min.js',
             'http://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css',
+            '//code.jquery.com/jquery-1.12.0.min.js',
+            '//code.jquery.com/jquery-migrate-1.2.1.min.js',
             // glyphicons for the carousel
             'http://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/fonts/glyphicons-halflings-regular.woff',
             'http://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/fonts/glyphicons-halflings-regular.ttf',
@@ -190,7 +193,7 @@ module.exports = function(grunt) {
           timestamp: true
         },
         dest: 'dist/index.min.appcache',
-        src: []
+        src: ['node_modules/matter-js/build/matter.min.js']
       }
     },
     'http-server': {
