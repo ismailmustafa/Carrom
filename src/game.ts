@@ -339,7 +339,7 @@ module game {
         // isSleeping: true,
         restitution: 1,
         render: { fillStyle: board[i].color, strokeStyle: 'black' },
-        label: 'Coins'
+        label: 'Coin'
       }));
     }
 
@@ -397,17 +397,43 @@ module game {
 
     Matter.Engine.run(_engine);
 
-    Matter.Events.on(_engine, 'collisionStart', function(event) {
+    Matter.Events.on(_engine, 'collisionActive', function(event) {
       var pairs = event.pairs;
 
       // change object colours to show those starting a collision
       for (var i = 0; i < pairs.length; i++) {
         var pair = pairs[i];
-        pair.bodyA.render.fillStyle = '#bbbbbb';
-        pair.bodyB.render.fillStyle = '#bbbbbb';
-
+        
+        console.log(event);
         console.log(pair.bodyA);
         console.log(pair.bodyB);
+
+        if (pair.bodyA.label == "Pocket" && pair.bodyB.label == "Coin"){
+          console.log(pair.bodyB);
+          
+          for (var j = 0; j < event.source.world.bodies.length; j++){
+            if(event.source.world.bodies[j].id == pair.bodyB.id){
+              console.log("found at index " + j);
+              event.source.world.bodies.splice(j, 1);
+            }
+          }
+          // pair.bodyB.render.fillStyle = '#bbbbbb';
+          // Matter.Composite.remove(_engine, pair.bodyB);
+          // 
+          
+        } else if (pair.bodyB.label == "Pocket" && pair.bodyA.label == "Coin") {
+          console.log(pair.bodyA);
+
+          for (var j = 0; j < event.source.world.bodies.length; j++) {
+            if (event.source.world.bodies[j].id == pair.bodyA.id) {
+              console.log("found at index " + j);
+              event.source.world.bodies.splice(j, 1);
+            }
+          }
+          // pair.bodyA.render.fillStyle = '#bbbbbb';
+          // Matter.Composite.remove(_engine, pair.body);
+        }
+
       }
     });
 
