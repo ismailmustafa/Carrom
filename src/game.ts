@@ -285,7 +285,7 @@ module game {
     // boundsMax.x = _sceneWidth;
     // boundsMax.y = _sceneHeight;
 
-    // // let size = _sceneWidth < _sceneHeight ? _sceneWidth : _sceneHeight;
+    
 
     // canvas.width = renderOptions.width = _sceneWidth;
     // canvas.height = renderOptions.height = _sceneWidth;
@@ -322,7 +322,7 @@ module game {
     //   settings["outerBoardWidth"],
     //   settings["borderThickness"],
     //   { isStatic: true });
-    var offset = 15;
+    var offset = 1;
 
     Matter.World.add(_engine.world, [
       Matter.Bodies.rectangle(400, -offset, 800 + 2 * offset, 50, {
@@ -354,7 +354,8 @@ module game {
         isStatic: false,
         // isSleeping: true,
         restitution: 1,
-        render: { fillStyle: board[i].color }
+        render: { fillStyle: board[i].color, strokeStyle: 'black' },
+        label: 'Coins'
       }));
     }
 
@@ -396,8 +397,22 @@ module game {
 
     drawObjects();
 
-    // run the engine
     Matter.Engine.run(_engine);
+
+    Matter.Events.on(_engine, 'collisionStart', function(event) {
+      var pairs = event.pairs;
+
+      // change object colours to show those starting a collision
+      for (var i = 0; i < pairs.length; i++) {
+        var pair = pairs[i];
+        pair.bodyA.render.fillStyle = '#bbbbbb';
+        pair.bodyB.render.fillStyle = '#bbbbbb';
+      }
+
+      
+    });
+
+
   }
 
 }

@@ -12,7 +12,6 @@
         display: inline-block;
         /*width:500px;
         height:400px;*/
-        
         max-width: 100%;
         max-height: 100%;
       }
@@ -384,7 +383,8 @@
               isStatic: false,
               // isSleeping: true,
               restitution: 1,
-              render: {fillStyle: coins[i].color }
+              render: {fillStyle: coins[i].color, strokeStyle: 'black' },
+              label: 'Coins'
             }));
           }
           World.add(engine.world, circles );
