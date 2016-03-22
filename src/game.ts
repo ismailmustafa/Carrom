@@ -307,21 +307,6 @@ module game {
 
   export function drawObjects(){
 
-    // var widthOffset = (_sceneWidth - settings["outerBoardWidth"]) / 2.0;
-    // var heightOffset = (_sceneHeight - settings["outerBoardHeight"]) / 2.0;
-
-    // var topBorder = Matter.Bodies.rectangle((settings["outerBoardWidth"] / 2.0) + widthOffset,
-    //   (settings["borderThickness"] / 2.0) - heightOffset,
-    //   settings["outerBoardWidth"],
-    //   settings["borderThickness"],
-    //   { isStatic: true });
-
-    // console.log(settings["innerBoardHeight"]);
-    // var bottomBorder = Matter.Bodies.rectangle((settings["outerBoardWidth"] / 2.0) + widthOffset,
-    //   (settings["borderThickness"] / 2.0) - heightOffset + settings["innerBoardHeight"],
-    //   settings["outerBoardWidth"],
-    //   settings["borderThickness"],
-    //   { isStatic: true });
     var offset = 1;
 
     Matter.World.add(_engine.world, [
@@ -347,7 +332,6 @@ module game {
 
     let circles : any = [];
 
-
     for (var i = 0; i < board.length; i++) {
       
       circles.push(Matter.Bodies.circle(board[i].coordinate.xPos, board[i].coordinate.yPos, board[i].diameter / 2.0, <any>{
@@ -359,7 +343,21 @@ module game {
       }));
     }
 
+    // Add boards pockets 
+    var pocket = Matter.Bodies.circle(settings["coinPocketTopLeftX"], settings["coinPocketTopLeftX"], settings["coinPocketDiameter"], <any>{
+         isStatic: true,
+         // isSleeping: true,
+         restitution: 1,
+         render: { fillStyle: 'black', strokeStyle: 'black' },
+         label: 'Pocket'
+      });
+
+      
     Matter.World.add(_engine.world, circles);
+
+    Matter.World.add(_engine.world, pocket);
+
+    
     console.log(circles);
   }
 
@@ -407,9 +405,10 @@ module game {
         var pair = pairs[i];
         pair.bodyA.render.fillStyle = '#bbbbbb';
         pair.bodyB.render.fillStyle = '#bbbbbb';
-      }
 
-      
+        console.log(pair.bodyA);
+        console.log(pair.bodyB);
+      }
     });
 
 
