@@ -251,17 +251,19 @@ module game {
   //   }
   // } 
   
-  export var _engine : any, _world : any, _sceneWidth : any, _sceneHeight : any ;
+  export let _engine : any, _world : any, _sceneWidth : any, _sceneHeight : any ;
 
   export function updateScene() {
 
-    var c = (<any>$("#gameArea canvas")).get(0);
+    // var c = (<any>$("#gameArea canvas")).get(0);
 
     // _sceneWidth = c.width;
     // _sceneHeight = c.height;
     
-    _sceneWidth = document.documentElement.clientWidth;
-    _sceneHeight = document.documentElement.clientHeight;
+    var c = (<any>$("canvas")).get(0);
+
+    _sceneWidth = c.width;
+    _sceneHeight = c.height;
 
     var boundsMax = _engine.world.bounds.max,
       renderOptions = _engine.render.options,
@@ -270,12 +272,23 @@ module game {
     boundsMax.x = _sceneWidth;
     boundsMax.y = _sceneHeight;
 
-    let size = _sceneWidth < _sceneHeight ? _sceneWidth : _sceneHeight;
-
     canvas.width = renderOptions.width = _sceneWidth;
     canvas.height = renderOptions.height = _sceneHeight;
 
-    console.log(_sceneWidth, _sceneHeight);
+    // _sceneWidth = document.documentElement.clientWidth;
+    // _sceneHeight = document.documentElement.clientHeight;
+
+    // var boundsMax = _engine.world.bounds.max,
+    //   renderOptions = _engine.render.options,
+    //   canvas = _engine.render.canvas;
+
+    // boundsMax.x = _sceneWidth;
+    // boundsMax.y = _sceneHeight;
+
+    // // let size = _sceneWidth < _sceneHeight ? _sceneWidth : _sceneHeight;
+
+    // canvas.width = renderOptions.width = _sceneWidth;
+    // canvas.height = renderOptions.height = _sceneWidth;
   };
 
   export function fullscreen() {
@@ -294,36 +307,88 @@ module game {
 
   export function drawObjects(){
 
-    var widthOffset = (_sceneWidth - settings["outerBoardWidth"]) / 2.0;
-    var heightOffset = (_sceneHeight - settings["outerBoardHeight"]) / 2.0;
+    // var widthOffset = (_sceneWidth - settings["outerBoardWidth"]) / 2.0;
+    // var heightOffset = (_sceneHeight - settings["outerBoardHeight"]) / 2.0;
 
-    var topBorder = Matter.Bodies.rectangle((settings["outerBoardWidth"] / 2.0) + widthOffset,
-      (settings["borderThickness"] / 2.0) - heightOffset,
-      settings["outerBoardWidth"],
-      settings["borderThickness"],
-      { isStatic: true });
+    // var topBorder = Matter.Bodies.rectangle((settings["outerBoardWidth"] / 2.0) + widthOffset,
+    //   (settings["borderThickness"] / 2.0) - heightOffset,
+    //   settings["outerBoardWidth"],
+    //   settings["borderThickness"],
+    //   { isStatic: true });
 
-    console.log(settings["innerBoardHeight"]);
-    var bottomBorder = Matter.Bodies.rectangle((settings["outerBoardWidth"] / 2.0) + widthOffset,
-      (settings["borderThickness"] / 2.0) - heightOffset + settings["innerBoardHeight"],
-      settings["outerBoardWidth"],
-      settings["borderThickness"],
-      { isStatic: true });
+    // console.log(settings["innerBoardHeight"]);
+    // var bottomBorder = Matter.Bodies.rectangle((settings["outerBoardWidth"] / 2.0) + widthOffset,
+    //   (settings["borderThickness"] / 2.0) - heightOffset + settings["innerBoardHeight"],
+    //   settings["outerBoardWidth"],
+    //   settings["borderThickness"],
+    //   { isStatic: true });
+    var offset = 15;
 
-    // add all of the bodies to the world
-    Matter.World.add(_engine.world, [topBorder, bottomBorder]);
+    Matter.World.add(_engine.world, [
+      Matter.Bodies.rectangle(400, -offset, 800 + 2 * offset, 50, {
+        isStatic: true
+      }),
+      Matter.Bodies.rectangle(400, 600 + offset, 800 + 2 * offset, 50, {
+        isStatic: true
+      }),
+      Matter.Bodies.rectangle(800 + offset, 300, 50, 600 + 2 * offset, {
+        isStatic: true
+      }),
+      Matter.Bodies.rectangle(-offset, 300, 50, 600 + 2 * offset, {
+        isStatic: true
+      })
+    ]);
+
+    console.log(_sceneWidth, _sceneHeight);
+    drawBoard(_sceneWidth, _sceneHeight);
+
+    state = gameLogic.getInitialState(settings);
+    board = state.board;
+
+    let circles : any = [];
+
+
+    for (var i = 0; i < board.length; i++) {
+      
+      circles.push(Matter.Bodies.circle(board[i].coordinate.xPos, board[i].coordinate.yPos, board[i].diameter / 2.0, <any>{
+        isStatic: false,
+        // isSleeping: true,
+        restitution: 1,
+        render: { fillStyle: board[i].color }
+      }));
+    }
+
+    Matter.World.add(_engine.world, circles);
+    console.log(circles);
   }
 
   export function init() {
 
-    var Engine = Matter.Engine,
-      World = Matter.World,
-      Bodies = Matter.Bodies;
+    // var Engine = Matter.Engine,
+    //   World = Matter.World,
+    //   Bodies = Matter.Bodies;
 
     // create a Matter.js engine
-    _engine = Engine.create(document.getElementById("gameArea"));
+    _engine = Matter.Engine.create(document.getElementById("gameArea"), <any>{
+      render: {
+        options: {
+          label: 'Engine',
+          showAngleIndicator: false,
+          gravity: {
+            x: 0,
+            y: 0
+          },
+          wireframes: false
+        }
+      }
+    });
+    
+    _engine.world.gravity.y = 0;
+    _engine.world.gravity.x = 0;
 
-    //fullscreen();
+    var mouseConstraint = (<any>Matter.MouseConstraint).create(_engine);
+
+    Matter.World.add(_engine.world, mouseConstraint);
 
     updateScene();
 
@@ -332,19 +397,7 @@ module game {
     drawObjects();
 
     // run the engine
-    Engine.run(_engine);
-
-    window.onresize = function() {
-      _world = _engine.world;
-      // updateScene();
-      World.clear(_world, false);
-
-      updateScene();
-
-      drawBoard(_sceneWidth, _sceneHeight);
-      
-      drawObjects();
-    }
+    Matter.Engine.run(_engine);
   }
 
 }

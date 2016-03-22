@@ -7,6 +7,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>Carrom</title>
   <meta name="description" content="Carrom game">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.1/css/materialize.min.css"></link>
+
   <link rel="shortcut icon"type="image/x-icon" href="data:image/x-icon;,"><!-- Suppress browser request for favicon.ico -->
 
   <!-- To ensure CSS files are downloaded in parallel, always include external CSS before external JavaScript. -->
@@ -50,6 +53,7 @@
   <script type="text/javascript" src="node_modules/matter-js/build/matter.min.js"></script>
   <script type="text/javascript" src="http://code.jquery.com/jquery-1.12.0.min.js"></script>
   <script type="text/javascript" src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.1/js/materialize.min.js"></script>
 </head>
 <body ng-cloak>
   <div id="e2e_test_open_rules_modal" class="help-tip" ng-click="game.isHelpModalShown = true" aria-hidden="true"></div>
@@ -113,10 +117,15 @@
       width: 100%;
       height: 100%;
     }
+
+    canvas:active {
+      cursor: pointer;
+      cursor: -webkit-grabbing;
+    }
   </style>
 
   <div id="gameArea">
-     <div id="canvas-container"></div>
+    <div id="canvas-container"></div>
   </div>
 
   <div ng-if="false" id="gameAreaOld">
