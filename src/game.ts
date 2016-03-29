@@ -252,43 +252,31 @@ module game {
   // } 
   
   export let _engine : any, _world : any, _sceneWidth : any, _sceneHeight : any ;
-
+  export let defaultCategory = 0x0001,
+             removedCategory = 0x0002;
+            
   export function updateScene() {
 
-    // var c = (<any>$("#gameArea canvas")).get(0);
-
-    // _sceneWidth = c.width;
-    // _sceneHeight = c.height;
-    
     var c = (<any>$("canvas")).get(0);
+    
+    var width = (<any>$(<any>window)).width();
+    var height = (<any>$(<any>window)).height();
+    
+    var size = width <= height ? width : height;
 
-    _sceneWidth = c.width;
-    _sceneHeight = c.height;
+    _sceneWidth = size;
+    _sceneHeight = size;
 
     var boundsMax = _engine.world.bounds.max,
       renderOptions = _engine.render.options,
       canvas = _engine.render.canvas;
 
-    boundsMax.x = _sceneWidth;
-    boundsMax.y = _sceneHeight;
+    boundsMax.x = size;
+    boundsMax.y = size;
 
-    canvas.width = renderOptions.width = _sceneWidth;
-    canvas.height = renderOptions.height = _sceneHeight;
+    canvas.width = renderOptions.width = size;
+    canvas.height = renderOptions.height = size;
 
-    // _sceneWidth = document.documentElement.clientWidth;
-    // _sceneHeight = document.documentElement.clientHeight;
-
-    // var boundsMax = _engine.world.bounds.max,
-    //   renderOptions = _engine.render.options,
-    //   canvas = _engine.render.canvas;
-
-    // boundsMax.x = _sceneWidth;
-    // boundsMax.y = _sceneHeight;
-
-    
-
-    // canvas.width = renderOptions.width = _sceneWidth;
-    // canvas.height = renderOptions.height = _sceneWidth;
   };
 
   export function fullscreen() {
@@ -308,24 +296,32 @@ module game {
   export function drawObjects(){
 
     var offset = 1;
+    
+    var width = _sceneWidth;
+    var height = _sceneHeight;
 
     Matter.World.add(_engine.world, [
-      Matter.Bodies.rectangle(400, -offset, 800 + 2 * offset, 50, {
-        isStatic: true
+      Matter.Bodies.rectangle(width/2, -offset, width + 2 * offset, settings["borderThickness"], <any>{
+        isStatic: true,
+        render: { fillStyle: 'black', strokeStyle: 'black'}
       }),
-      Matter.Bodies.rectangle(400, 600 + offset, 800 + 2 * offset, 50, {
-        isStatic: true
+      Matter.Bodies.rectangle(width/2, height + offset, width + 2 * offset, settings["borderThickness"], <any>{
+        isStatic: true,
+        render: { fillStyle: 'black', strokeStyle: 'black'}
       }),
-      Matter.Bodies.rectangle(800 + offset, 300, 50, 600 + 2 * offset, {
-        isStatic: true
+      Matter.Bodies.rectangle(width + offset, height/2, settings["borderThickness"], height + 2 * offset, <any>{
+        isStatic: true,
+        render: { fillStyle: 'black', strokeStyle: 'black'}
       }),
-      Matter.Bodies.rectangle(-offset, 300, 50, 600 + 2 * offset, {
-        isStatic: true
+      Matter.Bodies.rectangle(-offset, height/2, settings["borderThickness"], height + 2 * offset, <any>{
+        isStatic: true,
+        render: { fillStyle: 'black', strokeStyle: 'black'}
       })
     ]);
 
     console.log(_sceneWidth, _sceneHeight);
-    drawBoard(_sceneWidth, _sceneHeight);
+    console.log("passing this into drawboard: " + width + " " + height);
+    drawBoard(width, height);
 
     state = gameLogic.getInitialState(settings);
     board = state.board;
@@ -337,6 +333,9 @@ module game {
       circles.push(Matter.Bodies.circle(board[i].coordinate.xPos, board[i].coordinate.yPos, board[i].diameter / 2.0, <any>{
         isStatic: false,
         // isSleeping: true,
+        collisionFilter: {
+          mask: defaultCategory
+        },
         restitution: 1,
         render: { fillStyle: board[i].color, strokeStyle: 'black' },
         label: 'Coin'
@@ -346,8 +345,10 @@ module game {
     // Add boards pockets 
     var pocket = Matter.Bodies.circle(settings["coinPocketTopLeftX"], settings["coinPocketTopLeftX"], settings["coinPocketDiameter"], <any>{
          isStatic: true,
-         // isSleeping: true,
          restitution: 1,
+         collisionFilter: {
+            mask: defaultCategory
+         },
          render: { fillStyle: 'black', strokeStyle: 'black' },
          label: 'Pocket'
       });
@@ -397,46 +398,32 @@ module game {
 
     Matter.Engine.run(_engine);
 
-    Matter.Events.on(_engine, 'collisionActive', function(event) {
+    Matter.Events.on(_engine, 'collisionEnd', function(event) {
+      // console.log("collisionStart");
+      handlePocketCollision(event);
+    });
+    
+    function handlePocketCollision(event : any) {
       var pairs = event.pairs;
 
       // change object colours to show those starting a collision
       for (var i = 0; i < pairs.length; i++) {
         var pair = pairs[i];
         
-        console.log(event);
-        console.log(pair.bodyA);
-        console.log(pair.bodyB);
+        //console.log(_engine.world);
+        // console.log(pair.bodyA.label + " collided with " + pair.bodyB.label);
+        console.log(pair);
 
         if (pair.bodyA.label == "Pocket" && pair.bodyB.label == "Coin"){
-          console.log(pair.bodyB);
-          
-          for (var j = 0; j < event.source.world.bodies.length; j++){
-            if(event.source.world.bodies[j].id == pair.bodyB.id){
-              console.log("found at index " + j);
-              event.source.world.bodies.splice(j, 1);
-            }
-          }
-          // pair.bodyB.render.fillStyle = '#bbbbbb';
-          // Matter.Composite.remove(_engine, pair.bodyB);
-          // 
+          pair.bodyB.collisionFilter.mask = removedCategory;
+          (<any>Matter.World).remove(_engine.world, pair.bodyB);
           
         } else if (pair.bodyB.label == "Pocket" && pair.bodyA.label == "Coin") {
-          console.log(pair.bodyA);
-
-          for (var j = 0; j < event.source.world.bodies.length; j++) {
-            if (event.source.world.bodies[j].id == pair.bodyA.id) {
-              console.log("found at index " + j);
-              event.source.world.bodies.splice(j, 1);
-            }
-          }
-          // pair.bodyA.render.fillStyle = '#bbbbbb';
-          // Matter.Composite.remove(_engine, pair.body);
+          pair.bodyA.collisionFilter.mask = removedCategory;
+          (<any>Matter.World).remove(_engine.world, pair.bodyA);
         }
-
-      }
-    });
-
+      }  
+    }
 
   }
 
