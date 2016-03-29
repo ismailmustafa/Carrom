@@ -20,6 +20,7 @@ module game {
     let innerBoardHeight = innerBoardWidth;
 
     let coinDiameter = (3.18 / 74.0) * innerBoardWidth;
+    let strikerDiameter = (4.1/74.0) * innerBoardWidth;
     let startingCircleDiameter = (17.0 / 74.0) * innerBoardWidth;
     let borderThickness = (7.6 / 74.0) * innerBoardWidth;
 
@@ -139,6 +140,7 @@ module game {
       "firstLayer": 6,
       "secondLayer": 12,
       "coinDiameter": coinDiameter,
+      "strikerDiameter" : strikerDiameter,
       "innerBoardWidth": innerBoardWidth,
       "innerBoardHeight": innerBoardHeight,
       "outerBoardWidth": outerBoardWidth,
@@ -254,7 +256,8 @@ module game {
   
   export let _engine : any, _world : any, _sceneWidth : any, _sceneHeight : any ;
   export let defaultCategory = 0x0001,
-             removedCategory = 0x0002;
+             removedCategory = 0x0002,
+             movableCategory = 0x0003;
             
   export function updateScene() {
 
@@ -383,11 +386,21 @@ module game {
          render: { fillStyle: 'grey', strokeStyle: 'black' },
          label: 'Pocket'
       });
+      
+      var strikerCircle = Matter.Bodies.circle(200, 200, settings["strikerDiameter"]/2, <any>{
+         isStatic: false,
+         restitution: 1,
+         collisionFilter: {
+            category: movableCategory
+         },
+         render: { fillStyle: 'blue', strokeStyle: 'black' },
+         label: 'Striker'
+      });
 
       
     Matter.World.add(_engine.world, circles);
 
-    Matter.World.add(_engine.world, [pocket1,pocket2,pocket3,pocket4]);
+    Matter.World.add(_engine.world, [pocket1,pocket2,pocket3,pocket4,strikerCircle]);
 
     
     console.log(circles);
@@ -417,10 +430,6 @@ module game {
     _engine.world.gravity.y = 0;
     _engine.world.gravity.x = 0;
 
-    var mouseConstraint = (<any>Matter.MouseConstraint).create(_engine);
-
-    Matter.World.add(_engine.world, mouseConstraint);
-
     updateScene();
 
     drawBoard(_sceneWidth, _sceneHeight);
@@ -433,6 +442,10 @@ module game {
     renderOptions.showAngleIndicator = false;
     renderOptions.wireframes = false;
 
+    var mouseConstraint = (<any>Matter.MouseConstraint).create(_engine, { collisionFilter: { mask: removedCategory } } );
+
+    Matter.World.add(_engine.world, mouseConstraint);
+    
     Matter.Engine.run(_engine);
 
     Matter.Events.on(_engine, 'collisionEnd', function(event) {
