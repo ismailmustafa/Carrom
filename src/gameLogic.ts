@@ -36,10 +36,6 @@ module gameLogic {
   // Return initial board 
   export function getInitialBoard(gameSettings : {[setting : string] : number}): Board {
     let boardSize : BoardSize = getInitialSize(gameSettings);
-    console.log("-------------------------");
-    console.log(boardSize.width + " " + boardSize.height);
-    console.log(boardSize.centerX + " " + boardSize.centerY);
-    console.log("---------------------------");
     let board: Board = [];
     
     // set the position of hte queen

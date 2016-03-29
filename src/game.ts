@@ -13,15 +13,16 @@ module game {
     let size = width < height ? width : height;
     
     // Change these
-    let innerBoardWidth = size;
+    let outerBoardWidth = size;
+    let outerBoardHeight = outerBoardWidth;
+    
+    let innerBoardWidth = (74.0/89.2)*outerBoardWidth;
     let innerBoardHeight = innerBoardWidth;
 
     let coinDiameter = (3.18 / 74.0) * innerBoardWidth;
     let startingCircleDiameter = (17.0 / 74.0) * innerBoardWidth;
     let borderThickness = (7.6 / 74.0) * innerBoardWidth;
-    let outerBoardWidth = innerBoardWidth + 2 * borderThickness;
-    let outerBoardHeight = innerBoardHeight + 2 * borderThickness;
-    
+
     // Coin Pockets
     let coinPocketDiameter = (4.45 / 74.0) * innerBoardWidth;
     let coinPocketThickness = (0.15 / 74.0) * innerBoardWidth;
@@ -301,19 +302,19 @@ module game {
     var height = _sceneHeight;
 
     Matter.World.add(_engine.world, [
-      Matter.Bodies.rectangle(width/2, -offset, width + 2 * offset, settings["borderThickness"], <any>{
+      Matter.Bodies.rectangle(width/2, -offset, width + 2 * offset, settings["borderThickness"]*2, <any>{
         isStatic: true,
         render: { fillStyle: 'black', strokeStyle: 'black'}
       }),
-      Matter.Bodies.rectangle(width/2, height + offset, width + 2 * offset, settings["borderThickness"], <any>{
+      Matter.Bodies.rectangle(width/2, height + offset, width + 2 * offset, settings["borderThickness"]*2, <any>{
         isStatic: true,
         render: { fillStyle: 'black', strokeStyle: 'black'}
       }),
-      Matter.Bodies.rectangle(width + offset, height/2, settings["borderThickness"], height + 2 * offset, <any>{
+      Matter.Bodies.rectangle(width + offset, height/2, settings["borderThickness"]*2, height + 2 * offset, <any>{
         isStatic: true,
         render: { fillStyle: 'black', strokeStyle: 'black'}
       }),
-      Matter.Bodies.rectangle(-offset, height/2, settings["borderThickness"], height + 2 * offset, <any>{
+      Matter.Bodies.rectangle(-offset, height/2, settings["borderThickness"]*2, height + 2 * offset, <any>{
         isStatic: true,
         render: { fillStyle: 'black', strokeStyle: 'black'}
       })
@@ -343,20 +344,50 @@ module game {
     }
 
     // Add boards pockets 
-    var pocket = Matter.Bodies.circle(settings["coinPocketTopLeftX"], settings["coinPocketTopLeftX"], settings["coinPocketDiameter"], <any>{
+    var pocket1 = Matter.Bodies.circle(settings["coinPocketTopLeftX"], settings["coinPocketTopLeftY"], settings["coinPocketDiameter"]/2, <any>{
          isStatic: true,
          restitution: 1,
          collisionFilter: {
             mask: defaultCategory
          },
-         render: { fillStyle: 'black', strokeStyle: 'black' },
+         render: { fillStyle: 'grey', strokeStyle: 'black' },
+         label: 'Pocket'
+      });
+      
+      var pocket2 = Matter.Bodies.circle(settings["coinPocketTopRightX"], settings["coinPocketTopRightY"], settings["coinPocketDiameter"]/2, <any>{
+         isStatic: true,
+         restitution: 1,
+         collisionFilter: {
+            mask: defaultCategory
+         },
+         render: { fillStyle: 'grey', strokeStyle: 'black' },
+         label: 'Pocket'
+      });
+      
+      var pocket3 = Matter.Bodies.circle(settings["coinPocketBottomLeftX"], settings["coinPocketBottomRightY"], settings["coinPocketDiameter"]/2, <any>{
+         isStatic: true,
+         restitution: 1,
+         collisionFilter: {
+            mask: defaultCategory
+         },
+         render: { fillStyle: 'grey', strokeStyle: 'black' },
+         label: 'Pocket'
+      });
+      
+      var pocket4 = Matter.Bodies.circle(settings["coinPocketBottomRightX"], settings["coinPocketBottomRightY"], settings["coinPocketDiameter"]/2, <any>{
+         isStatic: true,
+         restitution: 1,
+         collisionFilter: {
+            mask: defaultCategory
+         },
+         render: { fillStyle: 'grey', strokeStyle: 'black' },
          label: 'Pocket'
       });
 
       
     Matter.World.add(_engine.world, circles);
 
-    Matter.World.add(_engine.world, pocket);
+    Matter.World.add(_engine.world, [pocket1,pocket2,pocket3,pocket4]);
 
     
     console.log(circles);
@@ -395,6 +426,12 @@ module game {
     drawBoard(_sceneWidth, _sceneHeight);
 
     drawObjects();
+    
+    // Background image
+    var renderOptions = _engine.render.options;
+    renderOptions.background = 'imgs/carromBackground.png';
+    renderOptions.showAngleIndicator = false;
+    renderOptions.wireframes = false;
 
     Matter.Engine.run(_engine);
 
@@ -402,6 +439,14 @@ module game {
       // console.log("collisionStart");
       handlePocketCollision(event);
     });
+    
+    // Matter.Events.on(_engine.render, "beforeRender", function(){
+    //   var c = (<any>$("canvas")).get(0);
+    
+    //   var ctx = c.getContext("2d");
+    //   ctx.fillStyle = "#FF0000";
+    //   ctx.fillRect(100,100,150,75);
+    // });
     
     function handlePocketCollision(event : any) {
       var pairs = event.pairs;
@@ -435,4 +480,9 @@ angular.module('myApp', ['ngTouch', 'ui.bootstrap', 'gameServices'])
 
     game.init();
 
+    // var c = (<any>$("canvas"));
+    // console.log(c)
+    // var ctx = c.getContext("2d");
+    // ctx.fillStyle = "#FF0000";
+    // ctx.fillRect(100,100,150,75);
   });
