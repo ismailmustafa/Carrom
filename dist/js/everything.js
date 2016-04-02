@@ -76,6 +76,11 @@ var gameLogic;
 // }
 var game;
 (function (game) {
+    var RotateDirection;
+    (function (RotateDirection) {
+        RotateDirection[RotateDirection["Left"] = 0] = "Left";
+        RotateDirection[RotateDirection["Right"] = 1] = "Right";
+    })(RotateDirection || (RotateDirection = {}));
     function drawBoard(width, height) {
         var size = width < height ? width : height;
         // Change these
@@ -321,8 +326,6 @@ var game;
                 render: { fillStyle: 'black', strokeStyle: 'black' }
             })
         ]);
-        console.log(game._sceneWidth, game._sceneHeight);
-        console.log("passing this into drawboard: " + width + " " + height);
         drawBoard(width, height);
         game.state = gameLogic.getInitialState(game.settings);
         game.board = game.state.board;
@@ -376,30 +379,30 @@ var game;
             render: { fillStyle: 'grey', strokeStyle: 'black' },
             label: 'Pocket'
         });
-        var strikerCircle = Matter.Bodies.circle(200, 200, game.settings["strikerDiameter"] / 2, {
+        // Constrain striker horizontally
+        var strikerCenterX = (game.settings["bottomOuterStrikerPlacementLineStartX"] + game.settings["bottomOuterStrikerPlacementLineEndX"]) / 2;
+        var strikerCenterY = game.settings["bottomOuterStrikerPlacementLineStartY"] - (game.settings["innerStrikerPlacementLineOffset"] / 2);
+        var strikerCircle = Matter.Bodies.circle(strikerCenterX, strikerCenterY, game.settings["strikerDiameter"] / 2, {
             isStatic: false,
             restitution: 1,
+            angle: (6.0 * Math.PI) / 4.0,
             collisionFilter: {
-                category: game.movableCategory
+                category: game.defaultCategory
             },
             render: { fillStyle: 'blue', strokeStyle: 'black' },
             label: 'Striker'
         });
         Matter.World.add(game._engine.world, circles);
         Matter.World.add(game._engine.world, [pocket1, pocket2, pocket3, pocket4, strikerCircle]);
-        console.log(circles);
     }
     game.drawObjects = drawObjects;
     function init() {
-        // var Engine = Matter.Engine,
-        //   World = Matter.World,
-        //   Bodies = Matter.Bodies;
         // create a Matter.js engine
         game._engine = Matter.Engine.create(document.getElementById("gameArea"), {
             render: {
                 options: {
                     label: 'Engine',
-                    showAngleIndicator: false,
+                    showAngleIndicator: true,
                     gravity: {
                         x: 0,
                         y: 0
@@ -418,27 +421,32 @@ var game;
         renderOptions.background = 'imgs/carromBackground.png';
         renderOptions.showAngleIndicator = false;
         renderOptions.wireframes = false;
-        var mouseConstraint = Matter.MouseConstraint.create(game._engine, { collisionFilter: { mask: game.removedCategory } });
-        Matter.World.add(game._engine.world, mouseConstraint);
+        // var mouseConstraint = (<any>Matter.MouseConstraint).create(_engine, { collisionFilter: { mask: removedCategory } } );
+        // Matter.World.add(_engine.world, mouseConstraint);
         Matter.Engine.run(game._engine);
+        // var mouseConstraint = (<any>Matter.MouseConstraint).create(_engine);
+        Matter.Events.on(game._engine.render, 'afterRender', function () {
+            var context = game._engine.render.context, bodies = Matter.Composite.allBodies(game._engine.world);
+            var striker = getStriker();
+            var startPoint = { x: striker.position.x, y: striker.position.y }, endPoint = {
+                x: striker.position.x + 32.0 * Math.cos(striker.angle),
+                y: striker.position.y + 32.0 * Math.sin(striker.angle)
+            };
+            context.beginPath();
+            context.moveTo(startPoint.x, startPoint.y);
+            context.lineTo(endPoint.x, endPoint.y);
+            context.strokeStyle = 'red';
+            context.lineWidth = 5.5;
+            context.stroke();
+        });
         Matter.Events.on(game._engine, 'collisionEnd', function (event) {
-            // console.log("collisionStart");
             handlePocketCollision(event);
         });
-        // Matter.Events.on(_engine.render, "beforeRender", function(){
-        //   var c = (<any>$("canvas")).get(0);
-        //   var ctx = c.getContext("2d");
-        //   ctx.fillStyle = "#FF0000";
-        //   ctx.fillRect(100,100,150,75);
-        // });
         function handlePocketCollision(event) {
             var pairs = event.pairs;
             // change object colours to show those starting a collision
             for (var i = 0; i < pairs.length; i++) {
                 var pair = pairs[i];
-                //console.log(_engine.world);
-                // console.log(pair.bodyA.label + " collided with " + pair.bodyB.label);
-                console.log(pair);
                 if (pair.bodyA.label == "Pocket" && pair.bodyB.label == "Coin") {
                     pair.bodyB.collisionFilter.mask = game.removedCategory;
                     Matter.World.remove(game._engine.world, pair.bodyB);
@@ -451,16 +459,87 @@ var game;
         }
     }
     game.init = init;
+    function getStriker() {
+        for (var body in game._engine.world.bodies) {
+            if (game._engine.world.bodies[body].label == "Striker") {
+                return game._engine.world.bodies[body];
+            }
+        }
+    }
+    game.getStriker = getStriker;
+    // Reset the position of the striker relative to the current player
+    function resetStrikerPosition() {
+        var strikerCenterX = (game.settings["bottomOuterStrikerPlacementLineStartX"] + game.settings["bottomOuterStrikerPlacementLineEndX"]) / 2;
+        var strikerCenterY = game.settings["bottomOuterStrikerPlacementLineStartY"] - (game.settings["innerStrikerPlacementLineOffset"] / 2);
+        Matter.Body.setPosition(getStriker(), { x: strikerCenterX, y: strikerCenterY });
+    }
+    game.resetStrikerPosition = resetStrikerPosition;
+    var translationFactor = 15;
+    // Move the striker left
+    function leftClick(evt) {
+        var posX = getStriker().position.x;
+        var leftGuard = game.settings["bottomOuterStrikerPlacementLineStartX"];
+        if ((posX - translationFactor) > leftGuard) {
+            Matter.Body.translate(getStriker(), { x: -translationFactor, y: 0 });
+        }
+        else {
+            var newTranslationFactor = posX - leftGuard;
+            Matter.Body.translate(getStriker(), { x: -newTranslationFactor, y: 0 });
+        }
+    }
+    game.leftClick = leftClick;
+    // Move the striker right
+    function rightClick(evt) {
+        console.log("rightClick");
+        var posX = getStriker().position.x;
+        var rightGuard = game.settings["bottomOuterStrikerPlacementLineEndX"];
+        if (posX + translationFactor < rightGuard) {
+            Matter.Body.translate(getStriker(), { x: translationFactor, y: 0 });
+        }
+        else {
+            var newTranslationFactor = Math.abs(rightGuard - posX);
+            Matter.Body.translate(getStriker(), { x: newTranslationFactor, y: 0 });
+        }
+    }
+    game.rightClick = rightClick;
+    function leftRotate(ev) {
+        rotate(RotateDirection.Left);
+    }
+    game.leftRotate = leftRotate;
+    function rotate(direction) {
+        var striker = getStriker();
+        var deltaAngle = (direction == RotateDirection.Left) ? -0.1 : 0.1;
+        var newAngle = (striker.angle + deltaAngle) % (2 * Math.PI);
+        var diff = 0.0;
+        if (newAngle < striker.angle) {
+            diff = newAngle;
+            Matter.Body.setAngle(striker, diff);
+        }
+        else {
+            diff = Math.abs(newAngle - striker.angle);
+            Matter.Body.rotate(striker, diff);
+        }
+    }
+    game.rotate = rotate;
+    function rightRotate(ev) {
+        rotate(RotateDirection.Right);
+    }
+    game.rightRotate = rightRotate;
+    function shootClick(ev) {
+        console.log("shootClick");
+        var striker = getStriker();
+        var position = {
+            x: striker.position.x + 1.0 * Math.cos(striker.angle),
+            y: striker.position.y + 1.0 * Math.sin(striker.angle)
+        };
+        Matter.Body.applyForce(striker, { x: position.x, y: position.y }, { x: 0.1 * Math.cos(striker.angle), y: 0.1 * Math.sin(striker.angle) });
+    }
+    game.shootClick = shootClick;
 })(game || (game = {}));
 angular.module('myApp', ['ngTouch', 'ui.bootstrap', 'gameServices'])
     .run(function () {
     $rootScope['game'] = game;
     game.init();
-    // var c = (<any>$("canvas"));
-    // console.log(c)
-    // var ctx = c.getContext("2d");
-    // ctx.fillStyle = "#FF0000";
-    // ctx.fillRect(100,100,150,75);
 });
 //# sourceMappingURL=game.js.map
 ;
