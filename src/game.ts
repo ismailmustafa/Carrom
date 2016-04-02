@@ -4,6 +4,12 @@
 // }
 
 module game {
+
+  enum RotateDirection {
+    Left,
+    Right
+  }
+
   export let state: IState;
   export let board: Board;
 
@@ -323,8 +329,6 @@ module game {
       })
     ]);
 
-    console.log(_sceneWidth, _sceneHeight);
-    console.log("passing this into drawboard: " + width + " " + height);
     drawBoard(width, height);
 
     state = gameLogic.getInitialState(settings);
@@ -391,7 +395,7 @@ module game {
          isStatic: false,
          restitution: 1,
          collisionFilter: {
-            category: movableCategory
+           category: defaultCategory
          },
          render: { fillStyle: 'blue', strokeStyle: 'black' },
          label: 'Striker'
@@ -402,22 +406,16 @@ module game {
 
     Matter.World.add(_engine.world, [pocket1,pocket2,pocket3,pocket4,strikerCircle]);
 
-    
-    console.log(circles);
   }
 
   export function init() {
-
-    // var Engine = Matter.Engine,
-    //   World = Matter.World,
-    //   Bodies = Matter.Bodies;
 
     // create a Matter.js engine
     _engine = Matter.Engine.create(document.getElementById("gameArea"), <any>{
       render: {
         options: {
           label: 'Engine',
-          showAngleIndicator: false,
+          showAngleIndicator: true,
           gravity: {
             x: 0,
             y: 0
@@ -439,27 +437,52 @@ module game {
     // Background image
     var renderOptions = _engine.render.options;
     renderOptions.background = 'imgs/carromBackground.png';
-    renderOptions.showAngleIndicator = false;
-    renderOptions.wireframes = false;
+    renderOptions.showAngleIndicator = true;
+    renderOptions.wireframes = true;
 
-    var mouseConstraint = (<any>Matter.MouseConstraint).create(_engine, { collisionFilter: { mask: removedCategory } } );
-
-    Matter.World.add(_engine.world, mouseConstraint);
+    // var mouseConstraint = (<any>Matter.MouseConstraint).create(_engine, { collisionFilter: { mask: removedCategory } } );
+    // Matter.World.add(_engine.world, mouseConstraint);
     
     Matter.Engine.run(_engine);
+    // var mouseConstraint = (<any>Matter.MouseConstraint).create(_engine);
+
+    Matter.Events.on(_engine.render, 'afterRender', function() {
+      var context = _engine.render.context,
+        bodies = Matter.Composite.allBodies(_engine.world),
+
+      var stricker = getStricker();
+      var startPoint = { x: stricker.position.x, y: stricker.position.y },
+        endPoint = {
+          x: stricker.position.x + 32.0 * Math.cos(stricker.angle), 
+          y: stricker.position.y + 32.0 * Math.sin(stricker.angle)
+        };
+
+      var collisions = Matter.Query.ray(bodies, startPoint, endPoint);
+
+      context.beginPath();
+      context.moveTo(startPoint.x, startPoint.y);
+      context.lineTo(endPoint.x, endPoint.y);
+      if (collisions.length > 0) {
+        context.strokeStyle = '#fff';
+      } else {
+        context.strokeStyle = '#555';
+      }
+      context.lineWidth = 0.5;
+      context.stroke();
+
+      for (var i = 0; i < collisions.length; i++) {
+        var collision = collisions[i];
+        context.rect(collision.bodyA.position.x - 4.5, collision.bodyA.position.y - 4.5, 8, 8);
+      }
+
+      context.fillStyle = 'rgba(255,165,0,0.7)';
+      context.fill();
+
+    });
 
     Matter.Events.on(_engine, 'collisionEnd', function(event) {
-      // console.log("collisionStart");
       handlePocketCollision(event);
     });
-    
-    // Matter.Events.on(_engine.render, "beforeRender", function(){
-    //   var c = (<any>$("canvas")).get(0);
-    
-    //   var ctx = c.getContext("2d");
-    //   ctx.fillStyle = "#FF0000";
-    //   ctx.fillRect(100,100,150,75);
-    // });
     
     function handlePocketCollision(event : any) {
       var pairs = event.pairs;
@@ -467,11 +490,7 @@ module game {
       // change object colours to show those starting a collision
       for (var i = 0; i < pairs.length; i++) {
         var pair = pairs[i];
-        
-        //console.log(_engine.world);
-        // console.log(pair.bodyA.label + " collided with " + pair.bodyB.label);
-        console.log(pair);
-
+       
         if (pair.bodyA.label == "Pocket" && pair.bodyB.label == "Coin"){
           pair.bodyB.collisionFilter.mask = removedCategory;
           (<any>Matter.World).remove(_engine.world, pair.bodyB);
@@ -485,6 +504,53 @@ module game {
 
   }
 
+  export function getStricker() : Matter.Body {
+    for (let body in _engine.world.bodies) {
+      if (_engine.world.bodies[body].label == "Striker") {
+        return _engine.world.bodies[body];
+      }
+    }
+  }
+
+  export function leftClick(evt: Event){
+    console.log("leftClick");
+    Matter.Body.translate(getStricker(), { x: -15, y: 0 });
+  }
+
+  export function rightClick(evt: Event){
+    console.log("rightClick");
+    Matter.Body.translate(getStricker(), { x: 15, y: 0 });
+  }
+
+  export function leftRotate(ev: Event){
+    rotate(RotateDirection.Left);
+  }
+
+  export function rotate(direction: RotateDirection) {
+    var stricker = getStricker();
+    
+    var deltaAngle = (direction == RotateDirection.Left) ? -0.1 : 0.1;
+
+    var newAngle = (stricker.angle + deltaAngle) % (2 * Math.PI);
+    var diff = 0.0;
+
+    if (newAngle < stricker.angle) {
+      diff = newAngle;
+      Matter.Body.setAngle(stricker, diff);
+    }
+    else {
+      diff = Math.abs(newAngle - stricker.angle);
+      Matter.Body.rotate(stricker, diff);
+    }
+  }
+
+  export function rightRotate(ev: Event){
+    rotate(RotateDirection.Right);
+  }
+
+  export function shootClick(ev: Event){
+    console.log("shootClick");
+  }
 }
 
 angular.module('myApp', ['ngTouch', 'ui.bootstrap', 'gameServices'])

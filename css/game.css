@@ -1,39 +1,77 @@
-/*.r {
-  border-right: 4pt solid black;
-}
-.b {
-  border-bottom: 4pt solid black;
+#gameArea{
+  display:block;
+  /*height:300px;*/
+} 
+
+a > .material-icons {
+  color: #C8F7C5;
+  margin: 0px;
+  margin-top: 10px;
 }
 
-.slowlyAppear {
-  animation: slowlyAppear 0.5s linear;
+.icon-flipped {
+  transform: scaleX(-1);
+  -moz-transform: scaleX(-1);
+  -webkit-transform: scaleX(-1);
+  -ms-transform: scaleX(-1);
 }
 
-@keyframes slowlyAppear {
-  from {opacity: 0.1;}
-  to {opacity: 1;}
+#gameArea canvas{
+  /*margin-left: 20%; */
+  padding: 0;
+  margin: auto;
+  display: block;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
 }
 
-td {
-  padding:0 5px 0 5px;
+canvas:active {
+  cursor: pointer;
+  cursor: -webkit-grabbing;
 }
 
-.help-tip {
-	position: absolute;
-  bottom:5px;
-  left: 5px;
-  z-index:10;
-	text-align: center;
-	background-color: #BCDBEA;
-	border-radius: 50%;
-	width: 40px;
-	height: 40px;
-	font-size: 22px;
-	line-height: 42px;
-	cursor: default;
+#glasspane {
+  position: absolute;
+  left: 38%;
+  top: 82%;
+  z-index: 9999;
+  padding: 0px 20px 1px 1px;
+  background: rgba(0, 0, 0, 0.3);
+  border: thin solid rgba(0, 0, 0, 0.6);
+  color:# #eeeeee;
+  font-family: Droid Sans, Arial, Helvetica, sans-serif;
+  font-size: 12px;
+  cursor: pointer;
+  -webkit-box-shadow: rgba(0,0,0,0.5) 5px 5px 20px;
+  -moz-box-shadow: rgba(0,0,0,0.5) 5px 5px 20px;
+  box-shadow: rgba(0,0,0,0.5) 5px 5px 20px;
 }
-.help-tip:before {
-	content:'?';
-	font-weight: bold;
-	color:#fff;
-}*/
+
+#glasspane h2 {
+  font-weight: normal;
+}
+
+#glasspane .title {
+  font-size: 2em;
+  color:# rgba(255, 255, 0, 0.8);
+}
+
+#glasspane a:hover {
+  color:# yellow;
+}
+
+#glasspane a {
+  text-decoration: none;
+  color:# #cccccc;
+  font-size: 2.5em;
+}
+
+#glasspane p {
+  margin: 10px;
+  color:# rgba(65, 65, 220, 1.0);
+  font-size: 12pt;
+  font-family: Palatino, Arial, Helvetica, sans-serif;
+}
