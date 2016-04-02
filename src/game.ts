@@ -438,7 +438,7 @@ module game {
     var renderOptions = _engine.render.options;
     renderOptions.background = 'imgs/carromBackground.png';
     renderOptions.showAngleIndicator = true;
-    renderOptions.wireframes = true;
+    renderOptions.wireframes = false;
 
     // var mouseConstraint = (<any>Matter.MouseConstraint).create(_engine, { collisionFilter: { mask: removedCategory } } );
     // Matter.World.add(_engine.world, mouseConstraint);
@@ -457,26 +457,13 @@ module game {
           y: stricker.position.y + 32.0 * Math.sin(stricker.angle)
         };
 
-      var collisions = Matter.Query.ray(bodies, startPoint, endPoint);
-
       context.beginPath();
       context.moveTo(startPoint.x, startPoint.y);
       context.lineTo(endPoint.x, endPoint.y);
-      if (collisions.length > 0) {
-        context.strokeStyle = '#fff';
-      } else {
-        context.strokeStyle = '#555';
-      }
-      context.lineWidth = 0.5;
+      
+      context.strokeStyle = 'red';
+      context.lineWidth = 5.5;
       context.stroke();
-
-      for (var i = 0; i < collisions.length; i++) {
-        var collision = collisions[i];
-        context.rect(collision.bodyA.position.x - 4.5, collision.bodyA.position.y - 4.5, 8, 8);
-      }
-
-      context.fillStyle = 'rgba(255,165,0,0.7)';
-      context.fill();
 
     });
 
