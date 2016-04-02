@@ -394,6 +394,7 @@ module game {
       var strikerCircle = Matter.Bodies.circle(200, 200, settings["strikerDiameter"]/2, <any>{
          isStatic: false,
          restitution: 1,
+         angle: (6.0*Math.PI)/4.0,
          collisionFilter: {
            category: defaultCategory
          },
