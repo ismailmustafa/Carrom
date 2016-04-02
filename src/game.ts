@@ -438,7 +438,7 @@ module game {
     var renderOptions = _engine.render.options;
     renderOptions.background = 'imgs/carromBackground.png';
     renderOptions.showAngleIndicator = true;
-    renderOptions.wireframes = false;
+    renderOptions.wireframes = true;
 
     // var mouseConstraint = (<any>Matter.MouseConstraint).create(_engine, { collisionFilter: { mask: removedCategory } } );
     // Matter.World.add(_engine.world, mouseConstraint);
@@ -500,7 +500,7 @@ module game {
   }
 
   export function leftClick(evt: Event){
-    console.log("leftClick");
+    console.log(settings);
     Matter.Body.translate(getStricker(), { x: -15, y: 0 });
   }
 
@@ -537,6 +537,16 @@ module game {
 
   export function shootClick(ev: Event){
     console.log("shootClick");
+
+    var stricker = getStricker();
+    var position = {
+        x: stricker.position.x + 1.0 * Math.cos(stricker.angle),
+        y: stricker.position.y + 1.0 * Math.sin(stricker.angle)
+      };
+
+    Matter.Body.applyForce(stricker, 
+      { x: position.x, y: position.y }, 
+      { x: 0.1 * Math.cos(stricker.angle), y: 0.1 * Math.sin(stricker.angle) })
   }
 }
 
