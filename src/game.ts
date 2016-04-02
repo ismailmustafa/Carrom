@@ -442,8 +442,8 @@ module game {
     // Background image
     var renderOptions = _engine.render.options;
     renderOptions.background = 'imgs/carromBackground.png';
-    renderOptions.showAngleIndicator = true;
-    renderOptions.wireframes = true;
+    renderOptions.showAngleIndicator = false;
+    renderOptions.wireframes = false;
 
     // var mouseConstraint = (<any>Matter.MouseConstraint).create(_engine, { collisionFilter: { mask: removedCategory } } );
     // Matter.World.add(_engine.world, mouseConstraint);
@@ -453,7 +453,7 @@ module game {
 
     Matter.Events.on(_engine.render, 'afterRender', function() {
       var context = _engine.render.context,
-        bodies = Matter.Composite.allBodies(_engine.world),
+        bodies = Matter.Composite.allBodies(_engine.world)
 
       var stricker = getStricker();
       var startPoint = { x: stricker.position.x, y: stricker.position.y },
