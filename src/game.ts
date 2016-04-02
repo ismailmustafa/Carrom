@@ -391,7 +391,11 @@ module game {
          label: 'Pocket'
       });
       
-      var strikerCircle = Matter.Bodies.circle(200, 200, settings["strikerDiameter"]/2, <any>{
+      // Constrain striker horizontally
+      var strikerCenterX = (settings["bottomOuterStrikerPlacementLineStartX"] + settings["bottomOuterStrikerPlacementLineEndX"]) / 2;
+      var strikerCenterY = settings["bottomOuterStrikerPlacementLineStartY"] - (settings["innerStrikerPlacementLineOffset"] / 2);
+      
+      var strikerCircle = Matter.Bodies.circle(strikerCenterX, strikerCenterY, settings["strikerDiameter"]/2, <any>{
          isStatic: false,
          restitution: 1,
          collisionFilter: {
@@ -498,15 +502,41 @@ module game {
       }
     }
   }
+  
+        //       "innerStrikerPlacementLineOffset": innerStrikerPlacementLineOffset,
+      // "bottomOuterStrikerPlacementLineStartX": bottomOuterStrikerPlacementLineStartX,
+      // "bottomOuterStrikerPlacementLineStartY": bottomOuterStrikerPlacementLineStartY,
+      // "bottomOuterStrikerPlacementLineEndX": bottomOuterStrikerPlacementLineEndX,
+      // "bottomOuterStrikerPlacementLineEndY": bottomOuterStrikerPlacementLineEndY,
 
+  
+  console.log(settings);
+  var translationFactor = 15;
+  // Move the striker left
   export function leftClick(evt: Event){
-    console.log("leftClick");
-    Matter.Body.translate(getStricker(), { x: -15, y: 0 });
+    var posX = getStricker().position.x;
+    var leftGuard = settings["bottomOuterStrikerPlacementLineStartX"];
+    if ((posX - translationFactor) > leftGuard) {
+      Matter.Body.translate(getStricker(), { x: -translationFactor, y: 0 });
+    }
+    else {
+      var newTranslationFactor = posX - leftGuard;
+      Matter.Body.translate(getStricker(), { x: -newTranslationFactor, y: 0 });
+    }
   }
 
+  // Move the striker right
   export function rightClick(evt: Event){
     console.log("rightClick");
-    Matter.Body.translate(getStricker(), { x: 15, y: 0 });
+    var posX = getStricker().position.x;
+    var rightGuard = settings["bottomOuterStrikerPlacementLineEndX"];
+    if (posX + translationFactor < rightGuard) {
+      Matter.Body.translate(getStricker(), { x: translationFactor, y: 0 });
+    }
+    else {
+      var newTranslationFactor = Math.abs(rightGuard - posX);
+      Matter.Body.translate(getStricker(), { x: newTranslationFactor, y: 0 });
+    }
   }
 
   export function leftRotate(ev: Event){
