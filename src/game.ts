@@ -398,6 +398,7 @@ module game {
       var strikerCircle = Matter.Bodies.circle(strikerCenterX, strikerCenterY, settings["strikerDiameter"]/2, <any>{
          isStatic: false,
          restitution: 1,
+         angle: (6.0*Math.PI)/4.0,
          collisionFilter: {
            category: defaultCategory
          },
@@ -442,7 +443,7 @@ module game {
     var renderOptions = _engine.render.options;
     renderOptions.background = 'imgs/carromBackground.png';
     renderOptions.showAngleIndicator = true;
-    renderOptions.wireframes = false;
+    renderOptions.wireframes = true;
 
     // var mouseConstraint = (<any>Matter.MouseConstraint).create(_engine, { collisionFilter: { mask: removedCategory } } );
     // Matter.World.add(_engine.world, mouseConstraint);
@@ -567,6 +568,16 @@ module game {
 
   export function shootClick(ev: Event){
     console.log("shootClick");
+
+    var stricker = getStricker();
+    var position = {
+        x: stricker.position.x + 1.0 * Math.cos(stricker.angle),
+        y: stricker.position.y + 1.0 * Math.sin(stricker.angle)
+      };
+
+    Matter.Body.applyForce(stricker, 
+      { x: position.x, y: position.y }, 
+      { x: 0.1 * Math.cos(stricker.angle), y: 0.1 * Math.sin(stricker.angle) })
   }
 }
 
