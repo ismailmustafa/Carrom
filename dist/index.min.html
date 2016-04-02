@@ -3,8 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <title>TicTacToe</title>
-  <meta name="description" content="TicTacToe game">
+  <title>Carrom</title>
+  <meta name="description" content="Carrom game">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.1/css/materialize.min.css"></link>
+
   <link rel="shortcut icon"type="image/x-icon" href="data:image/x-icon;,"><!-- Suppress browser request for favicon.ico -->
 
   <!-- To ensure CSS files are downloaded in parallel, always include external CSS before external JavaScript. -->
@@ -23,6 +26,11 @@
   <script crossorigin="anonymous" src="http://yoav-zibin.github.io/emulator/dist/turnBasedServices.3.min.js"></script>
 
   <script src="js/everything.min.js"></script>
+
+  <script type="text/javascript" src="node_modules/matter-js/build/matter.min.js"></script>
+  <script type="text/javascript" src="http://code.jquery.com/jquery-1.12.0.min.js"></script>
+  <script type="text/javascript" src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.1/js/materialize.min.js"></script>
 </head>
 <body ng-cloak>
   <div id="e2e_test_open_rules_modal" class="help-tip" ng-click="game.isHelpModalShown = true" aria-hidden="true"></div>
@@ -34,7 +42,7 @@
         <div class="modal-header">
           <button type="button" class="close" ng-click="game.isHelpModalShown = false" aria-label="Close"><span aria-hidden="true">&times;</span></button>
           <h4 id="e2e_test_rules_title" class="modal-title">
-            {{ 'RULES_OF_TICTACTOE' | translate }}
+            {{ 'RULES_OF_TICTACTOE'  }}
           </h4>
         </div>
         <div class="modal-body">
@@ -43,7 +51,7 @@
               <table>
                 <tr>
                   <td id="e2e_test_rules_slide1_text">
-                    {{ 'RULES_SLIDE1' | translate }}
+                    {{ 'RULES_SLIDE1'  }}
                   </td>
                   <td>
                     <img src="imgs/HelpSlide1.png" alt="Help slide 1" style="height:100px;">
@@ -55,7 +63,7 @@
               <table>
                 <tr>
                   <td id="e2e_test_rules_slide2_text">
-                  {{ 'RULES_SLIDE2' | translate }}
+                  {{ 'RULES_SLIDE2'  }}
                   </td>
                   <td>
                     <img src="imgs/HelpSlide2.png" alt="Help slide 2" style="height:100px;">
@@ -67,47 +75,110 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-primary" ng-click="game.isHelpModalShown = false">
-            {{ 'CLOSE' | translate }}
+            {{ 'CLOSE'  }}
           </button>
         </div>
       </div>
     </div>
   </div>
 
-<div id="gameArea">
+  <!--BOARD DRAWING-->
 
-  <div ng-repeat="row in [0, 1, 2]"
-      style="position:absolute; top:{{row * 33}}%; left:0; width:100%; height:33%;">
-    <div ng-repeat="col in [0, 1, 2]"
-        style="position:absolute; top:0; left:{{col * 33}}%; width:33%; height:100%;"
-        ng-class="{r: col < 2, b: row < 2}"
-        ng-click="game.cellClicked(row, col)"
-        id="{{'e2e_test_div_' + row + 'x' + col}}">
-      <div style="width:100%; height: 100%"
-          ng-class="{slowlyAppear: game.shouldSlowlyAppear(row, col)}"
-          ng-if="game.shouldShowImage(row, col)">
-        <svg ng-if="game.isPieceO(row, col)"
-            id="{{'e2e_test_pieceO_' + row + 'x' + col}}"
-            width="100%" height="100%">
-          <circle cx="50%" cy="50%" r="27%"
-            stroke="blue" stroke-width="5%" fill="white" />
-        </svg>
-        <svg ng-if="game.isPieceX(row, col)"
-            id="{{'e2e_test_pieceX_' + row + 'x' + col}}"
-            width="100%" height="100%">
-          <line x1="25%" y1="25%"
-                x2="75%" y2="75%"
-                stroke="red"
-                stroke-width="5%"/>
-          <line x1="25%" y1="75%"
-                x2="75%" y2="25%"
-                stroke="red"
-                stroke-width="5%"/>
-        </svg>
-      </div>
-    </div>
+  <style type="text/css">
+    #gameArea{
+      display:block;
+      /*height:300px;*/
+    } 
+
+    #gameArea canvas{
+      /*margin-left: 20%; */
+      padding: 0;
+      margin: auto;
+      display: block;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+    }
+
+    canvas:active {
+      cursor: pointer;
+      cursor: -webkit-grabbing;
+    }
+  </style>
+
+  <div id="gameArea">
+    <div id="canvas-container"></div>
   </div>
-</div>
+
+  <div ng-if="false" id="gameAreaOld">
+    <svg ng-attr-width='{{game.settings.outerBoardWidth}}' ng-attr-height='{{game.settings.outerBoardHeight}}' xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+    <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
+    <g>
+      <!--Outer Border-->
+      <rect fill="#000000" stroke-width="0" x="0" y="0" ng-attr-rx='{{game.settings.coinPocketDiameter/2}}' ng-attr-ry='{{game.settings.coinPocketDiameter/2}}' ng-attr-width="{{game.settings.outerBoardWidth}}" ng-attr-height='{{game.settings.outerBoardHeight}}' id="svg_1" stroke="#000000"/>
+      
+      <!--Inner Board-->
+      <rect fill="#F4B350" stroke-width="0" ng-attr-rx='{{game.settings.coinPocketDiameter/2}}' ng-attr-ry='{{game.settings.coinPocketDiameter/2}}' ng-attr-x='{{game.settings.borderThickness}}' ng-attr-y='{{game.settings.borderThickness}}' ng-attr-width='{{game.settings.innerBoardWidth}}' ng-attr-height='{{game.settings.innerBoardHeight}}' id="svg_1" stroke="#000000"/>
+      
+      <!--Main Circle containing starting coins-->
+      <circle fill="#F4B350" stroke="#000000" stroke-width="5" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" ng-attr-cx='{{game.settings.boardCenterX}}' ng-attr-cy='{{game.settings.boardCenterY}}' ng-attr-r='{{game.settings.startingCircleDiameter/2}}' id="svg_47"/>
+      
+      <!--Coin Pockets-->
+      <circle fill="#666666" stroke="#000000" ng-attr-stroke-width='{{game.settings.coinPocketThickness}}' stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" ng-attr-cx='{{game.settings.coinPocketTopLeftX}}' ng-attr-cy='{{game.settings.coinPocketTopLeftY}}' ng-attr-r='{{game.settings.coinPocketDiameter/2}}' id="svg_47"/>
+      <circle fill="#666666" stroke="#000000" ng-attr-stroke-width='{{game.settings.coinPocketThickness}}' stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" ng-attr-cx='{{game.settings.coinPocketTopRightX}}' ng-attr-cy='{{game.settings.coinPocketTopRightY}}' ng-attr-r='{{game.settings.coinPocketDiameter/2}}' id="svg_47"/>
+      <circle fill="#666666" stroke="#000000" ng-attr-stroke-width='{{game.settings.coinPocketThickness}}' stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" ng-attr-cx='{{game.settings.coinPocketBottomLeftX}}' ng-attr-cy='{{game.settings.coinPocketBottomLeftY}}' ng-attr-r='{{game.settings.coinPocketDiameter/2}}' id="svg_47"/>
+      <circle fill="#666666" stroke="#000000" ng-attr-stroke-width='{{game.settings.coinPocketThickness}}' stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" ng-attr-cx='{{game.settings.coinPocketBottomRightX}}' ng-attr-cy='{{game.settings.coinPocketBottomRightY}}' ng-attr-r='{{game.settings.coinPocketDiameter/2}}' id="svg_47"/>
+      
+      <!--Inner corner circles-->
+      <circle fill="#F4B350" stroke="#000000" ng-attr-stroke-width='{{game.settings.innerCornerCircleThickness}}' stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" ng-attr-cx='{{game.settings.innerCornerCircleTopLeftX}}' ng-attr-cy='{{game.settings.innerCornerCircleTopLeftY}}' ng-attr-r='{{game.settings.innerCornerCircleDiameter / 2}}' id="svg_14"/>
+      <circle fill="#F4B350" stroke="#000000" ng-attr-stroke-width='{{game.settings.innerCornerCircleThickness}}' stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" ng-attr-cx='{{game.settings.innerCornerCircleTopRightX}}' ng-attr-cy='{{game.settings.innerCornerCircleTopRightY}}' ng-attr-r='{{game.settings.innerCornerCircleDiameter / 2}}' id="svg_14"/>
+      <circle fill="#F4B350" stroke="#000000" ng-attr-stroke-width='{{game.settings.innerCornerCircleThickness}}' stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" ng-attr-cx='{{game.settings.innerCornerCircleBottomRightX}}' ng-attr-cy='{{game.settings.innerCornerCircleBottomRightY}}' ng-attr-r='{{game.settings.innerCornerCircleDiameter / 2}}' id="svg_14"/>
+      <circle fill="#F4B350" stroke="#000000" ng-attr-stroke-width='{{game.settings.innerCornerCircleThickness}}' stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" ng-attr-cx='{{game.settings.innerCornerCircleBottomLeftX}}' ng-attr-cy='{{game.settings.innerCornerCircleBottomLeftY}}' ng-attr-r='{{game.settings.innerCornerCircleDiameter / 2}}' id="svg_14"/>
+      
+      <!--Diagonal Lines-->
+      <line fill="none" stroke="#000000" ng-attr-stroke-width='{{game.settings.diagonalLineThickness}}' stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" ng-attr-x1='{{game.settings.diagonalLineTopLeftStartX}}' ng-attr-y1='{{game.settings.diagonalLineTopLeftStartY}}' ng-attr-x2='{{game.settings.diagonalLineTopLeftEndX}}' ng-attr-y2='{{game.settings.diagonalLineTopLeftEndY}}' id="svg_30"/>
+      <line fill="none" stroke="#000000" ng-attr-stroke-width='{{game.settings.diagonalLineThickness}}' stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" ng-attr-x1='{{game.settings.diagonalLineTopRightStartX}}' ng-attr-y1='{{game.settings.diagonalLineTopRightStartY}}' ng-attr-x2='{{game.settings.diagonalLineTopRightEndX}}' ng-attr-y2='{{game.settings.diagonalLineTopRightEndY}}' id="svg_30"/>
+      <line fill="none" stroke="#000000" ng-attr-stroke-width='{{game.settings.diagonalLineThickness}}' stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" ng-attr-x1='{{game.settings.diagonalLineBottomRightStartX}}' ng-attr-y1='{{game.settings.diagonalLineBottomRightStartY}}' ng-attr-x2='{{game.settings.diagonalLineBottomRightEndX}}' ng-attr-y2='{{game.settings.diagonalLineBottomRightEndY}}' id="svg_30"/>
+      <line fill="none" stroke="#000000" ng-attr-stroke-width='{{game.settings.diagonalLineThickness}}' stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" ng-attr-x1='{{game.settings.diagonalLineBottomLeftStartX}}' ng-attr-y1='{{game.settings.diagonalLineBottomLeftStartY}}' ng-attr-x2='{{game.settings.diagonalLineBottomLeftEndX}}' ng-attr-y2='{{game.settings.diagonalLineBottomLeftEndY}}' id="svg_30"/>
+      
+      <!--Outer and Inner striker circles-->
+      <circle fill="#F4B350" stroke="#000000" ng-attr-stroke-width='{{game.settings.outerStrikerCircleThickness}}' stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" ng-attr-cx='{{game.settings.strikerCircleTopLeft1X}}' ng-attr-cy='{{game.settings.strikerCircleTopLeft1Y}}' ng-attr-r='{{game.settings.outerStrikerCircleDiameter / 2}}' id="svg_14"/>
+      <circle fill="#F4B350" stroke="#000000" ng-attr-stroke-width='{{game.settings.outerStrikerCircleThickness}}' stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" ng-attr-cx='{{game.settings.strikerCircleTopLeft2X}}' ng-attr-cy='{{game.settings.strikerCircleTopLeft2Y}}' ng-attr-r='{{game.settings.outerStrikerCircleDiameter / 2}}' id="svg_14"/>
+      <circle fill="#F4B350" stroke="#000000" ng-attr-stroke-width='{{game.settings.outerStrikerCircleThickness}}' stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" ng-attr-cx='{{game.settings.strikerCircleTopRight1X}}' ng-attr-cy='{{game.settings.strikerCircleTopRight1Y}}' ng-attr-r='{{game.settings.outerStrikerCircleDiameter / 2}}' id="svg_14"/>
+      <circle fill="#F4B350" stroke="#000000" ng-attr-stroke-width='{{game.settings.outerStrikerCircleThickness}}' stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" ng-attr-cx='{{game.settings.strikerCircleTopRight2X}}' ng-attr-cy='{{game.settings.strikerCircleTopRight2Y}}' ng-attr-r='{{game.settings.outerStrikerCircleDiameter / 2}}' id="svg_14"/>
+      <circle fill="#F4B350" stroke="#000000" ng-attr-stroke-width='{{game.settings.outerStrikerCircleThickness}}' stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" ng-attr-cx='{{game.settings.strikerCircleBottomRight1X}}' ng-attr-cy='{{game.settings.strikerCircleBottomRight1Y}}' ng-attr-r='{{game.settings.outerStrikerCircleDiameter / 2}}' id="svg_14"/>
+      <circle fill="#F4B350" stroke="#000000" ng-attr-stroke-width='{{game.settings.outerStrikerCircleThickness}}' stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" ng-attr-cx='{{game.settings.strikerCircleBottomRight2X}}' ng-attr-cy='{{game.settings.strikerCircleBottomRight2Y}}' ng-attr-r='{{game.settings.outerStrikerCircleDiameter / 2}}' id="svg_14"/>
+      <circle fill="#F4B350" stroke="#000000" ng-attr-stroke-width='{{game.settings.outerStrikerCircleThickness}}' stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" ng-attr-cx='{{game.settings.strikerCircleBottomLeft1X}}' ng-attr-cy='{{game.settings.strikerCircleBottomLeft1Y}}' ng-attr-r='{{game.settings.outerStrikerCircleDiameter / 2}}' id="svg_14"/>
+      <circle fill="#F4B350" stroke="#000000" ng-attr-stroke-width='{{game.settings.outerStrikerCircleThickness}}' stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" ng-attr-cx='{{game.settings.strikerCircleBottomLeft2X}}' ng-attr-cy='{{game.settings.strikerCircleBottomLeft2Y}}' ng-attr-r='{{game.settings.outerStrikerCircleDiameter / 2}}' id="svg_14"/>
+      
+      <circle fill="#cf000f" stroke="#000000" stroke-width="0" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" ng-attr-cx='{{game.settings.strikerCircleTopLeft1X}}' ng-attr-cy='{{game.settings.strikerCircleTopLeft1Y}}' ng-attr-r='{{game.settings.innerStrikerCircleDiameter / 2}}' id="svg_14"/>
+      <circle fill="#cf000f" stroke="#000000" stroke-width="0" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" ng-attr-cx='{{game.settings.strikerCircleTopLeft2X}}' ng-attr-cy='{{game.settings.strikerCircleTopLeft2Y}}' ng-attr-r='{{game.settings.innerStrikerCircleDiameter / 2}}' id="svg_14"/>
+      <circle fill="#cf000f" stroke="#000000" stroke-width="0" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" ng-attr-cx='{{game.settings.strikerCircleTopRight1X}}' ng-attr-cy='{{game.settings.strikerCircleTopRight1Y}}' ng-attr-r='{{game.settings.innerStrikerCircleDiameter / 2}}' id="svg_14"/>
+      <circle fill="#cf000f" stroke="#000000" stroke-width="0" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" ng-attr-cx='{{game.settings.strikerCircleTopRight2X}}' ng-attr-cy='{{game.settings.strikerCircleTopRight2Y}}' ng-attr-r='{{game.settings.innerStrikerCircleDiameter / 2}}' id="svg_14"/>
+      <circle fill="#cf000f" stroke="#000000" stroke-width="0" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" ng-attr-cx='{{game.settings.strikerCircleBottomRight1X}}' ng-attr-cy='{{game.settings.strikerCircleBottomRight1Y}}' ng-attr-r='{{game.settings.innerStrikerCircleDiameter / 2}}' id="svg_14"/>
+      <circle fill="#cf000f" stroke="#000000" stroke-width="0" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" ng-attr-cx='{{game.settings.strikerCircleBottomRight2X}}' ng-attr-cy='{{game.settings.strikerCircleBottomRight2Y}}' ng-attr-r='{{game.settings.innerStrikerCircleDiameter / 2}}' id="svg_14"/>
+      <circle fill="#cf000f" stroke="#000000" stroke-width="0" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" ng-attr-cx='{{game.settings.strikerCircleBottomLeft1X}}' ng-attr-cy='{{game.settings.strikerCircleBottomLeft1Y}}' ng-attr-r='{{game.settings.innerStrikerCircleDiameter / 2}}' id="svg_14"/>
+      <circle fill="#cf000f" stroke="#000000" stroke-width="0" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" ng-attr-cx='{{game.settings.strikerCircleBottomLeft2X}}' ng-attr-cy='{{game.settings.strikerCircleBottomLeft2Y}}' ng-attr-r='{{game.settings.innerStrikerCircleDiameter / 2}}' id="svg_14"/>
+      
+      <!--Striker placement lines-->
+      <line fill="none" stroke="#000000" ng-attr-stroke-width='{{game.settings.outerStrikerPlacementLineThickness}}' stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" ng-attr-x1='{{game.settings.leftOuterStrikerPlacementLineStartX}}' ng-attr-y1='{{game.settings.leftOuterStrikerPlacementLineStartY}}' ng-attr-x2='{{game.settings.leftOuterStrikerPlacementLineEndX}}' ng-attr-y2='{{game.settings.leftOuterStrikerPlacementLineEndY}}' id="svg_30"/>
+      <line fill="none" stroke="#000000" ng-attr-stroke-width='{{game.settings.outerStrikerPlacementLineThickness}}' stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" ng-attr-x1='{{game.settings.rightOuterStrikerPlacementLineStartX}}' ng-attr-y1='{{game.settings.rightOuterStrikerPlacementLineStartY}}' ng-attr-x2='{{game.settings.rightOuterStrikerPlacementLineEndX}}' ng-attr-y2='{{game.settings.rightOuterStrikerPlacementLineEndY}}' id="svg_30"/>
+      <line fill="none" stroke="#000000" ng-attr-stroke-width='{{game.settings.outerStrikerPlacementLineThickness}}' stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" ng-attr-x1='{{game.settings.topOuterStrikerPlacementLineStartX}}' ng-attr-y1='{{game.settings.topOuterStrikerPlacementLineStartY}}' ng-attr-x2='{{game.settings.topOuterStrikerPlacementLineEndX}}' ng-attr-y2='{{game.settings.topOuterStrikerPlacementLineEndY}}' id="svg_30"/>
+      <line fill="none" stroke="#000000" ng-attr-stroke-width='{{game.settings.outerStrikerPlacementLineThickness}}' stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" ng-attr-x1='{{game.settings.bottomOuterStrikerPlacementLineStartX}}' ng-attr-y1='{{game.settings.bottomOuterStrikerPlacementLineStartY}}' ng-attr-x2='{{game.settings.bottomOuterStrikerPlacementLineEndX}}' ng-attr-y2='{{game.settings.bottomOuterStrikerPlacementLineEndY}}' id="svg_30"/>
+      
+      <line fill="none" stroke="#000000" ng-attr-stroke-width='{{game.settings.innerStrikerPlacementLineThickness}}' stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" ng-attr-x1='{{game.settings.leftOuterStrikerPlacementLineStartX + game.settings.innerStrikerPlacementLineOffset}}' ng-attr-y1='{{game.settings.leftOuterStrikerPlacementLineStartY}}' ng-attr-x2='{{game.settings.leftOuterStrikerPlacementLineEndX + game.settings.innerStrikerPlacementLineOffset}}' ng-attr-y2='{{game.settings.leftOuterStrikerPlacementLineEndY}}' id="svg_30"/>
+      <line fill="none" stroke="#000000" ng-attr-stroke-width='{{game.settings.innerStrikerPlacementLineThickness}}' stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" ng-attr-x1='{{game.settings.rightOuterStrikerPlacementLineStartX - game.settings.innerStrikerPlacementLineOffset}}' ng-attr-y1='{{game.settings.rightOuterStrikerPlacementLineStartY}}' ng-attr-x2='{{game.settings.rightOuterStrikerPlacementLineEndX - game.settings.innerStrikerPlacementLineOffset}}' ng-attr-y2='{{game.settings.rightOuterStrikerPlacementLineEndY}}' id="svg_30"/>
+      <line fill="none" stroke="#000000" ng-attr-stroke-width='{{game.settings.innerStrikerPlacementLineThickness}}' stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" ng-attr-x1='{{game.settings.topOuterStrikerPlacementLineStartX}}' ng-attr-y1='{{game.settings.topOuterStrikerPlacementLineStartY + game.settings.innerStrikerPlacementLineOffset}}' ng-attr-x2='{{game.settings.topOuterStrikerPlacementLineEndX}}' ng-attr-y2='{{game.settings.topOuterStrikerPlacementLineEndY + game.settings.innerStrikerPlacementLineOffset}}' id="svg_30"/>
+      <line fill="none" stroke="#000000" ng-attr-stroke-width='{{game.settings.innerStrikerPlacementLineThickness}}' stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" ng-attr-x1='{{game.settings.bottomOuterStrikerPlacementLineStartX}}' ng-attr-y1='{{game.settings.bottomOuterStrikerPlacementLineStartY - game.settings.innerStrikerPlacementLineOffset}}' ng-attr-x2='{{game.settings.bottomOuterStrikerPlacementLineEndX}}' ng-attr-y2='{{game.settings.bottomOuterStrikerPlacementLineEndY - game.settings.innerStrikerPlacementLineOffset}}' id="svg_30"/>
+      
+      <!--Generate Starting coin positions-->
+      <circle ng-repeat="coin in game.board" fill='{{coin.color}}' stroke="#000000" stroke-width="1" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" ng-attr-cx='{{coin.coordinate.xPos}}' ng-attr-cy='{{coin.coordinate.yPos}}' ng-attr-r='{{coin.diameter/2}}' id="svg_47"/>
+      
+    </g>
+    </svg>
+  </div>
 
 </body>
 </html>

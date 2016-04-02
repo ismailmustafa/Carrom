@@ -127,7 +127,8 @@ module.exports = function(grunt) {
         src: [
           'ts_output_readonly_do_NOT_change_manually/src/gameLogic.js',
           'ts_output_readonly_do_NOT_change_manually/src/game.js',
-          'ts_output_readonly_do_NOT_change_manually/src/aiService.js'
+          'ts_output_readonly_do_NOT_change_manually/src/aiService.js',
+          'node_modules/matter-js/build/matter.min.js'
           ],
         dest: 'dist/js/everything.js',
       },
