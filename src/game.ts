@@ -455,11 +455,11 @@ module game {
       var context = _engine.render.context,
         bodies = Matter.Composite.allBodies(_engine.world)
 
-      var stricker = getStricker();
-      var startPoint = { x: stricker.position.x, y: stricker.position.y },
+      var striker = getStriker();
+      var startPoint = { x: striker.position.x, y: striker.position.y },
         endPoint = {
-          x: stricker.position.x + 32.0 * Math.cos(stricker.angle), 
-          y: stricker.position.y + 32.0 * Math.sin(stricker.angle)
+          x: striker.position.x + 32.0 * Math.cos(striker.angle), 
+          y: striker.position.y + 32.0 * Math.sin(striker.angle)
         };
 
       context.beginPath();
@@ -493,10 +493,9 @@ module game {
         }
       }  
     }
-
   }
 
-  export function getStricker() : Matter.Body {
+  export function getStriker() : Matter.Body {
     for (let body in _engine.world.bodies) {
       if (_engine.world.bodies[body].label == "Striker") {
         return _engine.world.bodies[body];
@@ -504,39 +503,38 @@ module game {
     }
   }
   
-        //       "innerStrikerPlacementLineOffset": innerStrikerPlacementLineOffset,
-      // "bottomOuterStrikerPlacementLineStartX": bottomOuterStrikerPlacementLineStartX,
-      // "bottomOuterStrikerPlacementLineStartY": bottomOuterStrikerPlacementLineStartY,
-      // "bottomOuterStrikerPlacementLineEndX": bottomOuterStrikerPlacementLineEndX,
-      // "bottomOuterStrikerPlacementLineEndY": bottomOuterStrikerPlacementLineEndY,
+  // Reset the position of the striker relative to the current player
+  export function resetStrikerPosition() {
+    var strikerCenterX = (settings["bottomOuterStrikerPlacementLineStartX"] + settings["bottomOuterStrikerPlacementLineEndX"]) / 2;
+    var strikerCenterY = settings["bottomOuterStrikerPlacementLineStartY"] - (settings["innerStrikerPlacementLineOffset"] / 2);
+    Matter.Body.setPosition(getStriker(), {x:strikerCenterX, y:strikerCenterY});
+  }
 
-  
-  console.log(settings);
   var translationFactor = 15;
   // Move the striker left
   export function leftClick(evt: Event){
-    var posX = getStricker().position.x;
+    var posX = getStriker().position.x;
     var leftGuard = settings["bottomOuterStrikerPlacementLineStartX"];
     if ((posX - translationFactor) > leftGuard) {
-      Matter.Body.translate(getStricker(), { x: -translationFactor, y: 0 });
+      Matter.Body.translate(getStriker(), { x: -translationFactor, y: 0 });
     }
     else {
       var newTranslationFactor = posX - leftGuard;
-      Matter.Body.translate(getStricker(), { x: -newTranslationFactor, y: 0 });
+      Matter.Body.translate(getStriker(), { x: -newTranslationFactor, y: 0 });
     }
   }
 
   // Move the striker right
   export function rightClick(evt: Event){
     console.log("rightClick");
-    var posX = getStricker().position.x;
+    var posX = getStriker().position.x;
     var rightGuard = settings["bottomOuterStrikerPlacementLineEndX"];
     if (posX + translationFactor < rightGuard) {
-      Matter.Body.translate(getStricker(), { x: translationFactor, y: 0 });
+      Matter.Body.translate(getStriker(), { x: translationFactor, y: 0 });
     }
     else {
       var newTranslationFactor = Math.abs(rightGuard - posX);
-      Matter.Body.translate(getStricker(), { x: newTranslationFactor, y: 0 });
+      Matter.Body.translate(getStriker(), { x: newTranslationFactor, y: 0 });
     }
   }
 
@@ -545,20 +543,20 @@ module game {
   }
 
   export function rotate(direction: RotateDirection) {
-    var stricker = getStricker();
+    var striker = getStriker();
     
     var deltaAngle = (direction == RotateDirection.Left) ? -0.1 : 0.1;
 
-    var newAngle = (stricker.angle + deltaAngle) % (2 * Math.PI);
+    var newAngle = (striker.angle + deltaAngle) % (2 * Math.PI);
     var diff = 0.0;
 
-    if (newAngle < stricker.angle) {
+    if (newAngle < striker.angle) {
       diff = newAngle;
-      Matter.Body.setAngle(stricker, diff);
+      Matter.Body.setAngle(striker, diff);
     }
     else {
-      diff = Math.abs(newAngle - stricker.angle);
-      Matter.Body.rotate(stricker, diff);
+      diff = Math.abs(newAngle - striker.angle);
+      Matter.Body.rotate(striker, diff);
     }
   }
 
@@ -569,27 +567,20 @@ module game {
   export function shootClick(ev: Event){
     console.log("shootClick");
 
-    var stricker = getStricker();
+    var striker = getStriker();
     var position = {
-        x: stricker.position.x + 1.0 * Math.cos(stricker.angle),
-        y: stricker.position.y + 1.0 * Math.sin(stricker.angle)
+        x: striker.position.x + 1.0 * Math.cos(striker.angle),
+        y: striker.position.y + 1.0 * Math.sin(striker.angle)
       };
 
-    Matter.Body.applyForce(stricker, 
+    Matter.Body.applyForce(striker, 
       { x: position.x, y: position.y }, 
-      { x: 0.1 * Math.cos(stricker.angle), y: 0.1 * Math.sin(stricker.angle) })
+      { x: 0.1 * Math.cos(striker.angle), y: 0.1 * Math.sin(striker.angle) })
   }
 }
 
 angular.module('myApp', ['ngTouch', 'ui.bootstrap', 'gameServices'])
   .run(function() {
     $rootScope['game'] = game;
-
     game.init();
-
-    // var c = (<any>$("canvas"));
-    // console.log(c)
-    // var ctx = c.getContext("2d");
-    // ctx.fillStyle = "#FF0000";
-    // ctx.fillRect(100,100,150,75);
   });
