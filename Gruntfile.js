@@ -194,7 +194,7 @@ module.exports = function(grunt) {
           timestamp: true
         },
         dest: 'dist/index.min.appcache',
-        src: ['node_modules/matter-js/build/matter.min.js']
+        src: []
       }
     },
     'http-server': {
