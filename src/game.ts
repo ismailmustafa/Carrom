@@ -515,21 +515,40 @@ module game {
     }
 
     for (var i = 0; i < _engine.world.bodies.length; i++) {
-      Matter.Events.on(_engine.world.bodies[i], 'sleepStart sleepEnd', function(event) {
+      Matter.Events.on(_engine.world.bodies[i], 'sleepStart', function(event) {
         var body = this;
-        // console.log('body id', body.id, 'sleeping:', body.isSleeping);
-        _objectsInMotion += body.isSleeping ? 1 : -1;
-        // console.log('num objects: ', _objectsInMotion);
 
-        if (_engine.world.bodies.length == _objectsInMotion){
-          console.log("World is Static");
-          
+        _objectsInMotion += body.isSleeping ? 1 : 0;
+
+        var isWorldStatic = true;
+
+        for (let bodyId in _engine.world.bodies) {
+          if (!_engine.world.bodies[bodyId].isSleeping) {
+            isWorldStatic = false;
+          }
+        }
+
+        if (isWorldStatic){
+          console.log("World is Static (New)");
+
           enableButtons = true;
 
           _engine.enableSleeping = false;
-          resetStrikerPosition();
 
+          resetStrikerPosition();
         }
+
+        // if (_engine.world.bodies.length == _objectsInMotion){
+
+
+        //   console.log("World is Static (Old) ");
+          
+        //   enableButtons = true;
+
+        //   _engine.enableSleeping = false;
+        //   resetStrikerPosition();
+
+        // }
 
       });
     }
