@@ -428,6 +428,9 @@ module game {
 
   export function init() {
 
+    var localBoardState = JSON.parse(localStorage.getItem("boardState"))
+
+
     // create a Matter.js engine
     _engine = Matter.Engine.create(document.getElementById("gameArea"), <any>{
       render: {
@@ -455,7 +458,12 @@ module game {
 
     drawBoard(_sceneWidth, _sceneHeight);
 
-    drawObjects(undefined);
+    if (localBoardState != undefined) {
+      setBoardState(localBoardState);
+    } else {
+      drawObjects(undefined);  
+    }
+    
     
     // Background image
     var renderOptions = _engine.render.options;
@@ -474,20 +482,25 @@ module game {
       var context = _engine.render.context,
         bodies = Matter.Composite.allBodies(_engine.world)
 
-      var striker = getStriker();
-      var startPoint = { x: striker.position.x, y: striker.position.y },
-        endPoint = {
-          x: striker.position.x + 32.0 * Math.cos(striker.angle), 
-          y: striker.position.y + 32.0 * Math.sin(striker.angle)
-        };
-
-      context.beginPath();
-      context.moveTo(startPoint.x, startPoint.y);
-      context.lineTo(endPoint.x, endPoint.y);
       
-      context.strokeStyle = 'red';
-      context.lineWidth = 5.5;
-      context.stroke();
+      var striker = getStriker();
+
+      if(striker != undefined){
+        var startPoint = { x: striker.position.x, y: striker.position.y },
+          endPoint = {
+            x: striker.position.x + 32.0 * Math.cos(striker.angle),
+            y: striker.position.y + 32.0 * Math.sin(striker.angle)
+          };
+
+        context.beginPath();
+        context.moveTo(startPoint.x, startPoint.y);
+        context.lineTo(endPoint.x, endPoint.y);
+
+        context.strokeStyle = 'red';
+        context.lineWidth = 5.5;
+        context.stroke();
+      }
+      
 
     });
 
@@ -533,13 +546,18 @@ module game {
           
           // Generate current state of the board
           
-          createBoardState();
+          var state = createBoardState();
+
+          // (<any>document).cookie["boardState"] = state;
+
+          localStorage.setItem("boardState", JSON.stringify(<any>state));
 
           enableButtons = true;
 
           _engine.enableSleeping = false;
 
           resetStrikerPosition();
+
         }
 
         // if (_engine.world.bodies.length == _objectsInMotion){
@@ -662,14 +680,18 @@ module game {
   export function createBoardState() {
     var allCoins : Coin[] = [];
     for (var i = 0; i < _engine.world.bodies.length; i++) {
+      
       var currentCoin = _engine.world.bodies[i];
-      console.log(currentCoin.label);
-      console.log(currentCoin.position);
-      console.log(currentCoin.render.fillStyle);
-      var newCoin : Coin = {coordinate: {xPos: currentCoin.position.x, yPos: currentCoin.position.y},
-                            color: currentCoin.render.fillStyle
-                          };
-      allCoins.push(newCoin);
+      // console.log(currentCoin.label);
+      // console.log(currentCoin.position);
+      // console.log(currentCoin.render.fillStyle);
+      if(currentCoin.label == "Coin"){
+
+        var newCoin : Coin = {coordinate: {xPos: currentCoin.position.x, yPos: currentCoin.position.y},
+                              color: currentCoin.render.fillStyle
+                            };
+        allCoins.push(newCoin);
+      }
     }
     
     var state : IState = {board: allCoins};
