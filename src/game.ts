@@ -263,11 +263,13 @@ module game {
   //   }
   // } 
   
-  export let _engine : any, _world : any, _sceneWidth : any, _sceneHeight : any ;
+  export let _engine: any, _objectsInMotion = 0, clickPromise : any,
+             _world : any, _sceneWidth : any, _sceneHeight : any;
   export let defaultCategory = 0x0001,
              removedCategory = 0x0002,
              movableCategory = 0x0003;
-            
+
+
   export function updateScene() {
 
     var c = (<any>$("canvas")).get(0);
@@ -427,14 +429,15 @@ module game {
           gravity: {
             x: 0,
             y: 0
-          },
-          wireframes: false
+          }
         }
       }
     });
     
     _engine.world.gravity.y = 0;
     _engine.world.gravity.x = 0;
+
+    _objectsInMotion = 0;
 
     updateScene();
 
@@ -446,7 +449,7 @@ module game {
     var renderOptions = _engine.render.options;
     renderOptions.background = 'imgs/carromBackground.png';
     renderOptions.showAngleIndicator = false;
-    renderOptions.wireframes = false;
+    renderOptions.wireframes = true;
 
     // var mouseConstraint = (<any>Matter.MouseConstraint).create(_engine, { collisionFilter: { mask: removedCategory } } );
     // Matter.World.add(_engine.world, mouseConstraint);
@@ -479,6 +482,7 @@ module game {
       handlePocketCollision(event);
     });
     
+
     function handlePocketCollision(event : any) {
       var pairs = event.pairs;
 
@@ -496,6 +500,22 @@ module game {
         }
       }  
     }
+
+    for (var i = 0; i < _engine.world.bodies.length; i++) {
+      Matter.Events.on(_engine.world.bodies[i], 'sleepStart sleepEnd', function(event) {
+        var body = this;
+        // console.log('body id', body.id, 'sleeping:', body.isSleeping);
+        _objectsInMotion += body.isSleeping ? 1 : -1;
+        // console.log('num objects: ', _objectsInMotion);
+
+        if (_engine.world.bodies.length == _objectsInMotion){
+          console.log("World is Static");
+        }
+
+      });
+    }
+
+
   }
 
   export function getStriker() : Matter.Body {
@@ -514,8 +534,26 @@ module game {
   }
 
   var translationFactor = 15;
+
+  export function mouseUp(dir: string) {
+    $interval.cancel(clickPromise);
+  };
+
+  export function mouseDown(dir: string) {
+    clickPromise = $interval(function() {
+      if (dir === "left")
+        game.leftClick();
+      else if (dir === "right")
+        game.rightClick();
+      else if (dir === "leftRotate")
+        game.leftRotate();
+      else if (dir === "rightRotate")
+        game.rightRotate();
+    }, 100);
+  };
+
   // Move the striker left
-  export function leftClick(evt: Event){
+  export function leftClick(){
     var posX = getStriker().position.x;
     var leftGuard = settings["bottomOuterStrikerPlacementLineStartX"];
     if ((posX - translationFactor) > leftGuard) {
@@ -528,7 +566,7 @@ module game {
   }
 
   // Move the striker right
-  export function rightClick(evt: Event){
+  export function rightClick(){
     console.log("rightClick");
     var posX = getStriker().position.x;
     var rightGuard = settings["bottomOuterStrikerPlacementLineEndX"];
@@ -542,12 +580,12 @@ module game {
   }
 
   // Rotate the striker left
-  export function leftRotate(ev: Event){
+  export function leftRotate(){
     rotate(RotateDirection.Left);
   }
   
   // Rotate the striker right
-  export function rightRotate(ev: Event){
+  export function rightRotate(){
     rotate(RotateDirection.Right);
   }
 
@@ -571,9 +609,7 @@ module game {
   }
 
   // Shoot the striker
-  export function shootClick(ev: Event){
-    console.log("shootClick");
-
+  export function shootClick(){
     var striker = getStriker();
     var position = {
         x: striker.position.x + 1.0 * Math.cos(striker.angle),
@@ -587,6 +623,7 @@ module game {
     Matter.Body.applyForce(striker, 
       { x: position.x, y: position.y }, 
       { x: force * Math.cos(striker.angle), y: force * Math.sin(striker.angle) })
+    _engine.enableSleeping = true;
   }
 }
 
