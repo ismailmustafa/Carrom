@@ -540,6 +540,7 @@ module game {
   };
 
   export function mouseDown(dir: string) {
+    // if (!enableButtons) return;
     clickPromise = $interval(function() {
       if (dir === "left")
         game.leftClick();
@@ -549,7 +550,7 @@ module game {
         game.leftRotate();
       else if (dir === "rightRotate")
         game.rightRotate();
-    }, 100);
+    }, 50);
   };
 
   // Move the striker left
