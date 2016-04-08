@@ -191,6 +191,7 @@ module.exports = function(grunt) {
             'imgs/carromBackground.png',
             'js/everything.min.js',
             'css/everything.min.css',
+            'css/2fcrYFNaTjcS6g4U3t-Y5UEw0lE80llgEseQY3FEmqw.woff2',
             'imgs/HelpSlide1.png',
             'imgs/HelpSlide2.png',
           ],
