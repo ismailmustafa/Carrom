@@ -185,6 +185,7 @@ module.exports = function(grunt) {
             'https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.1/css/materialize.min.css',
             'https://fonts.googleapis.com/icon?family=Material+Icons',
             'http://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.1/js/materialize.min.js',
+            'https://fonts.gstatic.com/s/materialicons/v14/2fcrYFNaTjcS6g4U3t-Y5UEw0lE80llgEseQY3FEmqw.woff2',
             'imgs/carromBackground.png',
             'js/everything.min.js',
             'css/everything.min.css',
