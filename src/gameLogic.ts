@@ -21,6 +21,7 @@ interface Coordinate {
 interface Coin {
     coordinate : Coordinate;
     color: string;
+    shouldRescale: Boolean;
 }
 interface IState {
     board: Board;             // positons of all coins
@@ -42,7 +43,9 @@ module gameLogic {
     let queenCoordinate : Coordinate = {xPos: boardSize.centerX,
                                         yPos: boardSize.centerY};
     let queen : Coin = {coordinate:queenCoordinate,
-                        color:QUEENCOLOR};
+                        color:QUEENCOLOR,
+                        shouldRescale: false
+                      };
 
     // Initialize two layers
     let coins : Coin[] = [];
@@ -82,7 +85,9 @@ module gameLogic {
     let coinCoordinate : Coordinate = {xPos:c.xPos,
                                    yPos:c.yPos};
     let coin : Coin = {coordinate:coinCoordinate,
-                         color:coinColor};
+                       color:coinColor,
+                       shouldRescale: false
+                      };
     return coin;
   }
   

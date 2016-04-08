@@ -350,8 +350,17 @@ module game {
     let circles : any = [];
 
     for (var i = 0; i < currentBoard.length; i++) {
+      var xCoord : number, yCoord : number;
+      if (currentBoard[i].shouldRescale) {
+        xCoord = currentBoard[i].coordinate.xPos * settings["outerBoardWidth"];
+        yCoord = currentBoard[i].coordinate.yPos * settings["outerBoardHeight"];
+      }
+      else {
+        xCoord = currentBoard[i].coordinate.xPos;
+        yCoord = currentBoard[i].coordinate.yPos; 
+      }
      
-      circles.push(Matter.Bodies.circle(currentBoard[i].coordinate.xPos, currentBoard[i].coordinate.yPos, settings["coinDiameter"] / 2.0, <any>{
+      circles.push(Matter.Bodies.circle(xCoord, yCoord, settings["coinDiameter"] / 2.0, <any>{
         isStatic: false,
         // isSleeping: true,
         collisionFilter: {
@@ -428,9 +437,6 @@ module game {
 
   export function init() {
 
-    var localBoardState = JSON.parse(localStorage.getItem("boardState"))
-
-
     // create a Matter.js engine
     _engine = Matter.Engine.create(document.getElementById("gameArea"), <any>{
       render: {
@@ -458,13 +464,19 @@ module game {
 
     drawBoard(_sceneWidth, _sceneHeight);
 
-    if (localBoardState != undefined) {
-      setBoardState(localBoardState);
+    var localStorageState = localStorage.getItem("boardState");
+
+    if(localStorageState != null){
+      
+      var localBoardState = JSON.parse(localStorageState);
+
+      if (localBoardState != undefined) {
+        setBoardState(localBoardState);
+      }  
     } else {
       drawObjects(undefined);  
     }
-    
-    
+
     // Background image
     var renderOptions = _engine.render.options;
     renderOptions.background = 'imgs/carromBackground.png';
@@ -687,8 +699,9 @@ module game {
       // console.log(currentCoin.render.fillStyle);
       if(currentCoin.label == "Coin"){
 
-        var newCoin : Coin = {coordinate: {xPos: currentCoin.position.x, yPos: currentCoin.position.y},
-                              color: currentCoin.render.fillStyle
+        var newCoin : Coin = {coordinate: {xPos: currentCoin.position.x/settings["outerBoardWidth"], yPos: currentCoin.position.y/settings["outerBoardHeight"]},
+                              color: currentCoin.render.fillStyle,
+                              shouldRescale: true
                             };
         allCoins.push(newCoin);
       }
