@@ -10,6 +10,9 @@ module game {
     Right
   }
 
+  // Enable or disable player buttons
+  export let enableButtons : Boolean = true;
+  
   export let state: IState;
   export let board: Board;
 
@@ -538,10 +541,17 @@ module game {
     }
   }
 
+  // Rotate the striker left
   export function leftRotate(ev: Event){
     rotate(RotateDirection.Left);
   }
+  
+  // Rotate the striker right
+  export function rightRotate(ev: Event){
+    rotate(RotateDirection.Right);
+  }
 
+  // Generic rotate function
   export function rotate(direction: RotateDirection) {
     var striker = getStriker();
     
@@ -560,10 +570,7 @@ module game {
     }
   }
 
-  export function rightRotate(ev: Event){
-    rotate(RotateDirection.Right);
-  }
-
+  // Shoot the striker
   export function shootClick(ev: Event){
     console.log("shootClick");
 
@@ -573,9 +580,13 @@ module game {
         y: striker.position.y + 1.0 * Math.sin(striker.angle)
       };
 
+    // var force = settings["outerBoardWidth"] * 0.0001;
+    // console.log("force", force);
+    var force = 0.0323;
+    console.log(force);
     Matter.Body.applyForce(striker, 
       { x: position.x, y: position.y }, 
-      { x: 0.1 * Math.cos(striker.angle), y: 0.1 * Math.sin(striker.angle) })
+      { x: force * Math.cos(striker.angle), y: force * Math.sin(striker.angle) })
   }
 }
 

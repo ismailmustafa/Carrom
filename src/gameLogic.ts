@@ -24,7 +24,10 @@ interface Coin {
     color: string;
 }
 interface IState {
-    board: Board;
+    strikerPlacement: number; // where striker was shot from
+    strikerAngle: number;     // angle at which striker was shot
+    strikerSpeed: number;     // speed at which striker was shot
+    board: Board;             // positons of all coins
 }
 
 module gameLogic {
@@ -105,6 +108,11 @@ module gameLogic {
   }
 
   export function getInitialState(gameSettings : {[setting : string] : number}): IState {
-    return {board: getInitialBoard(gameSettings)};
+    return {
+      strikerPlacement: 0,
+      strikerAngle: 0,
+      strikerSpeed: 0,
+      board: getInitialBoard(gameSettings)
+    };
   }
 }
