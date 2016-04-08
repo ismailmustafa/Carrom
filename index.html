@@ -135,11 +135,11 @@
 
   <div id="gameArea">
     <div id='glasspane'>
-      <a class="icon-link" href="#" ng-mousedown='game.mouseDown("leftRotate")' ng-mouseup='game.mouseUp()'>
-        <i class="medium material-icons">replay</i>
+      <a href="">
+        <i class="medium material-icons" ng-click="{{game.enableButtons}} && game.leftRotate()">replay</i>
       </a>
 
-      <a class="icon-link" href="#" ng-mousedown='game.mouseDown("left")' ng-mouseup='game.mouseUp()'>
+      <a class="icon-link" href="#" ng-click="{{game.enableButtons}} && game.leftClick()">
         <i class="medium material-icons icon-flipped">play_arrow</i>
       </a>
       
@@ -147,12 +147,11 @@
         <i class="medium material-icons">navigation</i>
       </a>
 
-      <a class="icon-link" href="#" ng-mousedown='game.mouseDown("right")' ng-mouseup='game.mouseUp()'>
+      <a class="icon-link" href="" ng-click="{{game.enableButtons}} && game.rightClick()">
         <i class="medium material-icons">play_arrow</i>
       </a>
-      
-      <a class="icon-link" href="#" ng-mousedown='game.mouseDown("rightRotate")' ng-mouseup='game.mouseUp()'>
-        <i class="medium material-icons icon-flipped" >replay</i>
+      <a class="icon-link" href="">
+        <i class="medium material-icons icon-flipped" ng-click="{{game.enableButtons}} && game.rightRotate()">replay</i>
       </a>
       
     </div>
