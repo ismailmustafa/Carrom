@@ -20,13 +20,9 @@ interface Coordinate {
 
 interface Coin {
     coordinate : Coordinate;
-    diameter: number;
     color: string;
 }
 interface IState {
-    strikerPlacement: number; // where striker was shot from
-    strikerAngle: number;     // angle at which striker was shot
-    strikerSpeed: number;     // speed at which striker was shot
     board: Board;             // positons of all coins
 }
 
@@ -46,7 +42,6 @@ module gameLogic {
     let queenCoordinate : Coordinate = {xPos: boardSize.centerX,
                                         yPos: boardSize.centerY};
     let queen : Coin = {coordinate:queenCoordinate,
-                        diameter:gameSettings["coinDiameter"],
                         color:QUEENCOLOR};
 
     // Initialize two layers
@@ -87,7 +82,6 @@ module gameLogic {
     let coinCoordinate : Coordinate = {xPos:c.xPos,
                                    yPos:c.yPos};
     let coin : Coin = {coordinate:coinCoordinate,
-                         diameter:gameSettings["coinDiameter"],
                          color:coinColor};
     return coin;
   }
@@ -109,9 +103,6 @@ module gameLogic {
 
   export function getInitialState(gameSettings : {[setting : string] : number}): IState {
     return {
-      strikerPlacement: 0,
-      strikerAngle: 0,
-      strikerSpeed: 0,
       board: getInitialBoard(gameSettings)
     };
   }

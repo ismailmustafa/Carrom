@@ -316,7 +316,12 @@ module game {
     }
   };
 
-  export function drawObjects(){
+  export function drawObjects(currentBoard : Board){
+    
+    if (currentBoard == undefined) {
+      state = gameLogic.getInitialState(settings);
+      currentBoard = state.board;
+    }
 
     var offset = 1;
     
@@ -341,24 +346,19 @@ module game {
         render: { fillStyle: 'black', strokeStyle: 'black'}
       })
     ]);
-
-    drawBoard(width, height);
-
-    state = gameLogic.getInitialState(settings);
-    board = state.board;
-
+    
     let circles : any = [];
 
-    for (var i = 0; i < board.length; i++) {
-      
-      circles.push(Matter.Bodies.circle(board[i].coordinate.xPos, board[i].coordinate.yPos, board[i].diameter / 2.0, <any>{
+    for (var i = 0; i < currentBoard.length; i++) {
+     
+      circles.push(Matter.Bodies.circle(currentBoard[i].coordinate.xPos, currentBoard[i].coordinate.yPos, settings["coinDiameter"] / 2.0, <any>{
         isStatic: false,
         // isSleeping: true,
         collisionFilter: {
           mask: defaultCategory
         },
         restitution: 1,
-        render: { fillStyle: board[i].color, strokeStyle: 'black' },
+        render: { fillStyle: currentBoard[i].color, strokeStyle: 'black' },
         label: 'Coin'
       }));
     }
@@ -455,7 +455,7 @@ module game {
 
     drawBoard(_sceneWidth, _sceneHeight);
 
-    drawObjects();
+    drawObjects(undefined);
     
     // Background image
     var renderOptions = _engine.render.options;
@@ -530,6 +530,10 @@ module game {
 
         if (isWorldStatic){
           console.log("World is Static (New)");
+          
+          // Generate current state of the board
+          
+          createBoardState();
 
           enableButtons = true;
 
@@ -652,6 +656,34 @@ module game {
       diff = Math.abs(newAngle - striker.angle);
       Matter.Body.rotate(striker, diff);
     }
+  }
+
+  // Create the current state of the board
+  export function createBoardState() {
+    var allCoins : Coin[] = [];
+    for (var i = 0; i < _engine.world.bodies.length; i++) {
+      var currentCoin = _engine.world.bodies[i];
+      console.log(currentCoin.label);
+      console.log(currentCoin.position);
+      console.log(currentCoin.render.fillStyle);
+      var newCoin : Coin = {coordinate: {xPos: currentCoin.position.x, yPos: currentCoin.position.y},
+                            color: currentCoin.render.fillStyle
+                          };
+      allCoins.push(newCoin);
+    }
+    
+    var state : IState = {board: allCoins};
+    return state;
+  }
+  
+  // Redraw the board with the new state
+  export function setBoardState(state : IState) {
+    
+    Matter.World.clear(_engine.world, false);
+    
+    // Set diameter for coins in state
+    var newBoard : Board = state.board;
+    drawObjects(newBoard);
   }
 
   // Shoot the striker
