@@ -10,13 +10,20 @@ module game {
     Right
   }
 
+  enum Players {
+    Player1,
+    Player2
+  }
+
   // Enable or disable player buttons
   export let enableButtons : Boolean = true;
   
   export let state: IState;
+
   export let board: Board;
 
   export let settings: { [setting: string]: number };
+
 
   export function drawBoard(width: number, height: number) {
     let size = width < height ? width : height;
@@ -269,6 +276,7 @@ module game {
              removedCategory = 0x0002,
              movableCategory = 0x0003;
 
+  export let scores = { P1: 0, P2: 0 };
 
   export function updateScene() {
 
@@ -431,6 +439,10 @@ module game {
             y: 0
           }
         }
+      },
+      timing: {
+        timestamp: 0,
+        timeScale: 1
       }
     });
     
@@ -449,7 +461,8 @@ module game {
     var renderOptions = _engine.render.options;
     renderOptions.background = 'imgs/carromBackground.png';
     renderOptions.showAngleIndicator = false;
-    renderOptions.wireframes = true;
+    renderOptions.wireframes = false;
+    renderOptions.showDebug = false;
 
     // var mouseConstraint = (<any>Matter.MouseConstraint).create(_engine, { collisionFilter: { mask: removedCategory } } );
     // Matter.World.add(_engine.world, mouseConstraint);
@@ -510,11 +523,16 @@ module game {
 
         if (_engine.world.bodies.length == _objectsInMotion){
           console.log("World is Static");
+          
+          enableButtons = true;
+
+          _engine.enableSleeping = false;
+          resetStrikerPosition();
+
         }
 
       });
     }
-
 
   }
 
@@ -530,7 +548,15 @@ module game {
   export function resetStrikerPosition() {
     var strikerCenterX = (settings["bottomOuterStrikerPlacementLineStartX"] + settings["bottomOuterStrikerPlacementLineEndX"]) / 2;
     var strikerCenterY = settings["bottomOuterStrikerPlacementLineStartY"] - (settings["innerStrikerPlacementLineOffset"] / 2);
-    Matter.Body.setPosition(getStriker(), {x:strikerCenterX, y:strikerCenterY});
+    var striker = getStriker();
+    Matter.Body.setPosition(striker, {x:strikerCenterX, y:strikerCenterY});
+    Matter.Body.setAngle(striker, (6.0 * Math.PI) / 4.0);
+
+    for (let body in _engine.world.bodies) {
+      if (_engine.world.bodies[body].label != "Pocket") {
+        Matter.Sleeping.set(_engine.world.bodies[body], false);
+      }
+    }
   }
 
   var translationFactor = 15;
@@ -624,6 +650,10 @@ module game {
     Matter.Body.applyForce(striker, 
       { x: position.x, y: position.y }, 
       { x: force * Math.cos(striker.angle), y: force * Math.sin(striker.angle) })
+    
+    // Disable buttons to prevent user interaction
+    enableButtons = false;
+    
     _engine.enableSleeping = true;
   }
 }
