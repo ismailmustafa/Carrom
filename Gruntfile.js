@@ -118,6 +118,11 @@ module.exports = function(grunt) {
         src: 'imgs/*.*',
         dest: 'dist/'
       },
+      css: {
+        expand: false,
+        src: 'css/2fcrYFNaTjcS6g4U3t-Y5UEw0lE80llgEseQY3FEmqw.woff2',
+        dest: 'dist/'
+      },
     },
     concat: {
       options: {
@@ -145,7 +150,9 @@ module.exports = function(grunt) {
         ]
       },
       dist: {
-        src: 'css/game.css',
+        src: [
+          'css/game.css'
+        ],
         dest: 'dist/css/everything.min.css',
       }
     },
