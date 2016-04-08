@@ -316,11 +316,15 @@ module game {
     }
   };
 
-  export function drawObjects(currentBoard : Board){
+  export function drawObjects(currentBoard : Board, redrawingForMultiplayer : Boolean){
     
     if (currentBoard == undefined) {
       state = gameLogic.getInitialState(settings);
       currentBoard = state.board;
+    }
+    
+    if (redrawingForMultiplayer == undefined) {
+      redrawingForMultiplayer = false;
     }
 
     var offset = 1;
@@ -351,6 +355,7 @@ module game {
 
     for (var i = 0; i < currentBoard.length; i++) {
       var xCoord : number, yCoord : number;
+      
       if (currentBoard[i].shouldRescale) {
         xCoord = currentBoard[i].coordinate.xPos * settings["outerBoardWidth"];
         yCoord = currentBoard[i].coordinate.yPos * settings["outerBoardHeight"];
@@ -358,6 +363,11 @@ module game {
       else {
         xCoord = currentBoard[i].coordinate.xPos;
         yCoord = currentBoard[i].coordinate.yPos; 
+      }
+      
+      if (redrawingForMultiplayer) {
+        xCoord = settings["outerBoardWidth"] - xCoord;
+        yCoord = settings["outerBoardHeight"] - yCoord;
       }
      
       circles.push(Matter.Bodies.circle(xCoord, yCoord, settings["coinDiameter"] / 2.0, <any>{
@@ -474,7 +484,7 @@ module game {
         setBoardState(localBoardState);
       }  
     } else {
-      drawObjects(undefined);  
+      drawObjects(undefined, undefined);  
     }
 
     // Background image
@@ -512,7 +522,6 @@ module game {
         context.lineWidth = 5.5;
         context.stroke();
       }
-      
 
     });
 
@@ -716,9 +725,8 @@ module game {
     
     Matter.World.clear(_engine.world, false);
     
-    // Set diameter for coins in state
     var newBoard : Board = state.board;
-    drawObjects(newBoard);
+    drawObjects(newBoard, true);
   }
 
   // Shoot the striker
@@ -730,8 +738,17 @@ module game {
       };
 
     // var force = settings["outerBoardWidth"] * 0.0001;
-    // console.log("force", force);
-    var force = 0.0323;
+    
+    var force : number;
+    console.log(settings["borderThickness"]);
+    if(settings["borderThickness"] < 200){
+      force = 0.005;
+    } else if(settings["borderThickness"] > 200 && settings["borderThickness"] < 400) {
+      force = 0.001;
+    } else if(settings["borderThickness"] > 400){
+      force = 0.01;
+    }
+    
     console.log(force);
     Matter.Body.applyForce(striker, 
       { x: position.x, y: position.y }, 
