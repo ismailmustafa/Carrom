@@ -447,23 +447,7 @@ module game {
 
   export function updateUI(params : IUpdateUI) : void {
     console.log("updateUI");
-    // init();
-  }
-
-  export function init() {
-
-    console.log("intial init");
     
-    resizeGameAreaService.setWidthToHeight(1);
-
-    moveService.setGame({
-      minNumberOfPlayers: 2,
-      maxNumberOfPlayers: 2,
-      checkMoveOk: gameLogic.checkMoveOk,
-      updateUI: updateUI
-    });
-
-    console.log(Matter);
     // create a Matter.js engine
     _engine = Matter.Engine.create(document.getElementById("gameArea"), <any>{
       render: {
@@ -481,7 +465,7 @@ module game {
         timeScale: 1
       }
     });
-    
+
     _engine.world.gravity.y = 0;
     _engine.world.gravity.x = 0;
 
@@ -493,15 +477,15 @@ module game {
 
     var localStorageState = localStorage.getItem("boardState");
 
-    if(localStorageState != null){
-      
+    if (localStorageState != null) {
+
       var localBoardState = JSON.parse(localStorageState);
 
       if (localBoardState != undefined) {
         setBoardState(localBoardState);
-      }  
+      }
     } else {
-      drawObjects(undefined, undefined);  
+      drawObjects(undefined, undefined);
     }
 
     // Background image
@@ -511,22 +495,18 @@ module game {
     renderOptions.wireframes = false;
     renderOptions.showDebug = false;
 
-    // var mouseConstraint = (<any>Matter.MouseConstraint).create(_engine, { collisionFilter: { mask: removedCategory } } );
-    // Matter.World.add(_engine.world, mouseConstraint);
-    
     console.log(_engine);
 
     Matter.Engine.run(_engine);
-    // var mouseConstraint = (<any>Matter.MouseConstraint).create(_engine);
 
     Matter.Events.on(_engine.render, 'afterRender', function() {
       var context = _engine.render.context,
         bodies = Matter.Composite.allBodies(_engine.world)
 
-      
+
       var striker = getStriker();
 
-      if(striker != undefined){
+      if (striker != undefined) {
         var startPoint = { x: striker.position.x, y: striker.position.y },
           endPoint = {
             x: striker.position.x + 32.0 * Math.cos(striker.angle),
@@ -547,24 +527,24 @@ module game {
     Matter.Events.on(_engine, 'collisionEnd', function(event) {
       handlePocketCollision(event);
     });
-    
 
-    function handlePocketCollision(event : any) {
+
+    function handlePocketCollision(event: any) {
       var pairs = event.pairs;
 
       // change object colours to show those starting a collision
       for (var i = 0; i < pairs.length; i++) {
         var pair = pairs[i];
-       
-        if (pair.bodyA.label == "Pocket" && pair.bodyB.label == "Coin"){
+
+        if (pair.bodyA.label == "Pocket" && pair.bodyB.label == "Coin") {
           pair.bodyB.collisionFilter.mask = removedCategory;
           (<any>Matter.World).remove(_engine.world, pair.bodyB);
-          
+
         } else if (pair.bodyB.label == "Pocket" && pair.bodyA.label == "Coin") {
           pair.bodyA.collisionFilter.mask = removedCategory;
           (<any>Matter.World).remove(_engine.world, pair.bodyA);
         }
-      }  
+      }
     }
 
     for (var i = 0; i < _engine.world.bodies.length; i++) {
@@ -581,14 +561,12 @@ module game {
           }
         }
 
-        if (isWorldStatic){
+        if (isWorldStatic) {
           console.log("World is Static (New)");
-          
-          // Generate current state of the board
-          
-          var state = createBoardState();
 
-          // (<any>document).cookie["boardState"] = state;
+          // Generate current state of the board
+
+          var state = createBoardState();
 
           localStorage.setItem("boardState", JSON.stringify(<any>state));
 
@@ -600,20 +578,24 @@ module game {
 
         }
 
-        // if (_engine.world.bodies.length == _objectsInMotion){
-
-
-        //   console.log("World is Static (Old) ");
-          
-        //   enableButtons = true;
-
-        //   _engine.enableSleeping = false;
-        //   resetStrikerPosition();
-
-        // }
-
       });
     }
+  }
+
+  export function init() {
+
+    console.log("intial init");
+    
+    resizeGameAreaService.setWidthToHeight(1);
+
+    moveService.setGame({
+      minNumberOfPlayers: 2,
+      maxNumberOfPlayers: 2,
+      checkMoveOk: gameLogic.checkMoveOk,
+      updateUI: updateUI
+    });
+
+    console.log(Matter);
 
   }
 

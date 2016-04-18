@@ -449,19 +449,6 @@ var game;
     game.drawObjects = drawObjects;
     function updateUI(params) {
         console.log("updateUI");
-        // init();
-    }
-    game.updateUI = updateUI;
-    function init() {
-        console.log("intial init");
-        resizeGameAreaService.setWidthToHeight(1);
-        moveService.setGame({
-            minNumberOfPlayers: 2,
-            maxNumberOfPlayers: 2,
-            checkMoveOk: gameLogic.checkMoveOk,
-            updateUI: updateUI
-        });
-        console.log(Matter);
         // create a Matter.js engine
         game._engine = Matter.Engine.create(document.getElementById("gameArea"), {
             render: {
@@ -500,11 +487,8 @@ var game;
         renderOptions.showAngleIndicator = false;
         renderOptions.wireframes = false;
         renderOptions.showDebug = false;
-        // var mouseConstraint = (<any>Matter.MouseConstraint).create(_engine, { collisionFilter: { mask: removedCategory } } );
-        // Matter.World.add(_engine.world, mouseConstraint);
         console.log(game._engine);
         Matter.Engine.run(game._engine);
-        // var mouseConstraint = (<any>Matter.MouseConstraint).create(_engine);
         Matter.Events.on(game._engine.render, 'afterRender', function () {
             var context = game._engine.render.context, bodies = Matter.Composite.allBodies(game._engine.world);
             var striker = getStriker();
@@ -553,20 +537,25 @@ var game;
                     console.log("World is Static (New)");
                     // Generate current state of the board
                     var state = createBoardState();
-                    // (<any>document).cookie["boardState"] = state;
                     localStorage.setItem("boardState", JSON.stringify(state));
                     game.enableButtons = true;
                     game._engine.enableSleeping = false;
                     resetStrikerPosition();
                 }
-                // if (_engine.world.bodies.length == _objectsInMotion){
-                //   console.log("World is Static (Old) ");
-                //   enableButtons = true;
-                //   _engine.enableSleeping = false;
-                //   resetStrikerPosition();
-                // }
             });
         }
+    }
+    game.updateUI = updateUI;
+    function init() {
+        console.log("intial init");
+        resizeGameAreaService.setWidthToHeight(1);
+        moveService.setGame({
+            minNumberOfPlayers: 2,
+            maxNumberOfPlayers: 2,
+            checkMoveOk: gameLogic.checkMoveOk,
+            updateUI: updateUI
+        });
+        console.log(Matter);
     }
     game.init = init;
     function getStriker() {
