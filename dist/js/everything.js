@@ -43,6 +43,10 @@ var gameLogic;
         return coins;
     }
     gameLogic.getInitialBoard = getInitialBoard;
+    function checkMoveOk(stateTransition) {
+        // Need to implement
+    }
+    gameLogic.checkMoveOk = checkMoveOk;
     function createCoin(gameSettings, c, coinColor) {
         var coinCoordinate = { xPos: c.xPos,
             yPos: c.yPos };
@@ -442,7 +446,16 @@ var game;
         Matter.World.add(game._engine.world, [pocket1, pocket2, pocket3, pocket4, strikerCircle]);
     }
     game.drawObjects = drawObjects;
+    function updateUI(params) {
+    }
+    game.updateUI = updateUI;
     function init() {
+        moveService.setGame({
+            minNumberOfPlayers: 2,
+            maxNumberOfPlayers: 2,
+            checkMoveOk: gameLogic.checkMoveOk,
+            updateUI: updateUI
+        });
         // create a Matter.js engine
         game._engine = Matter.Engine.create(document.getElementById("gameArea"), {
             render: {
