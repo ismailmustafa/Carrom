@@ -453,6 +453,9 @@ module game {
   export function init() {
 
     console.log("intial init");
+    
+    resizeGameAreaService.setWidthToHeight(1);
+
     moveService.setGame({
       minNumberOfPlayers: 2,
       maxNumberOfPlayers: 2,
@@ -510,6 +513,8 @@ module game {
     // var mouseConstraint = (<any>Matter.MouseConstraint).create(_engine, { collisionFilter: { mask: removedCategory } } );
     // Matter.World.add(_engine.world, mouseConstraint);
     
+    console.log(_engine);
+
     Matter.Engine.run(_engine);
     // var mouseConstraint = (<any>Matter.MouseConstraint).create(_engine);
 

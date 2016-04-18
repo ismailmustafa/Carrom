@@ -454,6 +454,7 @@ var game;
     game.updateUI = updateUI;
     function init() {
         console.log("intial init");
+        resizeGameAreaService.setWidthToHeight(1);
         moveService.setGame({
             minNumberOfPlayers: 2,
             maxNumberOfPlayers: 2,
@@ -500,6 +501,7 @@ var game;
         renderOptions.showDebug = false;
         // var mouseConstraint = (<any>Matter.MouseConstraint).create(_engine, { collisionFilter: { mask: removedCategory } } );
         // Matter.World.add(_engine.world, mouseConstraint);
+        console.log(game._engine);
         Matter.Engine.run(game._engine);
         // var mouseConstraint = (<any>Matter.MouseConstraint).create(_engine);
         Matter.Events.on(game._engine.render, 'afterRender', function () {
