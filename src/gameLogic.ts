@@ -81,6 +81,10 @@ module gameLogic {
     return coins;
   }
   
+  export function checkMoveOk(stateTransition: IStateTransition) : void {
+    // Need to implement
+  }
+
   function createCoin(gameSettings : {[setting : string] : number}, c : Coordinate, coinColor : string) : Coin {
     let coinCoordinate : Coordinate = {xPos:c.xPos,
                                    yPos:c.yPos};

@@ -445,7 +445,18 @@ module game {
 
   }
 
+  export function updateUI(params : IUpdateUI) : void {
+  
+  }
+
   export function init() {
+
+    moveService.setGame({
+      minNumberOfPlayers: 2,
+      maxNumberOfPlayers: 2,
+      checkMoveOk: gameLogic.checkMoveOk,
+      updateUI: updateUI
+    });
 
     // create a Matter.js engine
     _engine = Matter.Engine.create(document.getElementById("gameArea"), <any>{
