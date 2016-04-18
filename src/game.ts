@@ -739,15 +739,15 @@ module game {
 
     // var force = settings["outerBoardWidth"] * 0.0001;
     
-    var force : number;
-    console.log(settings["borderThickness"]);
-    if(settings["borderThickness"] < 200){
-      force = 0.005;
-    } else if(settings["borderThickness"] > 200 && settings["borderThickness"] < 400) {
-      force = 0.001;
-    } else if(settings["borderThickness"] > 400){
-      force = 0.01;
-    }
+    var force : number = 0.1;
+    // console.log(settings["borderThickness"]);
+    // if(settings["borderThickness"] < 200){
+    //   force = 0.005;
+    // } else if(settings["borderThickness"] > 200 && settings["borderThickness"] < 400) {
+    //   force = 0.001;
+    // } else if(settings["borderThickness"] > 400){
+    //   force = 0.01;
+    // }
     
     console.log(force);
     Matter.Body.applyForce(striker, 

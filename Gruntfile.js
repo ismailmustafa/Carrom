@@ -120,7 +120,7 @@ module.exports = function(grunt) {
       },
       css: {
         expand: false,
-        src: 'css/2fcrYFNaTjcS6g4U3t-Y5UEw0lE80llgEseQY3FEmqw.woff2',
+        src: ['css/2fcrYFNaTjcS6g4U3t-Y5UEw0lE80llgEseQY3FEmqw.woff2', 'css/materialize.min.css'],
         dest: 'dist/'
       },
     },

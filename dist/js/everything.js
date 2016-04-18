@@ -12,8 +12,9 @@ var gameLogic;
         var queenCoordinate = { xPos: boardSize.centerX,
             yPos: boardSize.centerY };
         var queen = { coordinate: queenCoordinate,
-            diameter: gameSettings["coinDiameter"],
-            color: QUEENCOLOR };
+            color: QUEENCOLOR,
+            shouldRescale: false
+        };
         // Initialize two layers
         var coins = [];
         coins.push(queen);
@@ -46,8 +47,9 @@ var gameLogic;
         var coinCoordinate = { xPos: c.xPos,
             yPos: c.yPos };
         var coin = { coordinate: coinCoordinate,
-            diameter: gameSettings["coinDiameter"],
-            color: coinColor };
+            color: coinColor,
+            shouldRescale: false
+        };
         return coin;
     }
     function getCoordinates(gameSettings, centerX, centerY, index, hexSize) {
@@ -64,7 +66,9 @@ var gameLogic;
     }
     gameLogic.getInitialSize = getInitialSize;
     function getInitialState(gameSettings) {
-        return { board: getInitialBoard(gameSettings) };
+        return {
+            board: getInitialBoard(gameSettings)
+        };
     }
     gameLogic.getInitialState = getInitialState;
 })(gameLogic || (gameLogic = {}));
@@ -81,6 +85,13 @@ var game;
         RotateDirection[RotateDirection["Left"] = 0] = "Left";
         RotateDirection[RotateDirection["Right"] = 1] = "Right";
     })(RotateDirection || (RotateDirection = {}));
+    var Players;
+    (function (Players) {
+        Players[Players["Player1"] = 0] = "Player1";
+        Players[Players["Player2"] = 1] = "Player2";
+    })(Players || (Players = {}));
+    // Enable or disable player buttons
+    game.enableButtons = true;
     function drawBoard(width, height) {
         var size = width < height ? width : height;
         // Change these
@@ -272,7 +283,28 @@ var game;
         };
     }
     game.drawBoard = drawBoard;
+    // export function init() {
+    //   // resizeGameAreaService.setWidthToHeight(1);
+    //   var heightOutput = window.innerHeight;
+    //   var widthOutput = window.innerWidth;
+    //   drawBoard(widthOutput, heightOutput);
+    //   state = gameLogic.getInitialState(settings);
+    //   board = state.board;
+    //   window.onresize = function(){
+    //     var heightOutput = window.innerHeight;
+    //     var widthOutput = window.innerWidth;
+    //     document.getElementById("gameArea").offsetHeight;
+    //     document.getElementById("gameArea").offsetWidth;
+    //     $rootScope.$apply(function () {
+    //       drawBoard(widthOutput, heightOutput);
+    //       state = gameLogic.getInitialState(settings);
+    //       board = state.board;
+    //     });
+    //   }
+    // } 
+    game._objectsInMotion = 0;
     game.defaultCategory = 0x0001, game.removedCategory = 0x0002, game.movableCategory = 0x0003;
+    game.scores = { P1: 0, P2: 0 };
     function updateScene() {
         var c = $("canvas").get(0);
         var width = $(window).width();
@@ -304,7 +336,14 @@ var game;
     }
     game.fullscreen = fullscreen;
     ;
-    function drawObjects() {
+    function drawObjects(currentBoard, redrawingForMultiplayer) {
+        if (currentBoard == undefined) {
+            game.state = gameLogic.getInitialState(game.settings);
+            currentBoard = game.state.board;
+        }
+        if (redrawingForMultiplayer == undefined) {
+            redrawingForMultiplayer = false;
+        }
         var offset = 1;
         var width = game._sceneWidth;
         var height = game._sceneHeight;
@@ -326,19 +365,29 @@ var game;
                 render: { fillStyle: 'black', strokeStyle: 'black' }
             })
         ]);
-        drawBoard(width, height);
-        game.state = gameLogic.getInitialState(game.settings);
-        game.board = game.state.board;
         var circles = [];
-        for (var i = 0; i < game.board.length; i++) {
-            circles.push(Matter.Bodies.circle(game.board[i].coordinate.xPos, game.board[i].coordinate.yPos, game.board[i].diameter / 2.0, {
+        for (var i = 0; i < currentBoard.length; i++) {
+            var xCoord, yCoord;
+            if (currentBoard[i].shouldRescale) {
+                xCoord = currentBoard[i].coordinate.xPos * game.settings["outerBoardWidth"];
+                yCoord = currentBoard[i].coordinate.yPos * game.settings["outerBoardHeight"];
+            }
+            else {
+                xCoord = currentBoard[i].coordinate.xPos;
+                yCoord = currentBoard[i].coordinate.yPos;
+            }
+            if (redrawingForMultiplayer) {
+                xCoord = game.settings["outerBoardWidth"] - xCoord;
+                yCoord = game.settings["outerBoardHeight"] - yCoord;
+            }
+            circles.push(Matter.Bodies.circle(xCoord, yCoord, game.settings["coinDiameter"] / 2.0, {
                 isStatic: false,
                 // isSleeping: true,
                 collisionFilter: {
                     mask: game.defaultCategory
                 },
                 restitution: 1,
-                render: { fillStyle: game.board[i].color, strokeStyle: 'black' },
+                render: { fillStyle: currentBoard[i].color, strokeStyle: 'black' },
                 label: 'Coin'
             }));
         }
@@ -406,21 +455,35 @@ var game;
                     gravity: {
                         x: 0,
                         y: 0
-                    },
-                    wireframes: false
+                    }
                 }
+            },
+            timing: {
+                timestamp: 0,
+                timeScale: 1
             }
         });
         game._engine.world.gravity.y = 0;
         game._engine.world.gravity.x = 0;
+        game._objectsInMotion = 0;
         updateScene();
         drawBoard(game._sceneWidth, game._sceneHeight);
-        drawObjects();
+        var localStorageState = localStorage.getItem("boardState");
+        if (localStorageState != null) {
+            var localBoardState = JSON.parse(localStorageState);
+            if (localBoardState != undefined) {
+                setBoardState(localBoardState);
+            }
+        }
+        else {
+            drawObjects(undefined, undefined);
+        }
         // Background image
         var renderOptions = game._engine.render.options;
         renderOptions.background = 'imgs/carromBackground.png';
         renderOptions.showAngleIndicator = false;
         renderOptions.wireframes = false;
+        renderOptions.showDebug = false;
         // var mouseConstraint = (<any>Matter.MouseConstraint).create(_engine, { collisionFilter: { mask: removedCategory } } );
         // Matter.World.add(_engine.world, mouseConstraint);
         Matter.Engine.run(game._engine);
@@ -428,16 +491,18 @@ var game;
         Matter.Events.on(game._engine.render, 'afterRender', function () {
             var context = game._engine.render.context, bodies = Matter.Composite.allBodies(game._engine.world);
             var striker = getStriker();
-            var startPoint = { x: striker.position.x, y: striker.position.y }, endPoint = {
-                x: striker.position.x + 32.0 * Math.cos(striker.angle),
-                y: striker.position.y + 32.0 * Math.sin(striker.angle)
-            };
-            context.beginPath();
-            context.moveTo(startPoint.x, startPoint.y);
-            context.lineTo(endPoint.x, endPoint.y);
-            context.strokeStyle = 'red';
-            context.lineWidth = 5.5;
-            context.stroke();
+            if (striker != undefined) {
+                var startPoint = { x: striker.position.x, y: striker.position.y }, endPoint = {
+                    x: striker.position.x + 32.0 * Math.cos(striker.angle),
+                    y: striker.position.y + 32.0 * Math.sin(striker.angle)
+                };
+                context.beginPath();
+                context.moveTo(startPoint.x, startPoint.y);
+                context.lineTo(endPoint.x, endPoint.y);
+                context.strokeStyle = 'red';
+                context.lineWidth = 5.5;
+                context.stroke();
+            }
         });
         Matter.Events.on(game._engine, 'collisionEnd', function (event) {
             handlePocketCollision(event);
@@ -457,6 +522,34 @@ var game;
                 }
             }
         }
+        for (var i = 0; i < game._engine.world.bodies.length; i++) {
+            Matter.Events.on(game._engine.world.bodies[i], 'sleepStart', function (event) {
+                var body = this;
+                game._objectsInMotion += body.isSleeping ? 1 : 0;
+                var isWorldStatic = true;
+                for (var bodyId in game._engine.world.bodies) {
+                    if (!game._engine.world.bodies[bodyId].isSleeping) {
+                        isWorldStatic = false;
+                    }
+                }
+                if (isWorldStatic) {
+                    console.log("World is Static (New)");
+                    // Generate current state of the board
+                    var state = createBoardState();
+                    // (<any>document).cookie["boardState"] = state;
+                    localStorage.setItem("boardState", JSON.stringify(state));
+                    game.enableButtons = true;
+                    game._engine.enableSleeping = false;
+                    resetStrikerPosition();
+                }
+                // if (_engine.world.bodies.length == _objectsInMotion){
+                //   console.log("World is Static (Old) ");
+                //   enableButtons = true;
+                //   _engine.enableSleeping = false;
+                //   resetStrikerPosition();
+                // }
+            });
+        }
     }
     game.init = init;
     function getStriker() {
@@ -471,12 +564,39 @@ var game;
     function resetStrikerPosition() {
         var strikerCenterX = (game.settings["bottomOuterStrikerPlacementLineStartX"] + game.settings["bottomOuterStrikerPlacementLineEndX"]) / 2;
         var strikerCenterY = game.settings["bottomOuterStrikerPlacementLineStartY"] - (game.settings["innerStrikerPlacementLineOffset"] / 2);
-        Matter.Body.setPosition(getStriker(), { x: strikerCenterX, y: strikerCenterY });
+        var striker = getStriker();
+        Matter.Body.setPosition(striker, { x: strikerCenterX, y: strikerCenterY });
+        Matter.Body.setAngle(striker, (6.0 * Math.PI) / 4.0);
+        for (var body in game._engine.world.bodies) {
+            if (game._engine.world.bodies[body].label != "Pocket") {
+                Matter.Sleeping.set(game._engine.world.bodies[body], false);
+            }
+        }
     }
     game.resetStrikerPosition = resetStrikerPosition;
     var translationFactor = 15;
+    function mouseUp(dir) {
+        $interval.cancel(game.clickPromise);
+    }
+    game.mouseUp = mouseUp;
+    ;
+    function mouseDown(dir) {
+        // if (!enableButtons) return;
+        game.clickPromise = $interval(function () {
+            if (dir === "left")
+                game.leftClick();
+            else if (dir === "right")
+                game.rightClick();
+            else if (dir === "leftRotate")
+                game.leftRotate();
+            else if (dir === "rightRotate")
+                game.rightRotate();
+        }, 50);
+    }
+    game.mouseDown = mouseDown;
+    ;
     // Move the striker left
-    function leftClick(evt) {
+    function leftClick() {
         var posX = getStriker().position.x;
         var leftGuard = game.settings["bottomOuterStrikerPlacementLineStartX"];
         if ((posX - translationFactor) > leftGuard) {
@@ -489,7 +609,7 @@ var game;
     }
     game.leftClick = leftClick;
     // Move the striker right
-    function rightClick(evt) {
+    function rightClick() {
         console.log("rightClick");
         var posX = getStriker().position.x;
         var rightGuard = game.settings["bottomOuterStrikerPlacementLineEndX"];
@@ -502,10 +622,17 @@ var game;
         }
     }
     game.rightClick = rightClick;
-    function leftRotate(ev) {
+    // Rotate the striker left
+    function leftRotate() {
         rotate(RotateDirection.Left);
     }
     game.leftRotate = leftRotate;
+    // Rotate the striker right
+    function rightRotate() {
+        rotate(RotateDirection.Right);
+    }
+    game.rightRotate = rightRotate;
+    // Generic rotate function
     function rotate(direction) {
         var striker = getStriker();
         var deltaAngle = (direction == RotateDirection.Left) ? -0.1 : 0.1;
@@ -521,18 +648,55 @@ var game;
         }
     }
     game.rotate = rotate;
-    function rightRotate(ev) {
-        rotate(RotateDirection.Right);
+    // Create the current state of the board
+    function createBoardState() {
+        var allCoins = [];
+        for (var i = 0; i < game._engine.world.bodies.length; i++) {
+            var currentCoin = game._engine.world.bodies[i];
+            // console.log(currentCoin.label);
+            // console.log(currentCoin.position);
+            // console.log(currentCoin.render.fillStyle);
+            if (currentCoin.label == "Coin") {
+                var newCoin = { coordinate: { xPos: currentCoin.position.x / game.settings["outerBoardWidth"], yPos: currentCoin.position.y / game.settings["outerBoardHeight"] },
+                    color: currentCoin.render.fillStyle,
+                    shouldRescale: true
+                };
+                allCoins.push(newCoin);
+            }
+        }
+        var state = { board: allCoins };
+        return state;
     }
-    game.rightRotate = rightRotate;
-    function shootClick(ev) {
-        console.log("shootClick");
+    game.createBoardState = createBoardState;
+    // Redraw the board with the new state
+    function setBoardState(state) {
+        Matter.World.clear(game._engine.world, false);
+        var newBoard = state.board;
+        drawObjects(newBoard, true);
+    }
+    game.setBoardState = setBoardState;
+    // Shoot the striker
+    function shootClick() {
         var striker = getStriker();
         var position = {
             x: striker.position.x + 1.0 * Math.cos(striker.angle),
             y: striker.position.y + 1.0 * Math.sin(striker.angle)
         };
-        Matter.Body.applyForce(striker, { x: position.x, y: position.y }, { x: 0.1 * Math.cos(striker.angle), y: 0.1 * Math.sin(striker.angle) });
+        // var force = settings["outerBoardWidth"] * 0.0001;
+        var force = 0.1;
+        // console.log(settings["borderThickness"]);
+        // if(settings["borderThickness"] < 200){
+        //   force = 0.005;
+        // } else if(settings["borderThickness"] > 200 && settings["borderThickness"] < 400) {
+        //   force = 0.001;
+        // } else if(settings["borderThickness"] > 400){
+        //   force = 0.01;
+        // }
+        console.log(force);
+        Matter.Body.applyForce(striker, { x: position.x, y: position.y }, { x: force * Math.cos(striker.angle), y: force * Math.sin(striker.angle) });
+        // Disable buttons to prevent user interaction
+        game.enableButtons = false;
+        game._engine.enableSleeping = true;
     }
     game.shootClick = shootClick;
 })(game || (game = {}));
