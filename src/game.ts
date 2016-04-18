@@ -587,7 +587,7 @@ module game {
           
           // Computer move
           if (currentMode === CurrentMode.Practice) {
-            
+            console.log("computer turn:", isComputerTurn);
             if (isComputerTurn) $timeout(computerMove, 1000);
             isComputerTurn = !isComputerTurn;
           }
