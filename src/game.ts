@@ -446,11 +446,13 @@ module game {
   }
 
   export function updateUI(params : IUpdateUI) : void {
-  
+    console.log("updateUI");
+    init();
   }
 
   export function init() {
 
+    console.log("intial init");
     moveService.setGame({
       minNumberOfPlayers: 2,
       maxNumberOfPlayers: 2,

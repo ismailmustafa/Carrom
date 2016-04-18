@@ -45,6 +45,7 @@ var gameLogic;
     gameLogic.getInitialBoard = getInitialBoard;
     function checkMoveOk(stateTransition) {
         // Need to implement
+        console.log("checkMoveOk");
     }
     gameLogic.checkMoveOk = checkMoveOk;
     function createCoin(gameSettings, c, coinColor) {
@@ -447,9 +448,12 @@ var game;
     }
     game.drawObjects = drawObjects;
     function updateUI(params) {
+        console.log("updateUI");
+        init();
     }
     game.updateUI = updateUI;
     function init() {
+        console.log("intial init");
         moveService.setGame({
             minNumberOfPlayers: 2,
             maxNumberOfPlayers: 2,
