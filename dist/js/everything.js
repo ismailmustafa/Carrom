@@ -461,6 +461,7 @@ var game;
             checkMoveOk: gameLogic.checkMoveOk,
             updateUI: updateUI
         });
+        console.log(Matter);
         // create a Matter.js engine
         game._engine = Matter.Engine.create(document.getElementById("gameArea"), {
             render: {

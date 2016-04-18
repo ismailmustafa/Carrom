@@ -463,6 +463,7 @@ module game {
       updateUI: updateUI
     });
 
+    console.log(Matter);
     // create a Matter.js engine
     _engine = Matter.Engine.create(document.getElementById("gameArea"), <any>{
       render: {
