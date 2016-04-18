@@ -5,6 +5,11 @@ interface Translations {
 
 module game {
 
+  enum CurrentMode {
+    Practice,
+    Play
+  }
+  
   enum RotateDirection {
     Left,
     Right
@@ -14,6 +19,10 @@ module game {
     Player1,
     Player2
   }
+  
+  // Initial variables
+  let currentMode : CurrentMode = CurrentMode.Practice;
+  let isComputerTurn : Boolean  = true;
 
   // Enable or disable player buttons
   export let enableButtons : Boolean = true;
@@ -575,6 +584,13 @@ module game {
           _engine.enableSleeping = false;
 
           resetStrikerPosition();
+          
+          // Computer move
+          if (currentMode === CurrentMode.Practice) {
+            
+            if (isComputerTurn) $timeout(computerMove, 1000);
+            isComputerTurn = !isComputerTurn;
+          }
 
         }
 
@@ -760,6 +776,43 @@ module game {
     
     _engine.enableSleeping = true;
   }
+  
+  // Simulate computer move 
+  export function computerMove() {
+    // Disable buttons 
+    enableButtons = false;
+    
+    if (currentMode === CurrentMode.Practice) {
+      let move : Move = aiService.randomMove();
+      
+      // Do translation move
+      for (let i = 0; i < move.translationCount; i++) {
+        if (move.translationDirection == Direction.Left) {
+          leftClick();
+        }
+        else {
+          rightClick();
+        }
+      }
+      
+      // Do angle turn
+      for (let i = 0; i < move.angleTurnCount; i++) {
+        if (move.angleDirection == Direction.Left) {
+          rotate(RotateDirection.Left);
+        }
+        else {
+          rotate(RotateDirection.Right);
+        }
+      }
+      
+      // Shoot!!
+      shootClick();
+      
+      // Enable buttons
+      enableButtons = true;
+    }
+  }
+  
 }
 
 angular.module('myApp', ['ngTouch', 'ui.bootstrap', 'gameServices'])

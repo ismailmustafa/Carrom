@@ -1,4 +1,40 @@
-// module aiService {
+enum Direction {
+    Left,
+    Right
+  }
+
+interface Move {
+    translationCount : number;
+    translationDirection : Direction;
+    angleTurnCount : number;
+    angleDirection : Direction;
+}
+
+module aiService {
+  export function randomMove(): Move {
+    // Calculate translation count
+    let tc = Math.floor(Math.random()*10);
+    
+    // Calculate translation direction
+    let td : Direction;
+    if (Math.random() < 0.5) td = Direction.Left;
+    else td = Direction.Right;
+    
+    // Calculate angle turn count
+    let atc = Math.floor(Math.random()*15);
+    
+    // Calculate angle direction
+    let ad : Direction;
+    if (Math.random() < 0.5) ad = Direction.Left;
+    else ad = Direction.Right;
+    
+    return {
+            translationCount: tc,
+            translationDirection: td,
+            angleTurnCount: atc,
+            angleDirection: ad
+           };
+  } 
 //   /** Returns the move that the computer player should do for the given state in move. */
 //   export function findComputerMove(move: IMove): IMove {
 //     return createComputerMove(move,
@@ -50,4 +86,4 @@
 //   function getNextStates(move: IMove, playerIndex: number): IMove[] {
 //     return getPossibleMoves(move.stateAfterMove, playerIndex);
 //   }
-// }
+}

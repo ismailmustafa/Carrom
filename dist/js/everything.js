@@ -82,6 +82,11 @@ var gameLogic;
 ;
 var game;
 (function (game) {
+    var CurrentMode;
+    (function (CurrentMode) {
+        CurrentMode[CurrentMode["Practice"] = 0] = "Practice";
+        CurrentMode[CurrentMode["Play"] = 1] = "Play";
+    })(CurrentMode || (CurrentMode = {}));
     var RotateDirection;
     (function (RotateDirection) {
         RotateDirection[RotateDirection["Left"] = 0] = "Left";
@@ -92,6 +97,9 @@ var game;
         Players[Players["Player1"] = 0] = "Player1";
         Players[Players["Player2"] = 1] = "Player2";
     })(Players || (Players = {}));
+    // Initial variables
+    var currentMode = CurrentMode.Practice;
+    var isComputerTurn = true;
     // Enable or disable player buttons
     game.enableButtons = true;
     function drawBoard(width, height) {
@@ -541,6 +549,12 @@ var game;
                     game.enableButtons = true;
                     game._engine.enableSleeping = false;
                     resetStrikerPosition();
+                    // Computer move
+                    if (currentMode === CurrentMode.Practice) {
+                        if (isComputerTurn)
+                            $timeout(computerMove, 1000);
+                        isComputerTurn = !isComputerTurn;
+                    }
                 }
             });
         }
@@ -705,6 +719,37 @@ var game;
         game._engine.enableSleeping = true;
     }
     game.shootClick = shootClick;
+    // Simulate computer move 
+    function computerMove() {
+        // Disable buttons 
+        game.enableButtons = false;
+        if (currentMode === CurrentMode.Practice) {
+            var move = aiService.randomMove();
+            // Do translation move
+            for (var i = 0; i < move.translationCount; i++) {
+                if (move.translationDirection == Direction.Left) {
+                    leftClick();
+                }
+                else {
+                    rightClick();
+                }
+            }
+            // Do angle turn
+            for (var i = 0; i < move.angleTurnCount; i++) {
+                if (move.angleDirection == Direction.Left) {
+                    rotate(RotateDirection.Left);
+                }
+                else {
+                    rotate(RotateDirection.Right);
+                }
+            }
+            // Shoot!!
+            shootClick();
+            // Enable buttons
+            game.enableButtons = true;
+        }
+    }
+    game.computerMove = computerMove;
 })(game || (game = {}));
 angular.module('myApp', ['ngTouch', 'ui.bootstrap', 'gameServices'])
     .run(function () {
@@ -713,55 +758,39 @@ angular.module('myApp', ['ngTouch', 'ui.bootstrap', 'gameServices'])
 });
 //# sourceMappingURL=game.js.map
 ;
-// module aiService {
-//   /** Returns the move that the computer player should do for the given state in move. */
-//   export function findComputerMove(move: IMove): IMove {
-//     return createComputerMove(move,
-//         // at most 1 second for the AI to choose a move (but might be much quicker)
-//         {millisecondsLimit: 1000});
-//   }
-//   /**
-//    * Returns all the possible moves for the given state and turnIndexBeforeMove.
-//    * Returns an empty array if the game is over.
-//    */
-//   export function getPossibleMoves(state: IState, turnIndexBeforeMove: number): IMove[] {
-//     let possibleMoves: IMove[] = [];
-//     for (let i = 0; i < gameLogic.ROWS; i++) {
-//       for (let j = 0; j < gameLogic.COLS; j++) {
-//         try {
-//           possibleMoves.push(gameLogic.createMove(state, i, j, turnIndexBeforeMove));
-//         } catch (e) {
-//           // The cell in that position was full.
-//         }
-//       }
-//     }
-//     return possibleMoves;
-//   }
-//   /**
-//    * Returns the move that the computer player should do for the given state.
-//    * alphaBetaLimits is an object that sets a limit on the alpha-beta search,
-//    * and it has either a millisecondsLimit or maxDepth field:
-//    * millisecondsLimit is a time limit, and maxDepth is a depth limit.
-//    */
-//   export function createComputerMove(
-//       move: IMove, alphaBetaLimits: IAlphaBetaLimits): IMove {
-//     // We use alpha-beta search, where the search states are TicTacToe moves.
-//     return alphaBetaService.alphaBetaDecision(
-//         move, move.turnIndexAfterMove, getNextStates, getStateScoreForIndex0, null, alphaBetaLimits);
-//   }
-//   function getStateScoreForIndex0(move: IMove, playerIndex: number): number {
-//     let endMatchScores = move.endMatchScores;
-//     if (endMatchScores) {
-//       return endMatchScores[0] > endMatchScores[1] ? Number.POSITIVE_INFINITY
-//           : endMatchScores[0] < endMatchScores[1] ? Number.NEGATIVE_INFINITY
-//           : 0;
-//     }
-//     return 0;
-//   }
-//   function getNextStates(move: IMove, playerIndex: number): IMove[] {
-//     return getPossibleMoves(move.stateAfterMove, playerIndex);
-//   }
-// }
+var Direction;
+(function (Direction) {
+    Direction[Direction["Left"] = 0] = "Left";
+    Direction[Direction["Right"] = 1] = "Right";
+})(Direction || (Direction = {}));
+var aiService;
+(function (aiService) {
+    function randomMove() {
+        // Calculate translation count
+        var tc = Math.floor(Math.random() * 10);
+        // Calculate translation direction
+        var td;
+        if (Math.random() < 0.5)
+            td = Direction.Left;
+        else
+            td = Direction.Right;
+        // Calculate angle turn count
+        var atc = Math.floor(Math.random() * 15);
+        // Calculate angle direction
+        var ad;
+        if (Math.random() < 0.5)
+            ad = Direction.Left;
+        else
+            ad = Direction.Right;
+        return {
+            translationCount: tc,
+            translationDirection: td,
+            angleTurnCount: atc,
+            angleDirection: ad
+        };
+    }
+    aiService.randomMove = randomMove;
+})(aiService || (aiService = {}));
 //# sourceMappingURL=aiService.js.map
 ;
 /**
