@@ -189,7 +189,6 @@ module.exports = function(grunt) {
             'http://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/fonts/glyphicons-halflings-regular.ttf',
             'http://yoav-zibin.github.io/emulator/dist/turnBasedServices.3.min.js',
             'http://yoav-zibin.github.io/emulator/main.css',
-            'https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.1/css/materialize.min.css',
             'https://fonts.gstatic.com/s/materialicons/v14/2fcrYFNaTjcS6g4U3t-Y5UEw0lE80llgEseQY3FEmqw.woff2',
             'https://fonts.googleapis.com/icon?family=Material+Icons',
             'http://code.jquery.com/jquery-1.12.0.min.js',
