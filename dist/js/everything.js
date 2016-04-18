@@ -74,10 +74,7 @@ var gameLogic;
 })(gameLogic || (gameLogic = {}));
 //# sourceMappingURL=gameLogic.js.map
 ;
-// interface SupportedLanguages { en: string, iw: string};
-// interface Translations {
-//   [index: string]: SupportedLanguages;
-// }
+;
 var game;
 (function (game) {
     var RotateDirection;

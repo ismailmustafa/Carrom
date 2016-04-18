@@ -1,7 +1,7 @@
-// interface SupportedLanguages { en: string, iw: string};
-// interface Translations {
-//   [index: string]: SupportedLanguages;
-// }
+interface SupportedLanguages { en: string, iw: string};
+interface Translations {
+  [index: string]: SupportedLanguages;
+}
 
 module game {
 
