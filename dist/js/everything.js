@@ -449,7 +449,7 @@ var game;
     game.drawObjects = drawObjects;
     function updateUI(params) {
         console.log("updateUI");
-        init();
+        // init();
     }
     game.updateUI = updateUI;
     function init() {

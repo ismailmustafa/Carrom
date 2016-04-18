@@ -447,7 +447,7 @@ module game {
 
   export function updateUI(params : IUpdateUI) : void {
     console.log("updateUI");
-    init();
+    // init();
   }
 
   export function init() {
