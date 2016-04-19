@@ -116,4 +116,19 @@ module gameLogic {
       board: getInitialBoard(gameSettings)
     };
   }
+  
+  // Game rules
+  export function gameIsOver(state : IState) : Boolean {
+    return state.board.length === 0;
+  }
+  
+  export function queenPocketed(state : IState) : Boolean {
+    let queenFound : Boolean = false;
+    for (let i = 0; i < state.board.length; i++) {
+      if (state.board[i].color === "pink") {
+        queenFound = true;
+      }
+    }
+    return queenFound;
+  }
 }

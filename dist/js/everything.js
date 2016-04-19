@@ -76,29 +76,53 @@ var gameLogic;
         };
     }
     gameLogic.getInitialState = getInitialState;
+    // Game rules
+    function gameIsOver(state) {
+        return state.board.length === 0;
+    }
+    gameLogic.gameIsOver = gameIsOver;
+    function queenPocketed(state) {
+        var queenFound = false;
+        for (var i = 0; i < state.board.length; i++) {
+            if (state.board[i].color === "pink") {
+                queenFound = true;
+            }
+        }
+        return queenFound;
+    }
+    gameLogic.queenPocketed = queenPocketed;
 })(gameLogic || (gameLogic = {}));
 //# sourceMappingURL=gameLogic.js.map
 ;
 ;
 var game;
 (function (game) {
-    var CurrentMode;
     (function (CurrentMode) {
         CurrentMode[CurrentMode["Practice"] = 0] = "Practice";
         CurrentMode[CurrentMode["PassAndPlay"] = 1] = "PassAndPlay";
         CurrentMode[CurrentMode["Opponent"] = 2] = "Opponent";
-    })(CurrentMode || (CurrentMode = {}));
-    var RotateDirection;
+    })(game.CurrentMode || (game.CurrentMode = {}));
+    var CurrentMode = game.CurrentMode;
     (function (RotateDirection) {
         RotateDirection[RotateDirection["Left"] = 0] = "Left";
         RotateDirection[RotateDirection["Right"] = 1] = "Right";
-    })(RotateDirection || (RotateDirection = {}));
-    var Players;
+    })(game.RotateDirection || (game.RotateDirection = {}));
+    var RotateDirection = game.RotateDirection;
     (function (Players) {
         Players[Players["Player1"] = 0] = "Player1";
         Players[Players["Player2"] = 1] = "Player2";
-    })(Players || (Players = {}));
-    game.isComputerTurn = true;
+    })(game.Players || (game.Players = {}));
+    var Players = game.Players;
+    (function (CurrentTurn) {
+        CurrentTurn[CurrentTurn["White"] = 0] = "White";
+        CurrentTurn[CurrentTurn["Black"] = 1] = "Black";
+    })(game.CurrentTurn || (game.CurrentTurn = {}));
+    var CurrentTurn = game.CurrentTurn;
+    game.isComputerTurn = true; // check if computer should play in practice mode
+    game.gameScore = { White: 0, Black: 0 }; // Keep track of game score
+    game.queenPocketed = false; // Keep track of if queen was pocketed
+    game.currentTurn = CurrentTurn.White; // White goes first
+    game.turnIndex = 0; // Initialize turn index
     // Enable or disable player buttons
     game.enableButtons = true;
     function drawBoard(width, height) {
@@ -452,20 +476,28 @@ var game;
         });
         Matter.World.add(game._engine.world, circles);
         Matter.World.add(game._engine.world, [pocket1, pocket2, pocket3, pocket4, strikerCircle]);
+        return { board: currentBoard };
     }
     game.drawObjects = drawObjects;
+    function isNumber(n) {
+        return !isNaN(parseFloat(n)) && isFinite(n);
+    }
+    game.isNumber = isNumber;
     function updateUI(params) {
+        // SET CURRENT MODE
         // Play against person next to you
         if (params.playMode === "passAndPlay") {
             game.currentMode = CurrentMode.PassAndPlay;
         }
-        else if (!isNaN(params.playMode)) {
-            game.currentMode = CurrentMode.Opponent;
-        }
-        else {
+        else if (params.playMode === "playAgainstTheComputer") {
             game.currentMode = CurrentMode.Practice;
         }
-        console.log("CURRENT MODE:", game.currentMode);
+        else {
+            game.currentMode = CurrentMode.Opponent;
+        }
+        // DEBUGGING FORCE
+        game.currentMode = CurrentMode.Practice;
+        console.log("CURRENT MODE NEW:", game.currentMode);
         // create a Matter.js engine
         game._engine = Matter.Engine.create(document.getElementById("gameArea"), {
             render: {
@@ -498,7 +530,7 @@ var game;
         // } else {
         //   drawObjects(undefined, undefined);
         // }
-        drawObjects(undefined, undefined); // In leiu of local storage
+        game.currentState = drawObjects(undefined, undefined); // In leiu of local storage
         // Background image
         var renderOptions = game._engine.render.options;
         renderOptions.background = 'imgs/carromBackground.png';
@@ -555,6 +587,22 @@ var game;
                     console.log("World is Static (New)");
                     // Generate current state of the board
                     var state = createBoardState();
+                    // Create state transition
+                    var stateTransition = {
+                        turnIndexBeforeMove: game.turnIndex,
+                        stateBeforeMove: game.currentState,
+                        numberOfPlayers: 2,
+                        move: {
+                            endMatchScores: null,
+                            turnIndexAfterMove: ++game.turnIndex,
+                            stateAfterMove: state
+                        }
+                    };
+                    // Update current state
+                    game.currentState = state;
+                    // Check game rules and update score
+                    // Send move
+                    moveService.makeMove(stateTransition.move);
                     // Not neeeded, only for local storage
                     // localStorage.setItem("boardState", JSON.stringify(<any>state));
                     game.enableButtons = true;
@@ -567,8 +615,11 @@ var game;
                             $timeout(computerMove, 1000);
                         game.isComputerTurn = !game.isComputerTurn;
                     }
+                    else if (game.currentMode === CurrentMode.PassAndPlay) {
+                        console.log("PASS AND PLAY");
+                    }
                     else {
-                        console.log("PLAY MODE");
+                        console.log("PLAY AGAINST OPPONENT");
                     }
                 }
             });
@@ -576,6 +627,8 @@ var game;
     }
     game.updateUI = updateUI;
     function init() {
+        // Set for offline use
+        game.currentMode = CurrentMode.Practice;
         console.log("intial init");
         resizeGameAreaService.setWidthToHeight(1);
         var mS = moveService.setGame({

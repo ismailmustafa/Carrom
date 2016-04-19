@@ -5,25 +5,40 @@ interface Translations {
 
 module game {
 
-  enum CurrentMode {
+  export enum CurrentMode {
     Practice,
     PassAndPlay,
     Opponent
   }
   
-  enum RotateDirection {
+  export enum RotateDirection {
     Left,
     Right
   }
 
-  enum Players {
+  export enum Players {
     Player1,
     Player2
   }
   
-  // Initial variables
-  export let currentMode : CurrentMode;
-  export let isComputerTurn : Boolean  = true;
+  export interface GameScore {
+    White : number,
+    Black : number
+  }
+  
+  export enum CurrentTurn {
+    White,
+    Black
+  }
+  
+  // ALL INITIAL VARIABLES
+  export let currentMode : CurrentMode; // Current mode
+  export let isComputerTurn : Boolean  = true; // check if computer should play in practice mode
+  export let gameScore : GameScore = {White: 0, Black: 0}; // Keep track of game score
+  export let queenPocketed : Boolean = false; // Keep track of if queen was pocketed
+  export let currentTurn : CurrentTurn = CurrentTurn.White; // White goes first
+  export let turnIndex : number = 0; // Initialize turn index
+  export let currentState : IState; // Initialize current state
 
   // Enable or disable player buttons
   export let enableButtons : Boolean = true;
@@ -326,7 +341,7 @@ module game {
     }
   };
 
-  export function drawObjects(currentBoard : Board, redrawingForMultiplayer : Boolean){
+  export function drawObjects(currentBoard : Board, redrawingForMultiplayer : Boolean) : IState {
     
     if (currentBoard == undefined) {
       state = gameLogic.getInitialState(settings);
@@ -452,24 +467,34 @@ module game {
     Matter.World.add(_engine.world, circles);
 
     Matter.World.add(_engine.world, [pocket1,pocket2,pocket3,pocket4,strikerCircle]);
+    
+    return {board:currentBoard};
+  }
 
+  export function isNumber(n : any) {
+    return !isNaN(parseFloat(n)) && isFinite(n);
   }
 
   export function updateUI(params : IUpdateUI) : void {
     
+    // SET CURRENT MODE
     // Play against person next to you
     if (params.playMode === "passAndPlay") {
       currentMode = CurrentMode.PassAndPlay;
     }
-    // Play against random opponent
-    else if (!isNaN(<any>params.playMode)) {
-      currentMode = CurrentMode.Opponent;
-    }
     // Play against computer
-    else {
+    else if (params.playMode === "playAgainstTheComputer") {
       currentMode = CurrentMode.Practice;
     }
-    console.log("CURRENT MODE:", currentMode);
+    // Play against random opponent
+    else {
+      currentMode = CurrentMode.Opponent;
+    }
+    
+    // DEBUGGING FORCE
+    currentMode = CurrentMode.Practice;
+    
+    console.log("CURRENT MODE NEW:", currentMode);
     
     // create a Matter.js engine
     _engine = Matter.Engine.create(document.getElementById("gameArea"), <any>{
@@ -508,7 +533,8 @@ module game {
     // } else {
     //   drawObjects(undefined, undefined);
     // }
-    drawObjects(undefined, undefined); // In leiu of local storage
+    
+    currentState = drawObjects(undefined, undefined); // In leiu of local storage
 
     // Background image
     var renderOptions = _engine.render.options;
@@ -587,9 +613,29 @@ module game {
           console.log("World is Static (New)");
 
           // Generate current state of the board
-
           var state = createBoardState();
-
+          
+          // Create state transition
+          var stateTransition : IStateTransition = {
+            turnIndexBeforeMove: turnIndex,
+            stateBeforeMove: currentState,
+            numberOfPlayers: 2,
+            move: {
+              endMatchScores: null,
+              turnIndexAfterMove: ++turnIndex,
+              stateAfterMove: state
+            }
+          }
+          
+          // Update current state
+          currentState = state;
+          
+          // Check game rules and update score
+          
+          
+          // Send move
+          moveService.makeMove(stateTransition.move);
+          
           // Not neeeded, only for local storage
           // localStorage.setItem("boardState", JSON.stringify(<any>state));
 
@@ -606,8 +652,11 @@ module game {
             isComputerTurn = !isComputerTurn;
           }
           // PLAY MODE
+          else if (currentMode === CurrentMode.PassAndPlay) {
+            console.log("PASS AND PLAY");
+          }
           else {
-            console.log("PLAY MODE");
+            console.log("PLAY AGAINST OPPONENT");
           }
         }
       });
@@ -615,6 +664,9 @@ module game {
   }
 
   export function init() {
+    
+    // Set for offline use
+    currentMode = CurrentMode.Practice;
 
     console.log("intial init");
     
