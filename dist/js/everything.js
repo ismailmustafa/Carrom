@@ -479,16 +479,17 @@ var game;
         game._objectsInMotion = 0;
         updateScene();
         drawBoard(game._sceneWidth, game._sceneHeight);
-        var localStorageState = localStorage.getItem("boardState");
-        if (localStorageState != null) {
-            var localBoardState = JSON.parse(localStorageState);
-            if (localBoardState != undefined) {
-                setBoardState(localBoardState);
-            }
-        }
-        else {
-            drawObjects(undefined, undefined);
-        }
+        // This code saves the state to the local storage
+        // var localStorageState = localStorage.getItem("boardState");
+        // if (localStorageState != null) {
+        //   var localBoardState = JSON.parse(localStorageState);
+        //   if (localBoardState != undefined) {
+        //     setBoardState(localBoardState);
+        //   }
+        // } else {
+        //   drawObjects(undefined, undefined);
+        // }
+        drawObjects(undefined, undefined); // In leiu of local storage
         // Background image
         var renderOptions = game._engine.render.options;
         renderOptions.background = 'imgs/carromBackground.png';
@@ -545,16 +546,20 @@ var game;
                     console.log("World is Static (New)");
                     // Generate current state of the board
                     var state = createBoardState();
-                    localStorage.setItem("boardState", JSON.stringify(state));
+                    // Not neeeded, only for local storage
+                    // localStorage.setItem("boardState", JSON.stringify(<any>state));
                     game.enableButtons = true;
                     game._engine.enableSleeping = false;
                     resetStrikerPosition();
-                    // Computer move
+                    // PRACTICE MODE
                     if (currentMode === CurrentMode.Practice) {
-                        console.log("computer turn:", isComputerTurn);
+                        console.log("PRACTICE MODE");
                         if (isComputerTurn)
                             $timeout(computerMove, 1000);
                         isComputerTurn = !isComputerTurn;
+                    }
+                    else {
+                        console.log("PLAY MODE");
                     }
                 }
             });
@@ -564,13 +569,13 @@ var game;
     function init() {
         console.log("intial init");
         resizeGameAreaService.setWidthToHeight(1);
-        moveService.setGame({
+        var mS = moveService.setGame({
             minNumberOfPlayers: 2,
             maxNumberOfPlayers: 2,
             checkMoveOk: gameLogic.checkMoveOk,
             updateUI: updateUI
         });
-        console.log(Matter);
+        console.log("MOVE SERVICE:", mS);
     }
     game.init = init;
     function getStriker() {
