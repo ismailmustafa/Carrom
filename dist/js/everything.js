@@ -85,7 +85,8 @@ var game;
     var CurrentMode;
     (function (CurrentMode) {
         CurrentMode[CurrentMode["Practice"] = 0] = "Practice";
-        CurrentMode[CurrentMode["Play"] = 1] = "Play";
+        CurrentMode[CurrentMode["PassAndPlay"] = 1] = "PassAndPlay";
+        CurrentMode[CurrentMode["Opponent"] = 2] = "Opponent";
     })(CurrentMode || (CurrentMode = {}));
     var RotateDirection;
     (function (RotateDirection) {
@@ -97,9 +98,7 @@ var game;
         Players[Players["Player1"] = 0] = "Player1";
         Players[Players["Player2"] = 1] = "Player2";
     })(Players || (Players = {}));
-    // Initial variables
-    var currentMode = CurrentMode.Practice;
-    var isComputerTurn = true;
+    game.isComputerTurn = true;
     // Enable or disable player buttons
     game.enableButtons = true;
     function drawBoard(width, height) {
@@ -456,7 +455,17 @@ var game;
     }
     game.drawObjects = drawObjects;
     function updateUI(params) {
-        console.log("playMode:", params.playMode);
+        // Play against person next to you
+        if (params.playMode === "passAndPlay") {
+            game.currentMode = CurrentMode.PassAndPlay;
+        }
+        else if (!isNaN(params.playMode)) {
+            game.currentMode = CurrentMode.Opponent;
+        }
+        else {
+            game.currentMode = CurrentMode.Practice;
+        }
+        console.log("CURRENT MODE:", game.currentMode);
         // create a Matter.js engine
         game._engine = Matter.Engine.create(document.getElementById("gameArea"), {
             render: {
@@ -552,11 +561,11 @@ var game;
                     game._engine.enableSleeping = false;
                     resetStrikerPosition();
                     // PRACTICE MODE
-                    if (currentMode === CurrentMode.Practice) {
+                    if (game.currentMode === CurrentMode.Practice) {
                         console.log("PRACTICE MODE");
-                        if (isComputerTurn)
+                        if (game.isComputerTurn)
                             $timeout(computerMove, 1000);
-                        isComputerTurn = !isComputerTurn;
+                        game.isComputerTurn = !game.isComputerTurn;
                     }
                     else {
                         console.log("PLAY MODE");
@@ -729,7 +738,7 @@ var game;
     function computerMove() {
         // Disable buttons 
         game.enableButtons = false;
-        if (currentMode === CurrentMode.Practice) {
+        if (game.currentMode === CurrentMode.Practice) {
             var move = aiService.randomMove();
             // Do translation move
             for (var i = 0; i < move.translationCount; i++) {

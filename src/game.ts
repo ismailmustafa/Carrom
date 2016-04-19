@@ -7,7 +7,8 @@ module game {
 
   enum CurrentMode {
     Practice,
-    Play
+    PassAndPlay,
+    Opponent
   }
   
   enum RotateDirection {
@@ -21,8 +22,8 @@ module game {
   }
   
   // Initial variables
-  let currentMode : CurrentMode = CurrentMode.Practice;
-  let isComputerTurn : Boolean  = true;
+  export let currentMode : CurrentMode;
+  export let isComputerTurn : Boolean  = true;
 
   // Enable or disable player buttons
   export let enableButtons : Boolean = true;
@@ -456,7 +457,19 @@ module game {
 
   export function updateUI(params : IUpdateUI) : void {
     
-    console.log("playMode:", params.playMode);
+    // Play against person next to you
+    if (params.playMode === "passAndPlay") {
+      currentMode = CurrentMode.PassAndPlay;
+    }
+    // Play against random opponent
+    else if (!isNaN(<any>params.playMode)) {
+      currentMode = CurrentMode.Opponent;
+    }
+    // Play against computer
+    else {
+      currentMode = CurrentMode.Practice;
+    }
+    console.log("CURRENT MODE:", currentMode);
     
     // create a Matter.js engine
     _engine = Matter.Engine.create(document.getElementById("gameArea"), <any>{
