@@ -455,7 +455,8 @@ module game {
   }
 
   export function updateUI(params : IUpdateUI) : void {
-    console.log("updateUI");
+    
+    console.log("playMode:", params.playMode);
     
     // create a Matter.js engine
     _engine = Matter.Engine.create(document.getElementById("gameArea"), <any>{

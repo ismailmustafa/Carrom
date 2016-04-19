@@ -456,7 +456,7 @@ var game;
     }
     game.drawObjects = drawObjects;
     function updateUI(params) {
-        console.log("updateUI");
+        console.log("playMode:", params.playMode);
         // create a Matter.js engine
         game._engine = Matter.Engine.create(document.getElementById("gameArea"), {
             render: {
