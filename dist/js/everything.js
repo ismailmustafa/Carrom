@@ -484,6 +484,8 @@ var game;
     }
     game.isNumber = isNumber;
     function updateUI(params) {
+        console.log("IN UPDATE UI");
+        console.log("params.move:", params.move);
         // SET CURRENT MODE
         // Play against person next to you
         if (params.playMode === "passAndPlay") {
@@ -496,7 +498,7 @@ var game;
             game.currentMode = CurrentMode.Opponent;
         }
         // DEBUGGING FORCE
-        game.currentMode = CurrentMode.Practice;
+        // currentMode = CurrentMode.Practice;
         console.log("CURRENT MODE NEW:", game.currentMode);
         // create a Matter.js engine
         game._engine = Matter.Engine.create(document.getElementById("gameArea"), {
@@ -530,7 +532,7 @@ var game;
         // } else {
         //   drawObjects(undefined, undefined);
         // }
-        game.currentState = drawObjects(undefined, undefined); // In leiu of local storage
+        drawObjects(undefined, undefined); // In leiu of local storage
         // Background image
         var renderOptions = game._engine.render.options;
         renderOptions.background = 'imgs/carromBackground.png';
@@ -589,17 +591,17 @@ var game;
                     var state = createBoardState();
                     // Create state transition
                     var stateTransition = {
-                        turnIndexBeforeMove: game.turnIndex,
-                        stateBeforeMove: game.currentState,
+                        turnIndexBeforeMove: 0,
+                        stateBeforeMove: state,
                         numberOfPlayers: 2,
                         move: {
                             endMatchScores: null,
-                            turnIndexAfterMove: ++game.turnIndex,
+                            turnIndexAfterMove: 1,
                             stateAfterMove: state
                         }
                     };
                     // Update current state
-                    game.currentState = state;
+                    // currentState = state;
                     // Check game rules and update score
                     // Send move
                     moveService.makeMove(stateTransition.move);

@@ -38,7 +38,6 @@ module game {
   export let queenPocketed : Boolean = false; // Keep track of if queen was pocketed
   export let currentTurn : CurrentTurn = CurrentTurn.White; // White goes first
   export let turnIndex : number = 0; // Initialize turn index
-  export let currentState : IState; // Initialize current state
 
   // Enable or disable player buttons
   export let enableButtons : Boolean = true;
@@ -476,7 +475,8 @@ module game {
   }
 
   export function updateUI(params : IUpdateUI) : void {
-    
+    console.log("IN UPDATE UI");
+    console.log("params.move:", params.move);
     // SET CURRENT MODE
     // Play against person next to you
     if (params.playMode === "passAndPlay") {
@@ -492,7 +492,7 @@ module game {
     }
     
     // DEBUGGING FORCE
-    currentMode = CurrentMode.Practice;
+    // currentMode = CurrentMode.Practice;
     
     console.log("CURRENT MODE NEW:", currentMode);
     
@@ -534,7 +534,7 @@ module game {
     //   drawObjects(undefined, undefined);
     // }
     
-    currentState = drawObjects(undefined, undefined); // In leiu of local storage
+    drawObjects(undefined, undefined); // In leiu of local storage
 
     // Background image
     var renderOptions = _engine.render.options;
@@ -617,18 +617,18 @@ module game {
           
           // Create state transition
           var stateTransition : IStateTransition = {
-            turnIndexBeforeMove: turnIndex,
-            stateBeforeMove: currentState,
+            turnIndexBeforeMove: 0,
+            stateBeforeMove: state,
             numberOfPlayers: 2,
             move: {
               endMatchScores: null,
-              turnIndexAfterMove: ++turnIndex,
+              turnIndexAfterMove: 1,
               stateAfterMove: state
             }
           }
           
           // Update current state
-          currentState = state;
+          // currentState = state;
           
           // Check game rules and update score
           
