@@ -444,8 +444,7 @@ var game;
         if (isFirstMove()) {
             updateInitialUI();
             console.log("MAKE COMPUTER MOVE CALLED FROM UPDATE UI");
-            // $timeout(makeComputerMoveTest, 1000);
-            makeComputerMove();
+            $timeout(makeComputerMove, 500);
         }
     }
     game.updateUI = updateUI;
@@ -572,14 +571,9 @@ var game;
                     var nextMove = gameLogic.createMove(game.state, currentState, game.currentUpdateUI.move.turnIndexAfterMove, game.settings);
                     moveService.makeMove(nextMove);
                     game._engine.enableSleeping = false;
-                    if (isComputerTurn())
-                        resetStrikerPositionForComputer();
-                    else
-                        resetStrikerPosition();
+                    resetStrikerPosition();
                     console.log("CALLING MAKE COMPUTER MOVE FROM STATIC FUNCTION");
-                    // makeComputerMoveTest();
-                    // $timeout(makeComputerMoveTest,1000);
-                    makeComputerMove();
+                    $timeout(makeComputerMove, 500);
                 }
             });
         }
@@ -764,40 +758,6 @@ var game;
         game._engine.enableSleeping = true;
     }
     game.makeComputerMoveHelper = makeComputerMoveHelper;
-    function makeComputerMoveTest() {
-        console.log("MAKE COMPUTER MOVE CALLED");
-        if (!isComputerTurn())
-            return;
-        console.log("MAKE COMPUTER MOVE IS EXECUTING");
-        var move = aiService.randomMove();
-        // Do translation move
-        for (var i = 0; i < move.translationCount; i++) {
-            if (move.translationDirection == Direction.Left)
-                leftClick();
-            else
-                rightClick();
-        }
-        // Do angle turn
-        for (var i = 0; i < move.angleTurnCount; i++) {
-            if (move.angleDirection == Direction.Left)
-                rotate(RotateDirection.Left);
-            else
-                rotate(RotateDirection.Right);
-        }
-        // Same as shoot click, but without human limitation
-        if (game.didMakeMove)
-            return;
-        game.didMakeMove = true;
-        var striker = getStriker();
-        var position = {
-            x: striker.position.x + 1.0 * Math.cos(striker.angle),
-            y: striker.position.y + 1.0 * Math.sin(striker.angle)
-        };
-        var force = 0.1;
-        Matter.Body.applyForce(striker, { x: position.x, y: position.y }, { x: force * Math.cos(striker.angle), y: force * Math.sin(striker.angle) });
-        game._engine.enableSleeping = true;
-    }
-    game.makeComputerMoveTest = makeComputerMoveTest;
 })(game || (game = {}));
 angular.module('myApp', ['ngTouch', 'ui.bootstrap', 'gameServices'])
     .run(function () {

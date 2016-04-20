@@ -158,8 +158,7 @@ module game {
     if (isFirstMove()) {
       updateInitialUI();
       console.log("MAKE COMPUTER MOVE CALLED FROM UPDATE UI");
-      // $timeout(makeComputerMoveTest, 1000);
-      makeComputerMove();
+      $timeout(makeComputerMove, 500);
     }
   }
   
@@ -317,12 +316,9 @@ module game {
 
           _engine.enableSleeping = false;
           
-          if (isComputerTurn()) resetStrikerPositionForComputer();
-          else resetStrikerPosition();
+          resetStrikerPosition();
           console.log("CALLING MAKE COMPUTER MOVE FROM STATIC FUNCTION");
-          // makeComputerMoveTest();
-          // $timeout(makeComputerMoveTest,1000);
-          makeComputerMove();
+          $timeout(makeComputerMove, 500);
 
           // if (isComputerTurn()) {
           //   if (computerTurnFlag) $timeout(makeComputerMove, 1000);
@@ -478,6 +474,7 @@ module game {
   // Simulate computer move 
   export function makeComputerMove() {
     console.log(isComputerTurn());
+    
     if (!isComputerTurn()) return;
     resetStrikerPositionForComputer();
     console.log("BEFORE TIMEOUT");
@@ -486,36 +483,6 @@ module game {
   
   export function makeComputerMoveHelper() {
     console.log("AFTER TIMEOUT");
-    let move : Move = aiService.randomMove();
-    // Do translation move
-    for (let i = 0; i < move.translationCount; i++) {
-      if (move.translationDirection == Direction.Left) leftClick();
-      else rightClick();
-    }
-    // Do angle turn
-    for (let i = 0; i < move.angleTurnCount; i++) {
-      if (move.angleDirection == Direction.Left) rotate(RotateDirection.Left);
-      else rotate(RotateDirection.Right);
-    }
-    // Same as shoot click, but without human limitation
-    if (didMakeMove) return;
-    didMakeMove = true;
-    var striker = getStriker();
-    var position = {
-        x: striker.position.x + 1.0 * Math.cos(striker.angle),
-        y: striker.position.y + 1.0 * Math.sin(striker.angle)
-      };
-    var force : number = 0.1;
-    Matter.Body.applyForce(striker, 
-      { x: position.x, y: position.y }, 
-      { x: force * Math.cos(striker.angle), y: force * Math.sin(striker.angle) })
-    _engine.enableSleeping = true;
-  }
-  
-  export function makeComputerMoveTest() {
-    console.log("MAKE COMPUTER MOVE CALLED");
-    if (!isComputerTurn()) return;
-    console.log("MAKE COMPUTER MOVE IS EXECUTING");
     let move : Move = aiService.randomMove();
     // Do translation move
     for (let i = 0; i < move.translationCount; i++) {
