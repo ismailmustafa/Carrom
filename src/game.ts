@@ -370,7 +370,7 @@ module game {
     var strikerCenterY = settings["outerBoardHeight"] - (settings["bottomOuterStrikerPlacementLineStartY"] - (settings["innerStrikerPlacementLineOffset"] / 2));
     var striker = getStriker();
     Matter.Body.setPosition(striker, {x:strikerCenterX, y:strikerCenterY});
-    Matter.Body.setAngle(striker, (6.0 * Math.PI) / 4.0);
+    Matter.Body.setAngle(striker, 0.5*Math.PI);
 
     for (let body in _engine.world.bodies) {
       if (_engine.world.bodies[body].label != "Pocket") {
