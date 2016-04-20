@@ -157,7 +157,7 @@ module game {
     
     if (isFirstMove()) {
       updateInitialUI();
-      $timeout(makeComputerMove, 1000);
+      // $timeout(makeComputerMove, 1000);
     }
   }
   

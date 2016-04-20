@@ -443,7 +443,6 @@ var game;
         game.state = params.move.stateAfterMove;
         if (isFirstMove()) {
             updateInitialUI();
-            $timeout(makeComputerMove, 1000);
         }
     }
     game.updateUI = updateUI;
