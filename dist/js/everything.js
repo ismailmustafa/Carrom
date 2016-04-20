@@ -618,7 +618,7 @@ var game;
         var strikerCenterY = game.settings["outerBoardHeight"] - (game.settings["bottomOuterStrikerPlacementLineStartY"] - (game.settings["innerStrikerPlacementLineOffset"] / 2));
         var striker = getStriker();
         Matter.Body.setPosition(striker, { x: strikerCenterX, y: strikerCenterY });
-        Matter.Body.setAngle(striker, (6.0 * Math.PI) / 4.0);
+        Matter.Body.setAngle(striker, 0.5 * Math.PI);
         for (var body in game._engine.world.bodies) {
             if (game._engine.world.bodies[body].label != "Pocket") {
                 Matter.Sleeping.set(game._engine.world.bodies[body], false);
