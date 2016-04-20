@@ -319,7 +319,7 @@ var game;
     game.didMakeMove = false;
     game.state = null;
     game.isHelpModalShown = false;
-    game.isComputerTurn = true; // check if computer should play in practice mode
+    game.computerTurnFlag = true; // check if computer should play in practice mode
     game.gameScore = { White: 0, Black: 0 }; // Keep track of game score
     game.queenPocketed = false; // Keep track of if queen was pocketed
     game.currentTurn = CurrentTurn.White; // White goes first
@@ -409,32 +409,42 @@ var game;
             game.currentMode = CurrentMode.Practice;
         else
             game.currentMode = CurrentMode.Opponent;
-        // Update params
+        game.didMakeMove = false;
         game.currentUpdateUI = params;
+        game.state = params.move.stateAfterMove;
         if (isFirstMove()) {
             updateInitialUI();
-        }
-        else {
-            // Draw board mirrored
-            drawObjects(params.move.stateAfterMove.board, true);
         }
     }
     game.updateUI = updateUI;
     function isFirstMove() {
         return !game.currentUpdateUI.move.stateAfterMove;
     }
+    function yourPlayerIndex() {
+        return game.currentUpdateUI.yourPlayerIndex;
+    }
+    function isComputer() {
+        return game.currentUpdateUI.playersInfo[game.currentUpdateUI.yourPlayerIndex].playerId === '';
+    }
+    function isComputerTurn() {
+        return isMyTurn() && isComputer();
+    }
+    function isHumanTurn() {
+        return isMyTurn() && !isComputer();
+    }
+    function isMyTurn() {
+        return !game.didMakeMove &&
+            game.currentUpdateUI.move.turnIndexAfterMove >= 0 &&
+            game.currentUpdateUI.yourPlayerIndex === game.currentUpdateUI.move.turnIndexAfterMove; // it's my turn
+    }
     function init() {
-        // Set for offline use
-        game.currentMode = CurrentMode.Practice;
-        console.log("intial init");
         resizeGameAreaService.setWidthToHeight(1);
-        var mS = moveService.setGame({
+        moveService.setGame({
             minNumberOfPlayers: 2,
             maxNumberOfPlayers: 2,
             checkMoveOk: gameLogic.checkMoveOk,
             updateUI: updateUI
         });
-        console.log("MOVE SERVICE:", mS);
     }
     game.init = init;
     // This should be only called once
@@ -548,9 +558,9 @@ var game;
                     // PRACTICE MODE
                     if (game.currentMode === CurrentMode.Practice) {
                         console.log("PRACTICE MODE");
-                        if (game.isComputerTurn)
-                            $timeout(computerMove, 1000);
-                        game.isComputerTurn = !game.isComputerTurn;
+                        if (game.computerTurnFlag)
+                            $timeout(makeComputerMove, 1000);
+                        game.computerTurnFlag = !game.computerTurnFlag;
                     }
                     else if (game.currentMode === CurrentMode.PassAndPlay) {
                         console.log("PASS AND PLAY");
@@ -658,22 +668,20 @@ var game;
     game.setBoardState = setBoardState;
     // Shoot the striker
     function shootClick() {
+        if (!isHumanTurn())
+            return;
+        if (window.location.search === '?throwException') {
+            throw new Error("Throwing the error because URL has '?throwException'");
+        }
+        if (game.didMakeMove)
+            return;
+        game.didMakeMove = true;
         var striker = getStriker();
         var position = {
             x: striker.position.x + 1.0 * Math.cos(striker.angle),
             y: striker.position.y + 1.0 * Math.sin(striker.angle)
         };
-        // var force = settings["outerBoardWidth"] * 0.0001;
         var force = 0.1;
-        // console.log(settings["borderThickness"]);
-        // if(settings["borderThickness"] < 200){
-        //   force = 0.005;
-        // } else if(settings["borderThickness"] > 200 && settings["borderThickness"] < 400) {
-        //   force = 0.001;
-        // } else if(settings["borderThickness"] > 400){
-        //   force = 0.01;
-        // }
-        console.log(force);
         Matter.Body.applyForce(striker, { x: position.x, y: position.y }, { x: force * Math.cos(striker.angle), y: force * Math.sin(striker.angle) });
         // Disable buttons to prevent user interaction
         game.enableButtons = false;
@@ -681,7 +689,7 @@ var game;
     }
     game.shootClick = shootClick;
     // Simulate computer move 
-    function computerMove() {
+    function makeComputerMove() {
         // Disable buttons 
         game.enableButtons = false;
         if (game.currentMode === CurrentMode.Practice) {
@@ -700,13 +708,10 @@ var game;
                 else
                     rotate(RotateDirection.Right);
             }
-            // Shoot!!
             shootClick();
-            // Enable buttons
-            game.enableButtons = true;
         }
     }
-    game.computerMove = computerMove;
+    game.makeComputerMove = makeComputerMove;
 })(game || (game = {}));
 angular.module('myApp', ['ngTouch', 'ui.bootstrap', 'gameServices'])
     .run(function () {

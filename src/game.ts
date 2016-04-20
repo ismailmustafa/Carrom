@@ -41,7 +41,7 @@ module game {
   
   // My variables
   export let currentMode : CurrentMode; // Current mode
-  export let isComputerTurn : Boolean  = true; // check if computer should play in practice mode
+  export let computerTurnFlag : Boolean  = true; // check if computer should play in practice mode
   export let gameScore : GameScore = {White: 0, Black: 0}; // Keep track of game score
   export let queenPocketed : Boolean = false; // Keep track of if queen was pocketed
   export let currentTurn : CurrentTurn = CurrentTurn.White; // White goes first
@@ -153,43 +153,49 @@ module game {
     else if (params.playMode === "playAgainstTheComputer") currentMode = CurrentMode.Practice;
     else currentMode = CurrentMode.Opponent;
     
-    // Update params
+    didMakeMove = false;
     currentUpdateUI = params;
-
+    state = params.move.stateAfterMove;
     
     if (isFirstMove()) {
       updateInitialUI();
     }
-    else {
-      // Draw board mirrored
-      drawObjects(params.move.stateAfterMove.board, true);
-    }
-    
-    
   }
   
   function isFirstMove() {
     return !currentUpdateUI.move.stateAfterMove;
   }
+  
+  function yourPlayerIndex() {
+    return currentUpdateUI.yourPlayerIndex;
+  }
+  
+  function isComputer() {
+    return currentUpdateUI.playersInfo[currentUpdateUI.yourPlayerIndex].playerId === '';
+  }
+  
+  function isComputerTurn() {
+    return isMyTurn() && isComputer();
+  }
+  
+  function isHumanTurn() {
+    return isMyTurn() && !isComputer();
+  }
+  
+  function isMyTurn() {
+    return !didMakeMove && // you can only make one move per updateUI.
+      currentUpdateUI.move.turnIndexAfterMove >= 0 && // game is ongoing
+      currentUpdateUI.yourPlayerIndex === currentUpdateUI.move.turnIndexAfterMove; // it's my turn
+  }
 
   export function init() {
-    
-    // Set for offline use
-    currentMode = CurrentMode.Practice;
-
-    console.log("intial init");
-    
     resizeGameAreaService.setWidthToHeight(1);
-
-    var mS = moveService.setGame({
+    moveService.setGame({
       minNumberOfPlayers: 2,
       maxNumberOfPlayers: 2,
       checkMoveOk: gameLogic.checkMoveOk,
       updateUI: updateUI
     });
-    
-    console.log("MOVE SERVICE:", mS);
-
   }
   
   // This should be only called once
@@ -333,8 +339,8 @@ module game {
           // PRACTICE MODE
           if (currentMode === CurrentMode.Practice) {
             console.log("PRACTICE MODE");
-            if (isComputerTurn) $timeout(computerMove, 1000);
-            isComputerTurn = !isComputerTurn;
+            if (computerTurnFlag) $timeout(makeComputerMove, 1000);
+            computerTurnFlag = !computerTurnFlag;
           }
           // PLAY MODE
           else if (currentMode === CurrentMode.PassAndPlay) {
@@ -444,25 +450,19 @@ module game {
 
   // Shoot the striker
   export function shootClick(){
+    if (!isHumanTurn()) return;
+    if (window.location.search === '?throwException') {
+      throw new Error("Throwing the error because URL has '?throwException'");
+    }
+    if (didMakeMove) return;
+    didMakeMove = true;
     var striker = getStriker();
     var position = {
         x: striker.position.x + 1.0 * Math.cos(striker.angle),
         y: striker.position.y + 1.0 * Math.sin(striker.angle)
       };
-
-    // var force = settings["outerBoardWidth"] * 0.0001;
     
     var force : number = 0.1;
-    // console.log(settings["borderThickness"]);
-    // if(settings["borderThickness"] < 200){
-    //   force = 0.005;
-    // } else if(settings["borderThickness"] > 200 && settings["borderThickness"] < 400) {
-    //   force = 0.001;
-    // } else if(settings["borderThickness"] > 400){
-    //   force = 0.01;
-    // }
-    
-    console.log(force);
     Matter.Body.applyForce(striker, 
       { x: position.x, y: position.y }, 
       { x: force * Math.cos(striker.angle), y: force * Math.sin(striker.angle) })
@@ -474,30 +474,23 @@ module game {
   }
   
   // Simulate computer move 
-  export function computerMove() {
+  export function makeComputerMove() {
     // Disable buttons 
     enableButtons = false;
     
     if (currentMode === CurrentMode.Practice) {
       let move : Move = aiService.randomMove();
-      
       // Do translation move
       for (let i = 0; i < move.translationCount; i++) {
         if (move.translationDirection == Direction.Left) leftClick();
         else rightClick();
       }
-      
       // Do angle turn
       for (let i = 0; i < move.angleTurnCount; i++) {
         if (move.angleDirection == Direction.Left) rotate(RotateDirection.Left);
         else rotate(RotateDirection.Right);
       }
-      
-      // Shoot!!
       shootClick();
-      
-      // Enable buttons
-      enableButtons = true;
     }
   }
   
