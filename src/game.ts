@@ -317,6 +317,7 @@ module game {
 
         var isWorldStatic = true;
 
+        console.log("bodies length:", _engine.world.bodies.length);
         for (let bodyId in _engine.world.bodies) {
           if (!_engine.world.bodies[bodyId].isSleeping) {
             isWorldStatic = false;
@@ -463,6 +464,7 @@ module game {
   // Redraw the board with the new state
   export function setBoardState(state : IState) {
     
+    _engine.enableSleeping = false;
     Matter.World.clear(_engine.world, false);
     
     var newBoard : Board = state.board;

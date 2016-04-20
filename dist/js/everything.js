@@ -575,6 +575,7 @@ var game;
                 var body = this;
                 game._objectsInMotion += body.isSleeping ? 1 : 0;
                 var isWorldStatic = true;
+                console.log("bodies length:", game._engine.world.bodies.length);
                 for (var bodyId in game._engine.world.bodies) {
                     if (!game._engine.world.bodies[bodyId].isSleeping) {
                         isWorldStatic = false;
@@ -721,6 +722,7 @@ var game;
     game.getBoardState = getBoardState;
     // Redraw the board with the new state
     function setBoardState(state) {
+        game._engine.enableSleeping = false;
         Matter.World.clear(game._engine.world, false);
         var newBoard = state.board;
         drawObjects(newBoard, true);
