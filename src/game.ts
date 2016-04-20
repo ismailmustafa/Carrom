@@ -342,6 +342,7 @@ module game {
   
   // Reset the position of the striker relative to the current player
   export function resetStrikerPosition() {
+    if (!isHumanTurn()) return;
     console.log("resetting striker normally");
     var strikerCenterX = (settings["bottomOuterStrikerPlacementLineStartX"] + settings["bottomOuterStrikerPlacementLineEndX"]) / 2;
     var strikerCenterY = settings["bottomOuterStrikerPlacementLineStartY"] - (settings["innerStrikerPlacementLineOffset"] / 2);
@@ -358,8 +359,9 @@ module game {
   
   // Set striker position to top for computer
   export function resetStrikerPositionForComputer() {
+    if (!isComputerTurn()) return;
     console.log("reseting striker for computer");
-    var strikerCenterX = (settings["topOuterStrikerPlacementLineStartX"] + settings["topOuterStrikerPlacementLineEndX"]) / 2;
+    var strikerCenterX = (settings["bottomOuterStrikerPlacementLineStartX"] + settings["bottomOuterStrikerPlacementLineEndX"]) / 2;
     var strikerCenterY = settings["topInnerStrikerPlacementLineStartY"] - (settings["innerStrikerPlacementLineOffset"] / 2);
     var striker = getStriker();
     Matter.Body.setPosition(striker, {x:strikerCenterX, y:strikerCenterY});
