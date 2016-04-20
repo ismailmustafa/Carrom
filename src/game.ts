@@ -162,8 +162,14 @@ module game {
     }
     else {
       // HANDLE REDRAWING FOR OTHER TWO MODES (opponent + passAndPlay)
-      if (currentMode !== CurrentMode.Practice) {
-        drawObjects(state.board, true);
+      if (currentMode === CurrentMode.PassAndPlay) {
+        setBoardState(state);
+      }
+      else if (currentMode === CurrentMode.Opponent) {
+        // Only redraw and invert for current player
+        if (isMyTurn()) {
+          setBoardState(state);
+        }
       }
     }
   }
