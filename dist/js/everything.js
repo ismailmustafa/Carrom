@@ -444,7 +444,7 @@ var game;
         if (isFirstMove()) {
             updateInitialUI();
             console.log("MAKE COMPUTER MOVE CALLED FROM UPDATE UI");
-            $timeout(makeComputerMove, 500);
+            makeComputerMove();
         }
     }
     game.updateUI = updateUI;
@@ -571,14 +571,19 @@ var game;
                     var nextMove = gameLogic.createMove(game.state, currentState, game.currentUpdateUI.move.turnIndexAfterMove, game.settings);
                     moveService.makeMove(nextMove);
                     game._engine.enableSleeping = false;
-                    resetStrikerPosition();
-                    console.log("CALLING MAKE COMPUTER MOVE FROM STATIC FUNCTION");
-                    $timeout(makeComputerMove, 500);
+                    // Handle next turn
+                    $timeout(handleNextTurn, 1000);
                 }
             });
         }
     }
     game.updateInitialUI = updateInitialUI;
+    // Handle next turn
+    function handleNextTurn() {
+        resetStrikerPosition();
+        makeComputerMove();
+    }
+    game.handleNextTurn = handleNextTurn;
     function getStriker() {
         for (var body in game._engine.world.bodies) {
             if (game._engine.world.bodies[body].label == "Striker") {
@@ -589,6 +594,8 @@ var game;
     game.getStriker = getStriker;
     // Reset the position of the striker relative to the current player
     function resetStrikerPosition() {
+        if (!isHumanTurn())
+            return;
         console.log("resetting striker normally");
         var strikerCenterX = (game.settings["bottomOuterStrikerPlacementLineStartX"] + game.settings["bottomOuterStrikerPlacementLineEndX"]) / 2;
         var strikerCenterY = game.settings["bottomOuterStrikerPlacementLineStartY"] - (game.settings["innerStrikerPlacementLineOffset"] / 2);
@@ -604,6 +611,8 @@ var game;
     game.resetStrikerPosition = resetStrikerPosition;
     // Set striker position to top for computer
     function resetStrikerPositionForComputer() {
+        if (!isComputerTurn())
+            return;
         console.log("reseting striker for computer");
         var strikerCenterX = (game.settings["bottomOuterStrikerPlacementLineStartX"] + game.settings["bottomOuterStrikerPlacementLineEndX"]) / 2;
         var strikerCenterY = game.settings["topInnerStrikerPlacementLineStartY"] - (game.settings["innerStrikerPlacementLineOffset"] / 2);

@@ -158,7 +158,7 @@ module game {
     if (isFirstMove()) {
       updateInitialUI();
       console.log("MAKE COMPUTER MOVE CALLED FROM UPDATE UI");
-      $timeout(makeComputerMove, 500);
+      makeComputerMove();
     }
   }
   
@@ -316,10 +316,9 @@ module game {
 
           _engine.enableSleeping = false;
           
-          resetStrikerPosition();
-          console.log("CALLING MAKE COMPUTER MOVE FROM STATIC FUNCTION");
-          $timeout(makeComputerMove, 500);
-
+          // Handle next turn
+          $timeout(handleNextTurn, 1000);
+          
           // if (isComputerTurn()) {
           //   if (computerTurnFlag) $timeout(makeComputerMove, 1000);
           //   computerTurnFlag = !computerTurnFlag;
@@ -330,6 +329,12 @@ module game {
         }
       });
     }
+  }
+  
+  // Handle next turn
+  export function handleNextTurn() {
+    resetStrikerPosition();
+    makeComputerMove();
   }
 
   export function getStriker() : Matter.Body {
@@ -342,6 +347,7 @@ module game {
   
   // Reset the position of the striker relative to the current player
   export function resetStrikerPosition() {
+    if (!isHumanTurn()) return;
     console.log("resetting striker normally");
     var strikerCenterX = (settings["bottomOuterStrikerPlacementLineStartX"] + settings["bottomOuterStrikerPlacementLineEndX"]) / 2;
     var strikerCenterY = settings["bottomOuterStrikerPlacementLineStartY"] - (settings["innerStrikerPlacementLineOffset"] / 2);
@@ -358,6 +364,7 @@ module game {
   
   // Set striker position to top for computer
   export function resetStrikerPositionForComputer() {
+    if (!isComputerTurn()) return;
     console.log("reseting striker for computer");
     var strikerCenterX = (settings["bottomOuterStrikerPlacementLineStartX"] + settings["bottomOuterStrikerPlacementLineEndX"]) / 2;
     var strikerCenterY = settings["topInnerStrikerPlacementLineStartY"] - (settings["innerStrikerPlacementLineOffset"] / 2);
