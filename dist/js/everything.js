@@ -446,6 +446,12 @@ var game;
             console.log("MAKE COMPUTER MOVE CALLED FROM UPDATE UI");
             makeComputerMove();
         }
+        else {
+            // HANDLE REDRAWING FOR OTHER TWO MODES (opponent + passAndPlay)
+            if (game.currentMode !== CurrentMode.Practice) {
+                drawObjects(game.state.board, true);
+            }
+        }
     }
     game.updateUI = updateUI;
     function isFirstMove() {
@@ -580,8 +586,17 @@ var game;
     game.updateInitialUI = updateInitialUI;
     // Handle next turn
     function handleNextTurn() {
-        resetStrikerPosition();
-        makeComputerMove();
+        // Practice
+        if (game.currentMode === CurrentMode.Practice) {
+            resetStrikerPosition();
+            makeComputerMove();
+        }
+        else if (game.currentMode === CurrentMode.Opponent) {
+            resetStrikerPosition();
+        }
+        else {
+            resetStrikerPosition();
+        }
     }
     game.handleNextTurn = handleNextTurn;
     function getStriker() {

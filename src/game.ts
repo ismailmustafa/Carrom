@@ -160,6 +160,12 @@ module game {
       console.log("MAKE COMPUTER MOVE CALLED FROM UPDATE UI");
       makeComputerMove();
     }
+    else {
+      // HANDLE REDRAWING FOR OTHER TWO MODES (opponent + passAndPlay)
+      if (currentMode !== CurrentMode.Practice) {
+        drawObjects(state.board, true);
+      }
+    }
   }
   
   function isFirstMove() {
@@ -318,14 +324,6 @@ module game {
           
           // Handle next turn
           $timeout(handleNextTurn, 1000);
-          
-          // if (isComputerTurn()) {
-          //   if (computerTurnFlag) $timeout(makeComputerMove, 1000);
-          //   computerTurnFlag = !computerTurnFlag;
-          // }
-          // else {
-          //   resetStrikerPosition();
-          // }
         }
       });
     }
@@ -333,8 +331,19 @@ module game {
   
   // Handle next turn
   export function handleNextTurn() {
-    resetStrikerPosition();
-    makeComputerMove();
+    // Practice
+    if (currentMode === CurrentMode.Practice) {
+      resetStrikerPosition();
+      makeComputerMove();
+    }
+    // Play against random opponent
+    else if (currentMode === CurrentMode.Opponent) {
+      resetStrikerPosition();
+    }
+    // pass and play
+    else {
+      resetStrikerPosition();
+    }
   }
 
   export function getStriker() : Matter.Body {
