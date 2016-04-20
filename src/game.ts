@@ -46,267 +46,17 @@ module game {
   export let queenPocketed : Boolean = false; // Keep track of if queen was pocketed
   export let currentTurn : CurrentTurn = CurrentTurn.White; // White goes first
   export let turnIndex : number = 0; // Initialize turn index
+  export let settings : any = null;
 
   // Enable or disable player buttons
   export let enableButtons : Boolean = true;
 
-  export let board: Board;
-
-  export let settings: { [setting: string]: number };
-
-
-  export function drawBoard(width: number, height: number) {
-    let size = width < height ? width : height;
-    
-    // Change these
-    let outerBoardWidth = size;
-    let outerBoardHeight = outerBoardWidth;
-    
-    let innerBoardWidth = (74.0/89.2)*outerBoardWidth;
-    let innerBoardHeight = innerBoardWidth;
-
-    let coinDiameter = (3.18 / 74.0) * innerBoardWidth;
-    let strikerDiameter = (4.1/74.0) * innerBoardWidth;
-    let startingCircleDiameter = (17.0 / 74.0) * innerBoardWidth;
-    let borderThickness = (7.6 / 74.0) * innerBoardWidth;
-
-    // Coin Pockets
-    let coinPocketDiameter = (4.45 / 74.0) * innerBoardWidth;
-    let coinPocketThickness = (0.15 / 74.0) * innerBoardWidth;
-    let coinPocketTopLeftX = borderThickness + (coinPocketDiameter / 2);
-    let coinPocketTopLeftY = borderThickness + (coinPocketDiameter / 2);
-
-    let coinPocketTopRightX = borderThickness + innerBoardWidth - (coinPocketDiameter / 2);
-    let coinPocketTopRightY = borderThickness + (coinPocketDiameter / 2);
-
-    let coinPocketBottomLeftX = borderThickness + (coinPocketDiameter / 2);
-    let coinPocketBottomLeftY = borderThickness + innerBoardHeight - (coinPocketDiameter / 2);
-
-    let coinPocketBottomRightX = borderThickness + innerBoardWidth - (coinPocketDiameter / 2);
-    let coinPocketBottomRightY = borderThickness + innerBoardHeight - (coinPocketDiameter / 2);
-    
-    // Diagonal Lines
-    let diagonalLineTopLeftStartX = borderThickness + coinPocketDiameter + (((5.0 / 74.0) * innerBoardWidth) / Math.sqrt(2));
-    let diagonalLineTopLeftStartY = diagonalLineTopLeftStartX;
-    let diagonalLineTopLeftEndX = diagonalLineTopLeftStartX + (((26.70 / 74.0) * innerBoardWidth) / Math.sqrt(2));
-    let diagonalLineTopLeftEndY = diagonalLineTopLeftEndX;
-
-    let diagonalLineTopRightStartX = outerBoardWidth - borderThickness - coinPocketDiameter - (((5.0 / 74.0) * innerBoardWidth) / Math.sqrt(2));
-    let diagonalLineTopRightStartY = diagonalLineTopLeftStartX;
-    let diagonalLineTopRightEndX = diagonalLineTopRightStartX - (((26.70 / 74.0) * innerBoardWidth) / Math.sqrt(2));
-    let diagonalLineTopRightEndY = diagonalLineTopLeftEndX;
-
-    let diagonalLineBottomRightStartX = outerBoardWidth - borderThickness - coinPocketDiameter - (((5.0 / 74.0) * innerBoardWidth) / Math.sqrt(2));
-    let diagonalLineBottomRightStartY = diagonalLineBottomRightStartX;
-    let diagonalLineBottomRightEndX = diagonalLineBottomRightStartX - (((26.70 / 74.0) * innerBoardWidth) / Math.sqrt(2));
-    let diagonalLineBottomRightEndY = diagonalLineBottomRightEndX;
-
-    let diagonalLineBottomLeftStartX = diagonalLineTopLeftStartX;
-    let diagonalLineBottomLeftStartY = diagonalLineBottomRightStartX;
-    let diagonalLineBottomLeftEndX = diagonalLineTopLeftEndX;
-    let diagonalLineBottomLeftEndY = diagonalLineBottomRightEndX;
-
-    let diagonalLineThickness = (0.15 / 74.0) * innerBoardWidth;
-    
-    // Outer and Inner striker circles (1 == leftmost, 2 == rightmost)
-    //    Striker placement line measurements and striker circle properties
-    let strikerPlacementLineLength = (47.0 / 74.0) * innerBoardWidth;
-    let outerStrikerCircleDiameter = (3.18 / 74.0) * innerBoardWidth;
-    let innerStrikerCircleDiameter = (2.45 / 74.0) * innerBoardWidth;
-    let strikerPlacementLineLengthToCenterOfOuterStrikerCircles = strikerPlacementLineLength - outerStrikerCircleDiameter;
-    let outerStrikerCircleThickness = (0.3 / 74.0) * innerBoardWidth;
-
-    let strikerCircleTopLeft1X = borderThickness + (10.15 / 74.0) * innerBoardWidth + (outerStrikerCircleDiameter / 2);
-    let strikerCircleTopLeft1Y = (outerBoardHeight / 2) - (strikerPlacementLineLengthToCenterOfOuterStrikerCircles / 2);
-    let strikerCircleTopLeft2X = strikerCircleTopLeft1Y;
-    let strikerCircleTopLeft2Y = strikerCircleTopLeft1X;
-
-    let strikerCircleTopRight1X = outerBoardWidth - strikerCircleTopLeft2X;
-    let strikerCircleTopRight1Y = strikerCircleTopLeft2Y;
-    let strikerCircleTopRight2X = outerBoardWidth - strikerCircleTopLeft1X;
-    let strikerCircleTopRight2Y = strikerCircleTopLeft1Y;
-
-    let strikerCircleBottomRight1X = strikerCircleTopRight1X;
-    let strikerCircleBottomRight1Y = outerBoardHeight - strikerCircleTopRight1Y;
-    let strikerCircleBottomRight2X = strikerCircleTopRight2X;
-    let strikerCircleBottomRight2Y = outerBoardHeight - strikerCircleTopRight2Y;
-
-    let strikerCircleBottomLeft1X = strikerCircleTopLeft1X;
-    let strikerCircleBottomLeft1Y = outerBoardHeight - strikerCircleTopLeft1Y;
-    let strikerCircleBottomLeft2X = strikerCircleTopLeft2X;
-    let strikerCircleBottomLeft2Y = outerBoardHeight - strikerCircleTopLeft2Y;
-    
-    // Outer striker placement lines
-    let outerStrikerPlacementLineThickness = (0.3 / 74.0) * innerBoardWidth;
-    let innerStrikerPlacementLineThickness = (0.15 / 74.0) * innerBoardWidth;
-
-    let leftOuterStrikerPlacementLineStartX = borderThickness + (10.15 / 74.0) * innerBoardWidth;
-    let leftOuterStrikerPlacementLineStartY = (outerBoardHeight / 2) - strikerPlacementLineLengthToCenterOfOuterStrikerCircles / 2;
-    let leftOuterStrikerPlacementLineEndX = leftOuterStrikerPlacementLineStartX;
-    let leftOuterStrikerPlacementLineEndY = outerBoardHeight - leftOuterStrikerPlacementLineStartY;
-
-    let rightOuterStrikerPlacementLineStartX = outerBoardWidth - leftOuterStrikerPlacementLineStartX;
-    let rightOuterStrikerPlacementLineStartY = leftOuterStrikerPlacementLineStartY;
-    let rightOuterStrikerPlacementLineEndX = rightOuterStrikerPlacementLineStartX;
-    let rightOuterStrikerPlacementLineEndY = leftOuterStrikerPlacementLineEndY;
-
-    let topOuterStrikerPlacementLineStartX = leftOuterStrikerPlacementLineStartY;
-    let topOuterStrikerPlacementLineStartY = leftOuterStrikerPlacementLineStartX;
-    let topOuterStrikerPlacementLineEndX = outerBoardWidth - topOuterStrikerPlacementLineStartX;
-    let topOuterStrikerPlacementLineEndY = topOuterStrikerPlacementLineStartY;
-
-    let bottomOuterStrikerPlacementLineStartX = topOuterStrikerPlacementLineStartX;
-    let bottomOuterStrikerPlacementLineStartY = outerBoardHeight - topOuterStrikerPlacementLineStartY;
-    let bottomOuterStrikerPlacementLineEndX = topOuterStrikerPlacementLineEndX;
-    let bottomOuterStrikerPlacementLineEndY = bottomOuterStrikerPlacementLineStartY;
-
-    let innerStrikerPlacementLineOffset = outerStrikerCircleDiameter;
-    
-    // Inner corner circles
-    let innerCornerCircleDiameter = (6.35 / 74.0) * innerBoardWidth;
-    let innerCornerCircleThickness = (0.15 / 74.0) * innerBoardWidth;
-
-    let innerCornerCircleTopLeftX = diagonalLineTopLeftEndX - (innerCornerCircleDiameter / 2) / Math.sqrt(2);
-    let innerCornerCircleTopLeftY = innerCornerCircleTopLeftX;
-
-    let innerCornerCircleTopRightX = outerBoardWidth - innerCornerCircleTopLeftX;
-    let innerCornerCircleTopRightY = innerCornerCircleTopLeftY;
-
-    let innerCornerCircleBottomRightX = innerCornerCircleTopRightX;
-    let innerCornerCircleBottomRightY = outerBoardHeight - innerCornerCircleTopRightY;
-
-    let innerCornerCircleBottomLeftX = innerCornerCircleTopLeftX;
-    let innerCornerCircleBottomLeftY = outerBoardHeight - innerCornerCircleTopLeftY;
-
-    settings = {
-      "numCoins": 19,
-      "numBlack": 9,
-      "numWhite": 9,
-      "numQueen": 1,
-      "firstLayer": 6,
-      "secondLayer": 12,
-      "coinDiameter": coinDiameter,
-      "strikerDiameter" : strikerDiameter,
-      "innerBoardWidth": innerBoardWidth,
-      "innerBoardHeight": innerBoardHeight,
-      "outerBoardWidth": outerBoardWidth,
-      "outerBoardHeight": outerBoardHeight,
-      "numberOfSides": 6,
-      "hexSize": (coinDiameter / 2) * 2,
-      "startingCircleDiameter": startingCircleDiameter,
-      "boardCenterX": outerBoardWidth / 2.0,
-      "boardCenterY": outerBoardHeight / 2.0,
-      "borderThickness": borderThickness,
-      "coinPocketDiameter": coinPocketDiameter,
-      "coinPocketThickness": coinPocketThickness,
-      "coinPocketTopLeftX": coinPocketTopLeftX,
-      "coinPocketTopLeftY": coinPocketTopLeftY,
-      "coinPocketTopRightX": coinPocketTopRightX,
-      "coinPocketTopRightY": coinPocketTopRightY,
-      "coinPocketBottomLeftX": coinPocketBottomLeftX,
-      "coinPocketBottomLeftY": coinPocketBottomLeftY,
-      "coinPocketBottomRightX": coinPocketBottomRightX,
-      "coinPocketBottomRightY": coinPocketBottomRightY,
-      "diagonalLineTopLeftStartX": diagonalLineTopLeftStartX,
-      "diagonalLineTopLeftStartY": diagonalLineTopLeftStartY,
-      "diagonalLineTopLeftEndX": diagonalLineTopLeftEndX,
-      "diagonalLineTopLeftEndY": diagonalLineTopLeftEndY,
-      "diagonalLineTopRightStartX": diagonalLineTopRightStartX,
-      "diagonalLineTopRightStartY": diagonalLineTopRightStartY,
-      "diagonalLineTopRightEndX": diagonalLineTopRightEndX,
-      "diagonalLineTopRightEndY": diagonalLineTopRightEndY,
-      "diagonalLineBottomRightStartX": diagonalLineBottomRightStartX,
-      "diagonalLineBottomRightStartY": diagonalLineBottomRightStartY,
-      "diagonalLineBottomRightEndX": diagonalLineBottomRightEndX,
-      "diagonalLineBottomRightEndY": diagonalLineBottomRightEndY,
-      "diagonalLineBottomLeftStartX": diagonalLineBottomLeftStartX,
-      "diagonalLineBottomLeftStartY": diagonalLineBottomLeftStartY,
-      "diagonalLineBottomLeftEndX": diagonalLineBottomLeftEndX,
-      "diagonalLineBottomLeftEndY": diagonalLineBottomLeftEndY,
-      "diagonalLineThickness": diagonalLineThickness,
-      "outerStrikerCircleDiameter": outerStrikerCircleDiameter,
-      "innerStrikerCircleDiameter": innerStrikerCircleDiameter,
-      "outerStrikerCircleThickness": outerStrikerCircleThickness,
-      "strikerCircleTopLeft1X": strikerCircleTopLeft1X,
-      "strikerCircleTopLeft1Y": strikerCircleTopLeft1Y,
-      "strikerCircleTopLeft2X": strikerCircleTopLeft2X,
-      "strikerCircleTopLeft2Y": strikerCircleTopLeft2Y,
-      "strikerCircleTopRight1X": strikerCircleTopRight1X,
-      "strikerCircleTopRight1Y": strikerCircleTopRight1Y,
-      "strikerCircleTopRight2X": strikerCircleTopRight2X,
-      "strikerCircleTopRight2Y": strikerCircleTopRight2Y,
-      "strikerCircleBottomRight1X": strikerCircleBottomRight1X,
-      "strikerCircleBottomRight1Y": strikerCircleBottomRight1Y,
-      "strikerCircleBottomRight2X": strikerCircleBottomRight2X,
-      "strikerCircleBottomRight2Y": strikerCircleBottomRight2Y,
-      "strikerCircleBottomLeft1X": strikerCircleBottomLeft1X,
-      "strikerCircleBottomLeft1Y": strikerCircleBottomLeft1Y,
-      "strikerCircleBottomLeft2X": strikerCircleBottomLeft2X,
-      "strikerCircleBottomLeft2Y": strikerCircleBottomLeft2Y,
-      "outerStrikerPlacementLineThickness": outerStrikerPlacementLineThickness,
-      "innerStrikerPlacementLineThickness": innerStrikerPlacementLineThickness,
-      "innerStrikerPlacementLineOffset": innerStrikerPlacementLineOffset,
-      "leftOuterStrikerPlacementLineStartX": leftOuterStrikerPlacementLineStartX,
-      "leftOuterStrikerPlacementLineStartY": leftOuterStrikerPlacementLineStartY,
-      "leftOuterStrikerPlacementLineEndX": leftOuterStrikerPlacementLineEndX,
-      "leftOuterStrikerPlacementLineEndY": leftOuterStrikerPlacementLineEndY,
-      "rightOuterStrikerPlacementLineStartX": rightOuterStrikerPlacementLineStartX,
-      "rightOuterStrikerPlacementLineStartY": rightOuterStrikerPlacementLineStartY,
-      "rightOuterStrikerPlacementLineEndX": rightOuterStrikerPlacementLineEndX,
-      "rightOuterStrikerPlacementLineEndY": rightOuterStrikerPlacementLineEndY,
-      "topOuterStrikerPlacementLineStartX": topOuterStrikerPlacementLineStartX,
-      "topOuterStrikerPlacementLineStartY": topOuterStrikerPlacementLineStartY,
-      "topOuterStrikerPlacementLineEndX": topOuterStrikerPlacementLineEndX,
-      "topOuterStrikerPlacementLineEndY": topOuterStrikerPlacementLineEndY,
-      "bottomOuterStrikerPlacementLineStartX": bottomOuterStrikerPlacementLineStartX,
-      "bottomOuterStrikerPlacementLineStartY": bottomOuterStrikerPlacementLineStartY,
-      "bottomOuterStrikerPlacementLineEndX": bottomOuterStrikerPlacementLineEndX,
-      "bottomOuterStrikerPlacementLineEndY": bottomOuterStrikerPlacementLineEndY,
-      "innerCornerCircleDiameter": innerCornerCircleDiameter,
-      "innerCornerCircleThickness": innerCornerCircleThickness,
-      "innerCornerCircleTopLeftX": innerCornerCircleTopLeftX,
-      "innerCornerCircleTopLeftY": innerCornerCircleTopLeftY,
-      "innerCornerCircleTopRightX": innerCornerCircleTopRightX,
-      "innerCornerCircleTopRightY": innerCornerCircleTopRightY,
-      "innerCornerCircleBottomRightX": innerCornerCircleBottomRightX,
-      "innerCornerCircleBottomRightY": innerCornerCircleBottomRightY,
-      "innerCornerCircleBottomLeftX": innerCornerCircleBottomLeftX,
-      "innerCornerCircleBottomLeftY": innerCornerCircleBottomLeftY
-    };
-  }
-  
-  // export function init() {
-
-  //   // resizeGameAreaService.setWidthToHeight(1);
-  //   var heightOutput = window.innerHeight;
-  //   var widthOutput = window.innerWidth;
-      
-  //   drawBoard(widthOutput, heightOutput);
-  //   state = gameLogic.getInitialState(settings);
-  //   board = state.board;
-    
-  //   window.onresize = function(){
-  //     var heightOutput = window.innerHeight;
-  //     var widthOutput = window.innerWidth;
-      
-  //     document.getElementById("gameArea").offsetHeight;
-  //     document.getElementById("gameArea").offsetWidth;
-      
-  //     $rootScope.$apply(function () {
-  //       drawBoard(widthOutput, heightOutput);
-  //       state = gameLogic.getInitialState(settings);
-  //       board = state.board;
-  //     });
-  //   }
-  // } 
-  
+  // Engine initial variables
   export let _engine: any, _objectsInMotion = 0, clickPromise : any,
              _world : any, _sceneWidth : any, _sceneHeight : any;
   export let defaultCategory = 0x0001,
              removedCategory = 0x0002,
              movableCategory = 0x0003;
-
-  export let scores = { P1: 0, P2: 0 };
 
   export function updateScene() {
 
@@ -332,15 +82,18 @@ module game {
 
   };
 
-  export function drawObjects(currentBoard : Board, redrawingForMultiplayer : Boolean) : IState {
+  // Takes in a board to draw and a flag specifying if the board should be drawn mirrored.
+  // If undefined is passed in for the board, the initial state is drawn. If undefined is
+  // passd in for "shouldMirrorBoard", then it defaults to false.
+  export function drawObjects(currentBoard : Board, shouldMirrorBoard : Boolean) {
     
     if (currentBoard == undefined) {
       state = gameLogic.getInitialState(settings);
       currentBoard = state.board;
     }
     
-    if (redrawingForMultiplayer == undefined) {
-      redrawingForMultiplayer = false;
+    if (shouldMirrorBoard == undefined) {
+      shouldMirrorBoard = false;
     }
 
     var offset = 1;
@@ -348,30 +101,18 @@ module game {
     var width = _sceneWidth;
     var height = _sceneHeight;
 
+    // Create borders and add them
     Matter.World.add(_engine.world, [
-      Matter.Bodies.rectangle(width/2, -offset, width + 2 * offset, settings["borderThickness"]*2, <any>{
-        isStatic: true,
-        render: { fillStyle: 'black', strokeStyle: 'black'}
-      }),
-      Matter.Bodies.rectangle(width/2, height + offset, width + 2 * offset, settings["borderThickness"]*2, <any>{
-        isStatic: true,
-        render: { fillStyle: 'black', strokeStyle: 'black'}
-      }),
-      Matter.Bodies.rectangle(width + offset, height/2, settings["borderThickness"]*2, height + 2 * offset, <any>{
-        isStatic: true,
-        render: { fillStyle: 'black', strokeStyle: 'black'}
-      }),
-      Matter.Bodies.rectangle(-offset, height/2, settings["borderThickness"]*2, height + 2 * offset, <any>{
-        isStatic: true,
-        render: { fillStyle: 'black', strokeStyle: 'black'}
-      })
+      Matter.Bodies.rectangle(width/2, -offset, width + 2 * offset, settings["borderThickness"]*2, <any>{isStatic: true, render: { fillStyle: 'black', strokeStyle: 'black'}}),
+      Matter.Bodies.rectangle(width/2, height + offset, width + 2 * offset, settings["borderThickness"]*2, <any>{isStatic: true, render: { fillStyle: 'black', strokeStyle: 'black'}}),
+      Matter.Bodies.rectangle(width + offset, height/2, settings["borderThickness"]*2, height + 2 * offset, <any>{isStatic: true, render: { fillStyle: 'black', strokeStyle: 'black'}}),
+      Matter.Bodies.rectangle(-offset, height/2, settings["borderThickness"]*2, height + 2 * offset, <any>{isStatic: true, render: { fillStyle: 'black', strokeStyle: 'black'}})
     ]);
     
+    // Create coins
     let circles : any = [];
-
     for (var i = 0; i < currentBoard.length; i++) {
       var xCoord : number, yCoord : number;
-      
       if (currentBoard[i].shouldRescale) {
         xCoord = currentBoard[i].coordinate.xPos * settings["outerBoardWidth"];
         yCoord = currentBoard[i].coordinate.yPos * settings["outerBoardHeight"];
@@ -380,86 +121,29 @@ module game {
         xCoord = currentBoard[i].coordinate.xPos;
         yCoord = currentBoard[i].coordinate.yPos; 
       }
-      
-      if (redrawingForMultiplayer) {
+      // Mirror the board
+      if (shouldMirrorBoard) {
         xCoord = settings["outerBoardWidth"] - xCoord;
         yCoord = settings["outerBoardHeight"] - yCoord;
       }
-     
-      circles.push(Matter.Bodies.circle(xCoord, yCoord, settings["coinDiameter"] / 2.0, <any>{
-        isStatic: false,
-        // isSleeping: true,
-        collisionFilter: {
-          mask: defaultCategory
-        },
-        restitution: 1,
-        render: { fillStyle: currentBoard[i].color, strokeStyle: 'black' },
-        label: 'Coin'
-      }));
+      circles.push(Matter.Bodies.circle(xCoord, yCoord, settings["coinDiameter"] / 2.0, <any>{isStatic: false, collisionFilter: {mask: defaultCategory}, restitution: 1, render: { fillStyle: currentBoard[i].color, strokeStyle: 'black' }, label: 'Coin'}));
     }
+    Matter.World.add(_engine.world, circles); // add coins
 
-    // Add boards pockets 
-    var pocket1 = Matter.Bodies.circle(settings["coinPocketTopLeftX"], settings["coinPocketTopLeftY"], settings["coinPocketDiameter"]/2, <any>{
-         isStatic: true,
-         restitution: 1,
-         collisionFilter: {
-            mask: defaultCategory
-         },
-         render: { fillStyle: 'grey', strokeStyle: 'black' },
-         label: 'Pocket'
-      });
-      
-      var pocket2 = Matter.Bodies.circle(settings["coinPocketTopRightX"], settings["coinPocketTopRightY"], settings["coinPocketDiameter"]/2, <any>{
-         isStatic: true,
-         restitution: 1,
-         collisionFilter: {
-            mask: defaultCategory
-         },
-         render: { fillStyle: 'grey', strokeStyle: 'black' },
-         label: 'Pocket'
-      });
-      
-      var pocket3 = Matter.Bodies.circle(settings["coinPocketBottomLeftX"], settings["coinPocketBottomRightY"], settings["coinPocketDiameter"]/2, <any>{
-         isStatic: true,
-         restitution: 1,
-         collisionFilter: {
-            mask: defaultCategory
-         },
-         render: { fillStyle: 'grey', strokeStyle: 'black' },
-         label: 'Pocket'
-      });
-      
-      var pocket4 = Matter.Bodies.circle(settings["coinPocketBottomRightX"], settings["coinPocketBottomRightY"], settings["coinPocketDiameter"]/2, <any>{
-         isStatic: true,
-         restitution: 1,
-         collisionFilter: {
-            mask: defaultCategory
-         },
-         render: { fillStyle: 'grey', strokeStyle: 'black' },
-         label: 'Pocket'
-      });
-      
-      // Constrain striker horizontally
-      var strikerCenterX = (settings["bottomOuterStrikerPlacementLineStartX"] + settings["bottomOuterStrikerPlacementLineEndX"]) / 2;
-      var strikerCenterY = settings["bottomOuterStrikerPlacementLineStartY"] - (settings["innerStrikerPlacementLineOffset"] / 2);
-      
-      var strikerCircle = Matter.Bodies.circle(strikerCenterX, strikerCenterY, settings["strikerDiameter"]/2, <any>{
-         isStatic: false,
-         restitution: 1,
-         angle: (6.0*Math.PI)/4.0,
-         collisionFilter: {
-           category: defaultCategory
-         },
-         render: { fillStyle: 'blue', strokeStyle: 'black' },
-         label: 'Striker'
-      });
-
-      
-    Matter.World.add(_engine.world, circles);
-
-    Matter.World.add(_engine.world, [pocket1,pocket2,pocket3,pocket4,strikerCircle]);
+    // Create pockets and add them
+    Matter.World.add(_engine.world, [
+      Matter.Bodies.circle(settings["coinPocketTopLeftX"], settings["coinPocketTopLeftY"], settings["coinPocketDiameter"]/2, <any>{isStatic: true, restitution: 1, collisionFilter: {mask: defaultCategory}, render: { fillStyle: 'grey', strokeStyle: 'black' }, label: 'Pocket'}),
+      Matter.Bodies.circle(settings["coinPocketTopRightX"], settings["coinPocketTopRightY"], settings["coinPocketDiameter"]/2, <any>{isStatic: true, restitution: 1, collisionFilter: {mask: defaultCategory}, render: { fillStyle: 'grey', strokeStyle: 'black' }, label: 'Pocket'}),
+      Matter.Bodies.circle(settings["coinPocketBottomLeftX"], settings["coinPocketBottomRightY"], settings["coinPocketDiameter"]/2, <any>{isStatic: true, restitution: 1, collisionFilter: {mask: defaultCategory}, render: { fillStyle: 'grey', strokeStyle: 'black' }, label: 'Pocket'}),
+      Matter.Bodies.circle(settings["coinPocketBottomRightX"], settings["coinPocketBottomRightY"], settings["coinPocketDiameter"]/2, <any>{isStatic: true, restitution: 1, collisionFilter: {mask: defaultCategory}, render: { fillStyle: 'grey', strokeStyle: 'black' }, label: 'Pocket'})
+    ]);
     
-    return {board:currentBoard};
+    // Constrain striker horizontally
+    var strikerX = (settings["bottomOuterStrikerPlacementLineStartX"] + settings["bottomOuterStrikerPlacementLineEndX"]) / 2;
+    var strikerY = settings["bottomOuterStrikerPlacementLineStartY"] - (settings["innerStrikerPlacementLineOffset"] / 2);
+    
+    // Add striker circle
+    Matter.World.add(_engine.world, Matter.Bodies.circle(strikerX, strikerY, settings["strikerDiameter"]/2, <any>{isStatic: false, restitution: 1, angle: (6.0*Math.PI)/4.0, collisionFilter: {category: defaultCategory}, render: { fillStyle:'blue', strokeStyle:'black' }, label:'Striker'}));
   }
 
   // This gets called after every move
@@ -475,6 +159,10 @@ module game {
     
     if (isFirstMove()) {
       updateInitialUI();
+    }
+    else {
+      // Draw board mirrored
+      drawObjects(params.move.stateAfterMove.board, true);
     }
     
     
@@ -523,15 +211,13 @@ module game {
         timeScale: 1
       }
     });
-
     _engine.world.gravity.y = 0;
     _engine.world.gravity.x = 0;
-
     _objectsInMotion = 0;
 
     updateScene();
 
-    drawBoard(_sceneWidth, _sceneHeight);
+    settings = gameLogic.drawBoard(_sceneWidth, _sceneHeight);
 
     // This code saves the state to the local storage
     // var localStorageState = localStorage.getItem("boardState");
@@ -553,17 +239,13 @@ module game {
     renderOptions.wireframes = false;
     renderOptions.showDebug = false;
 
-    console.log(_engine);
-
     Matter.Engine.run(_engine);
 
     Matter.Events.on(_engine.render, 'afterRender', function() {
       var context = _engine.render.context,
         bodies = Matter.Composite.allBodies(_engine.world)
 
-
       var striker = getStriker();
-
       if (striker != undefined) {
         var startPoint = { x: striker.position.x, y: striker.position.y },
           endPoint = {
@@ -585,7 +267,6 @@ module game {
     Matter.Events.on(_engine, 'collisionEnd', function(event) {
       handlePocketCollision(event);
     });
-
 
     function handlePocketCollision(event: any) {
       var pairs = event.pairs;
@@ -635,13 +316,7 @@ module game {
               turnIndexAfterMove: 1,
               stateAfterMove: state
             }
-          }
-          
-          // Update current state
-          // currentState = state;
-          
-          // Check game rules and update score
-          
+          }        
           
           // Send move
           moveService.makeMove(stateTransition.move);

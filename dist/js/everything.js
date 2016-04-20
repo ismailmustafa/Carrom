@@ -1,5 +1,198 @@
 var gameLogic;
 (function (gameLogic) {
+    // Create all dimensions for board
+    function drawBoard(width, height) {
+        var size = width < height ? width : height;
+        // Change these
+        var outerBoardWidth = size;
+        var outerBoardHeight = outerBoardWidth;
+        var innerBoardWidth = (74.0 / 89.2) * outerBoardWidth;
+        var innerBoardHeight = innerBoardWidth;
+        var coinDiameter = (3.18 / 74.0) * innerBoardWidth;
+        var strikerDiameter = (4.1 / 74.0) * innerBoardWidth;
+        var startingCircleDiameter = (17.0 / 74.0) * innerBoardWidth;
+        var borderThickness = (7.6 / 74.0) * innerBoardWidth;
+        // Coin Pockets
+        var coinPocketDiameter = (4.45 / 74.0) * innerBoardWidth;
+        var coinPocketThickness = (0.15 / 74.0) * innerBoardWidth;
+        var coinPocketTopLeftX = borderThickness + (coinPocketDiameter / 2);
+        var coinPocketTopLeftY = borderThickness + (coinPocketDiameter / 2);
+        var coinPocketTopRightX = borderThickness + innerBoardWidth - (coinPocketDiameter / 2);
+        var coinPocketTopRightY = borderThickness + (coinPocketDiameter / 2);
+        var coinPocketBottomLeftX = borderThickness + (coinPocketDiameter / 2);
+        var coinPocketBottomLeftY = borderThickness + innerBoardHeight - (coinPocketDiameter / 2);
+        var coinPocketBottomRightX = borderThickness + innerBoardWidth - (coinPocketDiameter / 2);
+        var coinPocketBottomRightY = borderThickness + innerBoardHeight - (coinPocketDiameter / 2);
+        // Diagonal Lines
+        var diagonalLineTopLeftStartX = borderThickness + coinPocketDiameter + (((5.0 / 74.0) * innerBoardWidth) / Math.sqrt(2));
+        var diagonalLineTopLeftStartY = diagonalLineTopLeftStartX;
+        var diagonalLineTopLeftEndX = diagonalLineTopLeftStartX + (((26.70 / 74.0) * innerBoardWidth) / Math.sqrt(2));
+        var diagonalLineTopLeftEndY = diagonalLineTopLeftEndX;
+        var diagonalLineTopRightStartX = outerBoardWidth - borderThickness - coinPocketDiameter - (((5.0 / 74.0) * innerBoardWidth) / Math.sqrt(2));
+        var diagonalLineTopRightStartY = diagonalLineTopLeftStartX;
+        var diagonalLineTopRightEndX = diagonalLineTopRightStartX - (((26.70 / 74.0) * innerBoardWidth) / Math.sqrt(2));
+        var diagonalLineTopRightEndY = diagonalLineTopLeftEndX;
+        var diagonalLineBottomRightStartX = outerBoardWidth - borderThickness - coinPocketDiameter - (((5.0 / 74.0) * innerBoardWidth) / Math.sqrt(2));
+        var diagonalLineBottomRightStartY = diagonalLineBottomRightStartX;
+        var diagonalLineBottomRightEndX = diagonalLineBottomRightStartX - (((26.70 / 74.0) * innerBoardWidth) / Math.sqrt(2));
+        var diagonalLineBottomRightEndY = diagonalLineBottomRightEndX;
+        var diagonalLineBottomLeftStartX = diagonalLineTopLeftStartX;
+        var diagonalLineBottomLeftStartY = diagonalLineBottomRightStartX;
+        var diagonalLineBottomLeftEndX = diagonalLineTopLeftEndX;
+        var diagonalLineBottomLeftEndY = diagonalLineBottomRightEndX;
+        var diagonalLineThickness = (0.15 / 74.0) * innerBoardWidth;
+        // Outer and Inner striker circles (1 == leftmost, 2 == rightmost)
+        //    Striker placement line measurements and striker circle properties
+        var strikerPlacementLineLength = (47.0 / 74.0) * innerBoardWidth;
+        var outerStrikerCircleDiameter = (3.18 / 74.0) * innerBoardWidth;
+        var innerStrikerCircleDiameter = (2.45 / 74.0) * innerBoardWidth;
+        var strikerPlacementLineLengthToCenterOfOuterStrikerCircles = strikerPlacementLineLength - outerStrikerCircleDiameter;
+        var outerStrikerCircleThickness = (0.3 / 74.0) * innerBoardWidth;
+        var strikerCircleTopLeft1X = borderThickness + (10.15 / 74.0) * innerBoardWidth + (outerStrikerCircleDiameter / 2);
+        var strikerCircleTopLeft1Y = (outerBoardHeight / 2) - (strikerPlacementLineLengthToCenterOfOuterStrikerCircles / 2);
+        var strikerCircleTopLeft2X = strikerCircleTopLeft1Y;
+        var strikerCircleTopLeft2Y = strikerCircleTopLeft1X;
+        var strikerCircleTopRight1X = outerBoardWidth - strikerCircleTopLeft2X;
+        var strikerCircleTopRight1Y = strikerCircleTopLeft2Y;
+        var strikerCircleTopRight2X = outerBoardWidth - strikerCircleTopLeft1X;
+        var strikerCircleTopRight2Y = strikerCircleTopLeft1Y;
+        var strikerCircleBottomRight1X = strikerCircleTopRight1X;
+        var strikerCircleBottomRight1Y = outerBoardHeight - strikerCircleTopRight1Y;
+        var strikerCircleBottomRight2X = strikerCircleTopRight2X;
+        var strikerCircleBottomRight2Y = outerBoardHeight - strikerCircleTopRight2Y;
+        var strikerCircleBottomLeft1X = strikerCircleTopLeft1X;
+        var strikerCircleBottomLeft1Y = outerBoardHeight - strikerCircleTopLeft1Y;
+        var strikerCircleBottomLeft2X = strikerCircleTopLeft2X;
+        var strikerCircleBottomLeft2Y = outerBoardHeight - strikerCircleTopLeft2Y;
+        // Outer striker placement lines
+        var outerStrikerPlacementLineThickness = (0.3 / 74.0) * innerBoardWidth;
+        var innerStrikerPlacementLineThickness = (0.15 / 74.0) * innerBoardWidth;
+        var leftOuterStrikerPlacementLineStartX = borderThickness + (10.15 / 74.0) * innerBoardWidth;
+        var leftOuterStrikerPlacementLineStartY = (outerBoardHeight / 2) - strikerPlacementLineLengthToCenterOfOuterStrikerCircles / 2;
+        var leftOuterStrikerPlacementLineEndX = leftOuterStrikerPlacementLineStartX;
+        var leftOuterStrikerPlacementLineEndY = outerBoardHeight - leftOuterStrikerPlacementLineStartY;
+        var rightOuterStrikerPlacementLineStartX = outerBoardWidth - leftOuterStrikerPlacementLineStartX;
+        var rightOuterStrikerPlacementLineStartY = leftOuterStrikerPlacementLineStartY;
+        var rightOuterStrikerPlacementLineEndX = rightOuterStrikerPlacementLineStartX;
+        var rightOuterStrikerPlacementLineEndY = leftOuterStrikerPlacementLineEndY;
+        var topOuterStrikerPlacementLineStartX = leftOuterStrikerPlacementLineStartY;
+        var topOuterStrikerPlacementLineStartY = leftOuterStrikerPlacementLineStartX;
+        var topOuterStrikerPlacementLineEndX = outerBoardWidth - topOuterStrikerPlacementLineStartX;
+        var topOuterStrikerPlacementLineEndY = topOuterStrikerPlacementLineStartY;
+        var bottomOuterStrikerPlacementLineStartX = topOuterStrikerPlacementLineStartX;
+        var bottomOuterStrikerPlacementLineStartY = outerBoardHeight - topOuterStrikerPlacementLineStartY;
+        var bottomOuterStrikerPlacementLineEndX = topOuterStrikerPlacementLineEndX;
+        var bottomOuterStrikerPlacementLineEndY = bottomOuterStrikerPlacementLineStartY;
+        var innerStrikerPlacementLineOffset = outerStrikerCircleDiameter;
+        // Inner corner circles
+        var innerCornerCircleDiameter = (6.35 / 74.0) * innerBoardWidth;
+        var innerCornerCircleThickness = (0.15 / 74.0) * innerBoardWidth;
+        var innerCornerCircleTopLeftX = diagonalLineTopLeftEndX - (innerCornerCircleDiameter / 2) / Math.sqrt(2);
+        var innerCornerCircleTopLeftY = innerCornerCircleTopLeftX;
+        var innerCornerCircleTopRightX = outerBoardWidth - innerCornerCircleTopLeftX;
+        var innerCornerCircleTopRightY = innerCornerCircleTopLeftY;
+        var innerCornerCircleBottomRightX = innerCornerCircleTopRightX;
+        var innerCornerCircleBottomRightY = outerBoardHeight - innerCornerCircleTopRightY;
+        var innerCornerCircleBottomLeftX = innerCornerCircleTopLeftX;
+        var innerCornerCircleBottomLeftY = outerBoardHeight - innerCornerCircleTopLeftY;
+        var settings = {
+            "numCoins": 19,
+            "numBlack": 9,
+            "numWhite": 9,
+            "numQueen": 1,
+            "firstLayer": 6,
+            "secondLayer": 12,
+            "coinDiameter": coinDiameter,
+            "strikerDiameter": strikerDiameter,
+            "innerBoardWidth": innerBoardWidth,
+            "innerBoardHeight": innerBoardHeight,
+            "outerBoardWidth": outerBoardWidth,
+            "outerBoardHeight": outerBoardHeight,
+            "numberOfSides": 6,
+            "hexSize": (coinDiameter / 2) * 2,
+            "startingCircleDiameter": startingCircleDiameter,
+            "boardCenterX": outerBoardWidth / 2.0,
+            "boardCenterY": outerBoardHeight / 2.0,
+            "borderThickness": borderThickness,
+            "coinPocketDiameter": coinPocketDiameter,
+            "coinPocketThickness": coinPocketThickness,
+            "coinPocketTopLeftX": coinPocketTopLeftX,
+            "coinPocketTopLeftY": coinPocketTopLeftY,
+            "coinPocketTopRightX": coinPocketTopRightX,
+            "coinPocketTopRightY": coinPocketTopRightY,
+            "coinPocketBottomLeftX": coinPocketBottomLeftX,
+            "coinPocketBottomLeftY": coinPocketBottomLeftY,
+            "coinPocketBottomRightX": coinPocketBottomRightX,
+            "coinPocketBottomRightY": coinPocketBottomRightY,
+            "diagonalLineTopLeftStartX": diagonalLineTopLeftStartX,
+            "diagonalLineTopLeftStartY": diagonalLineTopLeftStartY,
+            "diagonalLineTopLeftEndX": diagonalLineTopLeftEndX,
+            "diagonalLineTopLeftEndY": diagonalLineTopLeftEndY,
+            "diagonalLineTopRightStartX": diagonalLineTopRightStartX,
+            "diagonalLineTopRightStartY": diagonalLineTopRightStartY,
+            "diagonalLineTopRightEndX": diagonalLineTopRightEndX,
+            "diagonalLineTopRightEndY": diagonalLineTopRightEndY,
+            "diagonalLineBottomRightStartX": diagonalLineBottomRightStartX,
+            "diagonalLineBottomRightStartY": diagonalLineBottomRightStartY,
+            "diagonalLineBottomRightEndX": diagonalLineBottomRightEndX,
+            "diagonalLineBottomRightEndY": diagonalLineBottomRightEndY,
+            "diagonalLineBottomLeftStartX": diagonalLineBottomLeftStartX,
+            "diagonalLineBottomLeftStartY": diagonalLineBottomLeftStartY,
+            "diagonalLineBottomLeftEndX": diagonalLineBottomLeftEndX,
+            "diagonalLineBottomLeftEndY": diagonalLineBottomLeftEndY,
+            "diagonalLineThickness": diagonalLineThickness,
+            "outerStrikerCircleDiameter": outerStrikerCircleDiameter,
+            "innerStrikerCircleDiameter": innerStrikerCircleDiameter,
+            "outerStrikerCircleThickness": outerStrikerCircleThickness,
+            "strikerCircleTopLeft1X": strikerCircleTopLeft1X,
+            "strikerCircleTopLeft1Y": strikerCircleTopLeft1Y,
+            "strikerCircleTopLeft2X": strikerCircleTopLeft2X,
+            "strikerCircleTopLeft2Y": strikerCircleTopLeft2Y,
+            "strikerCircleTopRight1X": strikerCircleTopRight1X,
+            "strikerCircleTopRight1Y": strikerCircleTopRight1Y,
+            "strikerCircleTopRight2X": strikerCircleTopRight2X,
+            "strikerCircleTopRight2Y": strikerCircleTopRight2Y,
+            "strikerCircleBottomRight1X": strikerCircleBottomRight1X,
+            "strikerCircleBottomRight1Y": strikerCircleBottomRight1Y,
+            "strikerCircleBottomRight2X": strikerCircleBottomRight2X,
+            "strikerCircleBottomRight2Y": strikerCircleBottomRight2Y,
+            "strikerCircleBottomLeft1X": strikerCircleBottomLeft1X,
+            "strikerCircleBottomLeft1Y": strikerCircleBottomLeft1Y,
+            "strikerCircleBottomLeft2X": strikerCircleBottomLeft2X,
+            "strikerCircleBottomLeft2Y": strikerCircleBottomLeft2Y,
+            "outerStrikerPlacementLineThickness": outerStrikerPlacementLineThickness,
+            "innerStrikerPlacementLineThickness": innerStrikerPlacementLineThickness,
+            "innerStrikerPlacementLineOffset": innerStrikerPlacementLineOffset,
+            "leftOuterStrikerPlacementLineStartX": leftOuterStrikerPlacementLineStartX,
+            "leftOuterStrikerPlacementLineStartY": leftOuterStrikerPlacementLineStartY,
+            "leftOuterStrikerPlacementLineEndX": leftOuterStrikerPlacementLineEndX,
+            "leftOuterStrikerPlacementLineEndY": leftOuterStrikerPlacementLineEndY,
+            "rightOuterStrikerPlacementLineStartX": rightOuterStrikerPlacementLineStartX,
+            "rightOuterStrikerPlacementLineStartY": rightOuterStrikerPlacementLineStartY,
+            "rightOuterStrikerPlacementLineEndX": rightOuterStrikerPlacementLineEndX,
+            "rightOuterStrikerPlacementLineEndY": rightOuterStrikerPlacementLineEndY,
+            "topOuterStrikerPlacementLineStartX": topOuterStrikerPlacementLineStartX,
+            "topOuterStrikerPlacementLineStartY": topOuterStrikerPlacementLineStartY,
+            "topOuterStrikerPlacementLineEndX": topOuterStrikerPlacementLineEndX,
+            "topOuterStrikerPlacementLineEndY": topOuterStrikerPlacementLineEndY,
+            "bottomOuterStrikerPlacementLineStartX": bottomOuterStrikerPlacementLineStartX,
+            "bottomOuterStrikerPlacementLineStartY": bottomOuterStrikerPlacementLineStartY,
+            "bottomOuterStrikerPlacementLineEndX": bottomOuterStrikerPlacementLineEndX,
+            "bottomOuterStrikerPlacementLineEndY": bottomOuterStrikerPlacementLineEndY,
+            "innerCornerCircleDiameter": innerCornerCircleDiameter,
+            "innerCornerCircleThickness": innerCornerCircleThickness,
+            "innerCornerCircleTopLeftX": innerCornerCircleTopLeftX,
+            "innerCornerCircleTopLeftY": innerCornerCircleTopLeftY,
+            "innerCornerCircleTopRightX": innerCornerCircleTopRightX,
+            "innerCornerCircleTopRightY": innerCornerCircleTopRightY,
+            "innerCornerCircleBottomRightX": innerCornerCircleBottomRightX,
+            "innerCornerCircleBottomRightY": innerCornerCircleBottomRightY,
+            "innerCornerCircleBottomLeftX": innerCornerCircleBottomLeftX,
+            "innerCornerCircleBottomLeftY": innerCornerCircleBottomLeftY
+        };
+        return settings;
+    }
+    gameLogic.drawBoard = drawBoard;
     var QUEENCOLOR = "pink";
     var COLOR1 = "black";
     var COLOR2 = "white";
@@ -131,221 +324,12 @@ var game;
     game.queenPocketed = false; // Keep track of if queen was pocketed
     game.currentTurn = CurrentTurn.White; // White goes first
     game.turnIndex = 0; // Initialize turn index
+    game.settings = null;
     // Enable or disable player buttons
     game.enableButtons = true;
-    function drawBoard(width, height) {
-        var size = width < height ? width : height;
-        // Change these
-        var outerBoardWidth = size;
-        var outerBoardHeight = outerBoardWidth;
-        var innerBoardWidth = (74.0 / 89.2) * outerBoardWidth;
-        var innerBoardHeight = innerBoardWidth;
-        var coinDiameter = (3.18 / 74.0) * innerBoardWidth;
-        var strikerDiameter = (4.1 / 74.0) * innerBoardWidth;
-        var startingCircleDiameter = (17.0 / 74.0) * innerBoardWidth;
-        var borderThickness = (7.6 / 74.0) * innerBoardWidth;
-        // Coin Pockets
-        var coinPocketDiameter = (4.45 / 74.0) * innerBoardWidth;
-        var coinPocketThickness = (0.15 / 74.0) * innerBoardWidth;
-        var coinPocketTopLeftX = borderThickness + (coinPocketDiameter / 2);
-        var coinPocketTopLeftY = borderThickness + (coinPocketDiameter / 2);
-        var coinPocketTopRightX = borderThickness + innerBoardWidth - (coinPocketDiameter / 2);
-        var coinPocketTopRightY = borderThickness + (coinPocketDiameter / 2);
-        var coinPocketBottomLeftX = borderThickness + (coinPocketDiameter / 2);
-        var coinPocketBottomLeftY = borderThickness + innerBoardHeight - (coinPocketDiameter / 2);
-        var coinPocketBottomRightX = borderThickness + innerBoardWidth - (coinPocketDiameter / 2);
-        var coinPocketBottomRightY = borderThickness + innerBoardHeight - (coinPocketDiameter / 2);
-        // Diagonal Lines
-        var diagonalLineTopLeftStartX = borderThickness + coinPocketDiameter + (((5.0 / 74.0) * innerBoardWidth) / Math.sqrt(2));
-        var diagonalLineTopLeftStartY = diagonalLineTopLeftStartX;
-        var diagonalLineTopLeftEndX = diagonalLineTopLeftStartX + (((26.70 / 74.0) * innerBoardWidth) / Math.sqrt(2));
-        var diagonalLineTopLeftEndY = diagonalLineTopLeftEndX;
-        var diagonalLineTopRightStartX = outerBoardWidth - borderThickness - coinPocketDiameter - (((5.0 / 74.0) * innerBoardWidth) / Math.sqrt(2));
-        var diagonalLineTopRightStartY = diagonalLineTopLeftStartX;
-        var diagonalLineTopRightEndX = diagonalLineTopRightStartX - (((26.70 / 74.0) * innerBoardWidth) / Math.sqrt(2));
-        var diagonalLineTopRightEndY = diagonalLineTopLeftEndX;
-        var diagonalLineBottomRightStartX = outerBoardWidth - borderThickness - coinPocketDiameter - (((5.0 / 74.0) * innerBoardWidth) / Math.sqrt(2));
-        var diagonalLineBottomRightStartY = diagonalLineBottomRightStartX;
-        var diagonalLineBottomRightEndX = diagonalLineBottomRightStartX - (((26.70 / 74.0) * innerBoardWidth) / Math.sqrt(2));
-        var diagonalLineBottomRightEndY = diagonalLineBottomRightEndX;
-        var diagonalLineBottomLeftStartX = diagonalLineTopLeftStartX;
-        var diagonalLineBottomLeftStartY = diagonalLineBottomRightStartX;
-        var diagonalLineBottomLeftEndX = diagonalLineTopLeftEndX;
-        var diagonalLineBottomLeftEndY = diagonalLineBottomRightEndX;
-        var diagonalLineThickness = (0.15 / 74.0) * innerBoardWidth;
-        // Outer and Inner striker circles (1 == leftmost, 2 == rightmost)
-        //    Striker placement line measurements and striker circle properties
-        var strikerPlacementLineLength = (47.0 / 74.0) * innerBoardWidth;
-        var outerStrikerCircleDiameter = (3.18 / 74.0) * innerBoardWidth;
-        var innerStrikerCircleDiameter = (2.45 / 74.0) * innerBoardWidth;
-        var strikerPlacementLineLengthToCenterOfOuterStrikerCircles = strikerPlacementLineLength - outerStrikerCircleDiameter;
-        var outerStrikerCircleThickness = (0.3 / 74.0) * innerBoardWidth;
-        var strikerCircleTopLeft1X = borderThickness + (10.15 / 74.0) * innerBoardWidth + (outerStrikerCircleDiameter / 2);
-        var strikerCircleTopLeft1Y = (outerBoardHeight / 2) - (strikerPlacementLineLengthToCenterOfOuterStrikerCircles / 2);
-        var strikerCircleTopLeft2X = strikerCircleTopLeft1Y;
-        var strikerCircleTopLeft2Y = strikerCircleTopLeft1X;
-        var strikerCircleTopRight1X = outerBoardWidth - strikerCircleTopLeft2X;
-        var strikerCircleTopRight1Y = strikerCircleTopLeft2Y;
-        var strikerCircleTopRight2X = outerBoardWidth - strikerCircleTopLeft1X;
-        var strikerCircleTopRight2Y = strikerCircleTopLeft1Y;
-        var strikerCircleBottomRight1X = strikerCircleTopRight1X;
-        var strikerCircleBottomRight1Y = outerBoardHeight - strikerCircleTopRight1Y;
-        var strikerCircleBottomRight2X = strikerCircleTopRight2X;
-        var strikerCircleBottomRight2Y = outerBoardHeight - strikerCircleTopRight2Y;
-        var strikerCircleBottomLeft1X = strikerCircleTopLeft1X;
-        var strikerCircleBottomLeft1Y = outerBoardHeight - strikerCircleTopLeft1Y;
-        var strikerCircleBottomLeft2X = strikerCircleTopLeft2X;
-        var strikerCircleBottomLeft2Y = outerBoardHeight - strikerCircleTopLeft2Y;
-        // Outer striker placement lines
-        var outerStrikerPlacementLineThickness = (0.3 / 74.0) * innerBoardWidth;
-        var innerStrikerPlacementLineThickness = (0.15 / 74.0) * innerBoardWidth;
-        var leftOuterStrikerPlacementLineStartX = borderThickness + (10.15 / 74.0) * innerBoardWidth;
-        var leftOuterStrikerPlacementLineStartY = (outerBoardHeight / 2) - strikerPlacementLineLengthToCenterOfOuterStrikerCircles / 2;
-        var leftOuterStrikerPlacementLineEndX = leftOuterStrikerPlacementLineStartX;
-        var leftOuterStrikerPlacementLineEndY = outerBoardHeight - leftOuterStrikerPlacementLineStartY;
-        var rightOuterStrikerPlacementLineStartX = outerBoardWidth - leftOuterStrikerPlacementLineStartX;
-        var rightOuterStrikerPlacementLineStartY = leftOuterStrikerPlacementLineStartY;
-        var rightOuterStrikerPlacementLineEndX = rightOuterStrikerPlacementLineStartX;
-        var rightOuterStrikerPlacementLineEndY = leftOuterStrikerPlacementLineEndY;
-        var topOuterStrikerPlacementLineStartX = leftOuterStrikerPlacementLineStartY;
-        var topOuterStrikerPlacementLineStartY = leftOuterStrikerPlacementLineStartX;
-        var topOuterStrikerPlacementLineEndX = outerBoardWidth - topOuterStrikerPlacementLineStartX;
-        var topOuterStrikerPlacementLineEndY = topOuterStrikerPlacementLineStartY;
-        var bottomOuterStrikerPlacementLineStartX = topOuterStrikerPlacementLineStartX;
-        var bottomOuterStrikerPlacementLineStartY = outerBoardHeight - topOuterStrikerPlacementLineStartY;
-        var bottomOuterStrikerPlacementLineEndX = topOuterStrikerPlacementLineEndX;
-        var bottomOuterStrikerPlacementLineEndY = bottomOuterStrikerPlacementLineStartY;
-        var innerStrikerPlacementLineOffset = outerStrikerCircleDiameter;
-        // Inner corner circles
-        var innerCornerCircleDiameter = (6.35 / 74.0) * innerBoardWidth;
-        var innerCornerCircleThickness = (0.15 / 74.0) * innerBoardWidth;
-        var innerCornerCircleTopLeftX = diagonalLineTopLeftEndX - (innerCornerCircleDiameter / 2) / Math.sqrt(2);
-        var innerCornerCircleTopLeftY = innerCornerCircleTopLeftX;
-        var innerCornerCircleTopRightX = outerBoardWidth - innerCornerCircleTopLeftX;
-        var innerCornerCircleTopRightY = innerCornerCircleTopLeftY;
-        var innerCornerCircleBottomRightX = innerCornerCircleTopRightX;
-        var innerCornerCircleBottomRightY = outerBoardHeight - innerCornerCircleTopRightY;
-        var innerCornerCircleBottomLeftX = innerCornerCircleTopLeftX;
-        var innerCornerCircleBottomLeftY = outerBoardHeight - innerCornerCircleTopLeftY;
-        game.settings = {
-            "numCoins": 19,
-            "numBlack": 9,
-            "numWhite": 9,
-            "numQueen": 1,
-            "firstLayer": 6,
-            "secondLayer": 12,
-            "coinDiameter": coinDiameter,
-            "strikerDiameter": strikerDiameter,
-            "innerBoardWidth": innerBoardWidth,
-            "innerBoardHeight": innerBoardHeight,
-            "outerBoardWidth": outerBoardWidth,
-            "outerBoardHeight": outerBoardHeight,
-            "numberOfSides": 6,
-            "hexSize": (coinDiameter / 2) * 2,
-            "startingCircleDiameter": startingCircleDiameter,
-            "boardCenterX": outerBoardWidth / 2.0,
-            "boardCenterY": outerBoardHeight / 2.0,
-            "borderThickness": borderThickness,
-            "coinPocketDiameter": coinPocketDiameter,
-            "coinPocketThickness": coinPocketThickness,
-            "coinPocketTopLeftX": coinPocketTopLeftX,
-            "coinPocketTopLeftY": coinPocketTopLeftY,
-            "coinPocketTopRightX": coinPocketTopRightX,
-            "coinPocketTopRightY": coinPocketTopRightY,
-            "coinPocketBottomLeftX": coinPocketBottomLeftX,
-            "coinPocketBottomLeftY": coinPocketBottomLeftY,
-            "coinPocketBottomRightX": coinPocketBottomRightX,
-            "coinPocketBottomRightY": coinPocketBottomRightY,
-            "diagonalLineTopLeftStartX": diagonalLineTopLeftStartX,
-            "diagonalLineTopLeftStartY": diagonalLineTopLeftStartY,
-            "diagonalLineTopLeftEndX": diagonalLineTopLeftEndX,
-            "diagonalLineTopLeftEndY": diagonalLineTopLeftEndY,
-            "diagonalLineTopRightStartX": diagonalLineTopRightStartX,
-            "diagonalLineTopRightStartY": diagonalLineTopRightStartY,
-            "diagonalLineTopRightEndX": diagonalLineTopRightEndX,
-            "diagonalLineTopRightEndY": diagonalLineTopRightEndY,
-            "diagonalLineBottomRightStartX": diagonalLineBottomRightStartX,
-            "diagonalLineBottomRightStartY": diagonalLineBottomRightStartY,
-            "diagonalLineBottomRightEndX": diagonalLineBottomRightEndX,
-            "diagonalLineBottomRightEndY": diagonalLineBottomRightEndY,
-            "diagonalLineBottomLeftStartX": diagonalLineBottomLeftStartX,
-            "diagonalLineBottomLeftStartY": diagonalLineBottomLeftStartY,
-            "diagonalLineBottomLeftEndX": diagonalLineBottomLeftEndX,
-            "diagonalLineBottomLeftEndY": diagonalLineBottomLeftEndY,
-            "diagonalLineThickness": diagonalLineThickness,
-            "outerStrikerCircleDiameter": outerStrikerCircleDiameter,
-            "innerStrikerCircleDiameter": innerStrikerCircleDiameter,
-            "outerStrikerCircleThickness": outerStrikerCircleThickness,
-            "strikerCircleTopLeft1X": strikerCircleTopLeft1X,
-            "strikerCircleTopLeft1Y": strikerCircleTopLeft1Y,
-            "strikerCircleTopLeft2X": strikerCircleTopLeft2X,
-            "strikerCircleTopLeft2Y": strikerCircleTopLeft2Y,
-            "strikerCircleTopRight1X": strikerCircleTopRight1X,
-            "strikerCircleTopRight1Y": strikerCircleTopRight1Y,
-            "strikerCircleTopRight2X": strikerCircleTopRight2X,
-            "strikerCircleTopRight2Y": strikerCircleTopRight2Y,
-            "strikerCircleBottomRight1X": strikerCircleBottomRight1X,
-            "strikerCircleBottomRight1Y": strikerCircleBottomRight1Y,
-            "strikerCircleBottomRight2X": strikerCircleBottomRight2X,
-            "strikerCircleBottomRight2Y": strikerCircleBottomRight2Y,
-            "strikerCircleBottomLeft1X": strikerCircleBottomLeft1X,
-            "strikerCircleBottomLeft1Y": strikerCircleBottomLeft1Y,
-            "strikerCircleBottomLeft2X": strikerCircleBottomLeft2X,
-            "strikerCircleBottomLeft2Y": strikerCircleBottomLeft2Y,
-            "outerStrikerPlacementLineThickness": outerStrikerPlacementLineThickness,
-            "innerStrikerPlacementLineThickness": innerStrikerPlacementLineThickness,
-            "innerStrikerPlacementLineOffset": innerStrikerPlacementLineOffset,
-            "leftOuterStrikerPlacementLineStartX": leftOuterStrikerPlacementLineStartX,
-            "leftOuterStrikerPlacementLineStartY": leftOuterStrikerPlacementLineStartY,
-            "leftOuterStrikerPlacementLineEndX": leftOuterStrikerPlacementLineEndX,
-            "leftOuterStrikerPlacementLineEndY": leftOuterStrikerPlacementLineEndY,
-            "rightOuterStrikerPlacementLineStartX": rightOuterStrikerPlacementLineStartX,
-            "rightOuterStrikerPlacementLineStartY": rightOuterStrikerPlacementLineStartY,
-            "rightOuterStrikerPlacementLineEndX": rightOuterStrikerPlacementLineEndX,
-            "rightOuterStrikerPlacementLineEndY": rightOuterStrikerPlacementLineEndY,
-            "topOuterStrikerPlacementLineStartX": topOuterStrikerPlacementLineStartX,
-            "topOuterStrikerPlacementLineStartY": topOuterStrikerPlacementLineStartY,
-            "topOuterStrikerPlacementLineEndX": topOuterStrikerPlacementLineEndX,
-            "topOuterStrikerPlacementLineEndY": topOuterStrikerPlacementLineEndY,
-            "bottomOuterStrikerPlacementLineStartX": bottomOuterStrikerPlacementLineStartX,
-            "bottomOuterStrikerPlacementLineStartY": bottomOuterStrikerPlacementLineStartY,
-            "bottomOuterStrikerPlacementLineEndX": bottomOuterStrikerPlacementLineEndX,
-            "bottomOuterStrikerPlacementLineEndY": bottomOuterStrikerPlacementLineEndY,
-            "innerCornerCircleDiameter": innerCornerCircleDiameter,
-            "innerCornerCircleThickness": innerCornerCircleThickness,
-            "innerCornerCircleTopLeftX": innerCornerCircleTopLeftX,
-            "innerCornerCircleTopLeftY": innerCornerCircleTopLeftY,
-            "innerCornerCircleTopRightX": innerCornerCircleTopRightX,
-            "innerCornerCircleTopRightY": innerCornerCircleTopRightY,
-            "innerCornerCircleBottomRightX": innerCornerCircleBottomRightX,
-            "innerCornerCircleBottomRightY": innerCornerCircleBottomRightY,
-            "innerCornerCircleBottomLeftX": innerCornerCircleBottomLeftX,
-            "innerCornerCircleBottomLeftY": innerCornerCircleBottomLeftY
-        };
-    }
-    game.drawBoard = drawBoard;
-    // export function init() {
-    //   // resizeGameAreaService.setWidthToHeight(1);
-    //   var heightOutput = window.innerHeight;
-    //   var widthOutput = window.innerWidth;
-    //   drawBoard(widthOutput, heightOutput);
-    //   state = gameLogic.getInitialState(settings);
-    //   board = state.board;
-    //   window.onresize = function(){
-    //     var heightOutput = window.innerHeight;
-    //     var widthOutput = window.innerWidth;
-    //     document.getElementById("gameArea").offsetHeight;
-    //     document.getElementById("gameArea").offsetWidth;
-    //     $rootScope.$apply(function () {
-    //       drawBoard(widthOutput, heightOutput);
-    //       state = gameLogic.getInitialState(settings);
-    //       board = state.board;
-    //     });
-    //   }
-    // } 
+    // Engine initial variables
     game._objectsInMotion = 0;
     game.defaultCategory = 0x0001, game.removedCategory = 0x0002, game.movableCategory = 0x0003;
-    game.scores = { P1: 0, P2: 0 };
     function updateScene() {
         var c = $("canvas").get(0);
         var width = $(window).width();
@@ -361,35 +345,28 @@ var game;
     }
     game.updateScene = updateScene;
     ;
-    function drawObjects(currentBoard, redrawingForMultiplayer) {
+    // Takes in a board to draw and a flag specifying if the board should be drawn mirrored.
+    // If undefined is passed in for the board, the initial state is drawn. If undefined is
+    // passd in for "shouldMirrorBoard", then it defaults to false.
+    function drawObjects(currentBoard, shouldMirrorBoard) {
         if (currentBoard == undefined) {
             game.state = gameLogic.getInitialState(game.settings);
             currentBoard = game.state.board;
         }
-        if (redrawingForMultiplayer == undefined) {
-            redrawingForMultiplayer = false;
+        if (shouldMirrorBoard == undefined) {
+            shouldMirrorBoard = false;
         }
         var offset = 1;
         var width = game._sceneWidth;
         var height = game._sceneHeight;
+        // Create borders and add them
         Matter.World.add(game._engine.world, [
-            Matter.Bodies.rectangle(width / 2, -offset, width + 2 * offset, game.settings["borderThickness"] * 2, {
-                isStatic: true,
-                render: { fillStyle: 'black', strokeStyle: 'black' }
-            }),
-            Matter.Bodies.rectangle(width / 2, height + offset, width + 2 * offset, game.settings["borderThickness"] * 2, {
-                isStatic: true,
-                render: { fillStyle: 'black', strokeStyle: 'black' }
-            }),
-            Matter.Bodies.rectangle(width + offset, height / 2, game.settings["borderThickness"] * 2, height + 2 * offset, {
-                isStatic: true,
-                render: { fillStyle: 'black', strokeStyle: 'black' }
-            }),
-            Matter.Bodies.rectangle(-offset, height / 2, game.settings["borderThickness"] * 2, height + 2 * offset, {
-                isStatic: true,
-                render: { fillStyle: 'black', strokeStyle: 'black' }
-            })
+            Matter.Bodies.rectangle(width / 2, -offset, width + 2 * offset, game.settings["borderThickness"] * 2, { isStatic: true, render: { fillStyle: 'black', strokeStyle: 'black' } }),
+            Matter.Bodies.rectangle(width / 2, height + offset, width + 2 * offset, game.settings["borderThickness"] * 2, { isStatic: true, render: { fillStyle: 'black', strokeStyle: 'black' } }),
+            Matter.Bodies.rectangle(width + offset, height / 2, game.settings["borderThickness"] * 2, height + 2 * offset, { isStatic: true, render: { fillStyle: 'black', strokeStyle: 'black' } }),
+            Matter.Bodies.rectangle(-offset, height / 2, game.settings["borderThickness"] * 2, height + 2 * offset, { isStatic: true, render: { fillStyle: 'black', strokeStyle: 'black' } })
         ]);
+        // Create coins
         var circles = [];
         for (var i = 0; i < currentBoard.length; i++) {
             var xCoord, yCoord;
@@ -401,74 +378,26 @@ var game;
                 xCoord = currentBoard[i].coordinate.xPos;
                 yCoord = currentBoard[i].coordinate.yPos;
             }
-            if (redrawingForMultiplayer) {
+            // Mirror the board
+            if (shouldMirrorBoard) {
                 xCoord = game.settings["outerBoardWidth"] - xCoord;
                 yCoord = game.settings["outerBoardHeight"] - yCoord;
             }
-            circles.push(Matter.Bodies.circle(xCoord, yCoord, game.settings["coinDiameter"] / 2.0, {
-                isStatic: false,
-                // isSleeping: true,
-                collisionFilter: {
-                    mask: game.defaultCategory
-                },
-                restitution: 1,
-                render: { fillStyle: currentBoard[i].color, strokeStyle: 'black' },
-                label: 'Coin'
-            }));
+            circles.push(Matter.Bodies.circle(xCoord, yCoord, game.settings["coinDiameter"] / 2.0, { isStatic: false, collisionFilter: { mask: game.defaultCategory }, restitution: 1, render: { fillStyle: currentBoard[i].color, strokeStyle: 'black' }, label: 'Coin' }));
         }
-        // Add boards pockets 
-        var pocket1 = Matter.Bodies.circle(game.settings["coinPocketTopLeftX"], game.settings["coinPocketTopLeftY"], game.settings["coinPocketDiameter"] / 2, {
-            isStatic: true,
-            restitution: 1,
-            collisionFilter: {
-                mask: game.defaultCategory
-            },
-            render: { fillStyle: 'grey', strokeStyle: 'black' },
-            label: 'Pocket'
-        });
-        var pocket2 = Matter.Bodies.circle(game.settings["coinPocketTopRightX"], game.settings["coinPocketTopRightY"], game.settings["coinPocketDiameter"] / 2, {
-            isStatic: true,
-            restitution: 1,
-            collisionFilter: {
-                mask: game.defaultCategory
-            },
-            render: { fillStyle: 'grey', strokeStyle: 'black' },
-            label: 'Pocket'
-        });
-        var pocket3 = Matter.Bodies.circle(game.settings["coinPocketBottomLeftX"], game.settings["coinPocketBottomRightY"], game.settings["coinPocketDiameter"] / 2, {
-            isStatic: true,
-            restitution: 1,
-            collisionFilter: {
-                mask: game.defaultCategory
-            },
-            render: { fillStyle: 'grey', strokeStyle: 'black' },
-            label: 'Pocket'
-        });
-        var pocket4 = Matter.Bodies.circle(game.settings["coinPocketBottomRightX"], game.settings["coinPocketBottomRightY"], game.settings["coinPocketDiameter"] / 2, {
-            isStatic: true,
-            restitution: 1,
-            collisionFilter: {
-                mask: game.defaultCategory
-            },
-            render: { fillStyle: 'grey', strokeStyle: 'black' },
-            label: 'Pocket'
-        });
+        Matter.World.add(game._engine.world, circles); // add coins
+        // Create pockets and add them
+        Matter.World.add(game._engine.world, [
+            Matter.Bodies.circle(game.settings["coinPocketTopLeftX"], game.settings["coinPocketTopLeftY"], game.settings["coinPocketDiameter"] / 2, { isStatic: true, restitution: 1, collisionFilter: { mask: game.defaultCategory }, render: { fillStyle: 'grey', strokeStyle: 'black' }, label: 'Pocket' }),
+            Matter.Bodies.circle(game.settings["coinPocketTopRightX"], game.settings["coinPocketTopRightY"], game.settings["coinPocketDiameter"] / 2, { isStatic: true, restitution: 1, collisionFilter: { mask: game.defaultCategory }, render: { fillStyle: 'grey', strokeStyle: 'black' }, label: 'Pocket' }),
+            Matter.Bodies.circle(game.settings["coinPocketBottomLeftX"], game.settings["coinPocketBottomRightY"], game.settings["coinPocketDiameter"] / 2, { isStatic: true, restitution: 1, collisionFilter: { mask: game.defaultCategory }, render: { fillStyle: 'grey', strokeStyle: 'black' }, label: 'Pocket' }),
+            Matter.Bodies.circle(game.settings["coinPocketBottomRightX"], game.settings["coinPocketBottomRightY"], game.settings["coinPocketDiameter"] / 2, { isStatic: true, restitution: 1, collisionFilter: { mask: game.defaultCategory }, render: { fillStyle: 'grey', strokeStyle: 'black' }, label: 'Pocket' })
+        ]);
         // Constrain striker horizontally
-        var strikerCenterX = (game.settings["bottomOuterStrikerPlacementLineStartX"] + game.settings["bottomOuterStrikerPlacementLineEndX"]) / 2;
-        var strikerCenterY = game.settings["bottomOuterStrikerPlacementLineStartY"] - (game.settings["innerStrikerPlacementLineOffset"] / 2);
-        var strikerCircle = Matter.Bodies.circle(strikerCenterX, strikerCenterY, game.settings["strikerDiameter"] / 2, {
-            isStatic: false,
-            restitution: 1,
-            angle: (6.0 * Math.PI) / 4.0,
-            collisionFilter: {
-                category: game.defaultCategory
-            },
-            render: { fillStyle: 'blue', strokeStyle: 'black' },
-            label: 'Striker'
-        });
-        Matter.World.add(game._engine.world, circles);
-        Matter.World.add(game._engine.world, [pocket1, pocket2, pocket3, pocket4, strikerCircle]);
-        return { board: currentBoard };
+        var strikerX = (game.settings["bottomOuterStrikerPlacementLineStartX"] + game.settings["bottomOuterStrikerPlacementLineEndX"]) / 2;
+        var strikerY = game.settings["bottomOuterStrikerPlacementLineStartY"] - (game.settings["innerStrikerPlacementLineOffset"] / 2);
+        // Add striker circle
+        Matter.World.add(game._engine.world, Matter.Bodies.circle(strikerX, strikerY, game.settings["strikerDiameter"] / 2, { isStatic: false, restitution: 1, angle: (6.0 * Math.PI) / 4.0, collisionFilter: { category: game.defaultCategory }, render: { fillStyle: 'blue', strokeStyle: 'black' }, label: 'Striker' }));
     }
     game.drawObjects = drawObjects;
     // This gets called after every move
@@ -484,6 +413,10 @@ var game;
         game.currentUpdateUI = params;
         if (isFirstMove()) {
             updateInitialUI();
+        }
+        else {
+            // Draw board mirrored
+            drawObjects(params.move.stateAfterMove.board, true);
         }
     }
     game.updateUI = updateUI;
@@ -527,7 +460,7 @@ var game;
         game._engine.world.gravity.x = 0;
         game._objectsInMotion = 0;
         updateScene();
-        drawBoard(game._sceneWidth, game._sceneHeight);
+        game.settings = gameLogic.drawBoard(game._sceneWidth, game._sceneHeight);
         // This code saves the state to the local storage
         // var localStorageState = localStorage.getItem("boardState");
         // if (localStorageState != null) {
@@ -545,7 +478,6 @@ var game;
         renderOptions.showAngleIndicator = false;
         renderOptions.wireframes = false;
         renderOptions.showDebug = false;
-        console.log(game._engine);
         Matter.Engine.run(game._engine);
         Matter.Events.on(game._engine.render, 'afterRender', function () {
             var context = game._engine.render.context, bodies = Matter.Composite.allBodies(game._engine.world);
@@ -606,9 +538,6 @@ var game;
                             stateAfterMove: state
                         }
                     };
-                    // Update current state
-                    // currentState = state;
-                    // Check game rules and update score
                     // Send move
                     moveService.makeMove(stateTransition.move);
                     // Not neeeded, only for local storage
