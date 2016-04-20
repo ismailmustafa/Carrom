@@ -309,6 +309,10 @@ module game {
       }
     }
 
+    addSleepEventToEngineBodies();
+  }
+  
+  export function addSleepEventToEngineBodies() {
     for (var i = 0; i < _engine.world.bodies.length; i++) {
       Matter.Events.on(_engine.world.bodies[i], 'sleepStart', function(event) {
         var body = this;
@@ -463,12 +467,10 @@ module game {
   
   // Redraw the board with the new state
   export function setBoardState(state : IState) {
-    
-    _engine.enableSleeping = false;
     Matter.World.clear(_engine.world, false);
-    
     var newBoard : Board = state.board;
     drawObjects(newBoard, true);
+    addSleepEventToEngineBodies();
   }
 
   // Shoot the striker

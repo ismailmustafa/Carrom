@@ -570,6 +570,10 @@ var game;
                 }
             }
         }
+        addSleepEventToEngineBodies();
+    }
+    game.updateInitialUI = updateInitialUI;
+    function addSleepEventToEngineBodies() {
         for (var i = 0; i < game._engine.world.bodies.length; i++) {
             Matter.Events.on(game._engine.world.bodies[i], 'sleepStart', function (event) {
                 var body = this;
@@ -595,7 +599,7 @@ var game;
             });
         }
     }
-    game.updateInitialUI = updateInitialUI;
+    game.addSleepEventToEngineBodies = addSleepEventToEngineBodies;
     // Handle next turn
     function handlePracticeMode() {
         // Practice
@@ -722,10 +726,10 @@ var game;
     game.getBoardState = getBoardState;
     // Redraw the board with the new state
     function setBoardState(state) {
-        game._engine.enableSleeping = false;
         Matter.World.clear(game._engine.world, false);
         var newBoard = state.board;
         drawObjects(newBoard, true);
+        addSleepEventToEngineBodies();
     }
     game.setBoardState = setBoardState;
     // Shoot the striker
