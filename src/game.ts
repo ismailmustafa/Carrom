@@ -157,7 +157,8 @@ module game {
     
     if (isFirstMove()) {
       updateInitialUI();
-      makeComputerMove();
+      $timeout(makeComputerMoveTest, 1000);
+      // makeComputerMove();
     }
   }
   
@@ -316,7 +317,8 @@ module game {
           _engine.enableSleeping = false;
           
           resetStrikerPosition();
-          makeComputerMove();
+          $timeout(makeComputerMoveTest,1000);
+          // makeComputerMove();
 
           // if (isComputerTurn()) {
           //   if (computerTurnFlag) $timeout(makeComputerMove, 1000);
@@ -477,6 +479,34 @@ module game {
   }
   
   export function makeComputerMoveHelper() {
+    let move : Move = aiService.randomMove();
+    // Do translation move
+    for (let i = 0; i < move.translationCount; i++) {
+      if (move.translationDirection == Direction.Left) leftClick();
+      else rightClick();
+    }
+    // Do angle turn
+    for (let i = 0; i < move.angleTurnCount; i++) {
+      if (move.angleDirection == Direction.Left) rotate(RotateDirection.Left);
+      else rotate(RotateDirection.Right);
+    }
+    // Same as shoot click, but without human limitation
+    if (didMakeMove) return;
+    didMakeMove = true;
+    var striker = getStriker();
+    var position = {
+        x: striker.position.x + 1.0 * Math.cos(striker.angle),
+        y: striker.position.y + 1.0 * Math.sin(striker.angle)
+      };
+    var force : number = 0.1;
+    Matter.Body.applyForce(striker, 
+      { x: position.x, y: position.y }, 
+      { x: force * Math.cos(striker.angle), y: force * Math.sin(striker.angle) })
+    _engine.enableSleeping = true;
+  }
+  
+  export function makeComputerMoveTest() {
+    if (!isComputerTurn()) return;
     let move : Move = aiService.randomMove();
     // Do translation move
     for (let i = 0; i < move.translationCount; i++) {

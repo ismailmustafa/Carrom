@@ -443,7 +443,7 @@ var game;
         game.state = params.move.stateAfterMove;
         if (isFirstMove()) {
             updateInitialUI();
-            makeComputerMove();
+            $timeout(makeComputerMoveTest, 1000);
         }
     }
     game.updateUI = updateUI;
@@ -571,7 +571,7 @@ var game;
                     moveService.makeMove(nextMove);
                     game._engine.enableSleeping = false;
                     resetStrikerPosition();
-                    makeComputerMove();
+                    $timeout(makeComputerMoveTest, 1000);
                 }
             });
         }
@@ -753,6 +753,38 @@ var game;
         game._engine.enableSleeping = true;
     }
     game.makeComputerMoveHelper = makeComputerMoveHelper;
+    function makeComputerMoveTest() {
+        if (!isComputerTurn())
+            return;
+        var move = aiService.randomMove();
+        // Do translation move
+        for (var i = 0; i < move.translationCount; i++) {
+            if (move.translationDirection == Direction.Left)
+                leftClick();
+            else
+                rightClick();
+        }
+        // Do angle turn
+        for (var i = 0; i < move.angleTurnCount; i++) {
+            if (move.angleDirection == Direction.Left)
+                rotate(RotateDirection.Left);
+            else
+                rotate(RotateDirection.Right);
+        }
+        // Same as shoot click, but without human limitation
+        if (game.didMakeMove)
+            return;
+        game.didMakeMove = true;
+        var striker = getStriker();
+        var position = {
+            x: striker.position.x + 1.0 * Math.cos(striker.angle),
+            y: striker.position.y + 1.0 * Math.sin(striker.angle)
+        };
+        var force = 0.1;
+        Matter.Body.applyForce(striker, { x: position.x, y: position.y }, { x: force * Math.cos(striker.angle), y: force * Math.sin(striker.angle) });
+        game._engine.enableSleeping = true;
+    }
+    game.makeComputerMoveTest = makeComputerMoveTest;
 })(game || (game = {}));
 angular.module('myApp', ['ngTouch', 'ui.bootstrap', 'gameServices'])
     .run(function () {
