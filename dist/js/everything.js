@@ -570,19 +570,13 @@ var game;
                     var nextMove = gameLogic.createMove(game.state, currentState, game.currentUpdateUI.move.turnIndexAfterMove, game.settings);
                     moveService.makeMove(nextMove);
                     game._engine.enableSleeping = false;
-                    resetStrikerPosition();
-                    // PRACTICE MODE
-                    if (game.currentMode === CurrentMode.Practice) {
-                        console.log("PRACTICE MODE");
+                    if (isComputerTurn()) {
                         if (game.computerTurnFlag)
                             $timeout(makeComputerMove, 1000);
                         game.computerTurnFlag = !game.computerTurnFlag;
                     }
-                    else if (game.currentMode === CurrentMode.PassAndPlay) {
-                        console.log("PASS AND PLAY");
-                    }
                     else {
-                        console.log("PLAY AGAINST OPPONENT");
+                        resetStrikerPosition();
                     }
                 }
             });

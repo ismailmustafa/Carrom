@@ -315,20 +315,12 @@ module game {
 
           _engine.enableSleeping = false;
 
-          resetStrikerPosition();
-          
-          // PRACTICE MODE
-          if (currentMode === CurrentMode.Practice) {
-            console.log("PRACTICE MODE");
+          if (isComputerTurn()) {
             if (computerTurnFlag) $timeout(makeComputerMove, 1000);
             computerTurnFlag = !computerTurnFlag;
           }
-          // PLAY MODE
-          else if (currentMode === CurrentMode.PassAndPlay) {
-            console.log("PASS AND PLAY");
-          }
           else {
-            console.log("PLAY AGAINST OPPONENT");
+            resetStrikerPosition();
           }
         }
       });
