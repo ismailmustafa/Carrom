@@ -443,6 +443,7 @@ var game;
         game.state = params.move.stateAfterMove;
         if (isFirstMove()) {
             updateInitialUI();
+            makeComputerMove();
         }
     }
     game.updateUI = updateUI;
@@ -570,7 +571,6 @@ var game;
                     moveService.makeMove(nextMove);
                     game._engine.enableSleeping = false;
                     resetStrikerPosition();
-                    makeComputerMove();
                 }
             });
         }
