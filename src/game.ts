@@ -333,6 +333,7 @@ module game {
   }
 
   export function getStriker() : Matter.Body {
+    if (_engine === undefined) return undefined;
     for (let body in _engine.world.bodies) 
     if (_engine.world.bodies[body].label == "Striker") {
       return _engine.world.bodies[body];

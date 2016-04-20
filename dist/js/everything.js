@@ -579,6 +579,8 @@ var game;
     }
     game.updateInitialUI = updateInitialUI;
     function getStriker() {
+        if (game._engine === undefined)
+            return undefined;
         for (var body in game._engine.world.bodies)
             if (game._engine.world.bodies[body].label == "Striker") {
                 return game._engine.world.bodies[body];
