@@ -47,6 +47,7 @@ module game {
   export let currentTurn : CurrentTurn = CurrentTurn.White; // White goes first
   export let turnIndex : number = 0; // Initialize turn index
   export let settings : any = null;
+  export let enableButtons: boolean = true;
 
   // Engine initial variables
   export let _engine: any, _objectsInMotion = 0, clickPromise : any,
@@ -356,6 +357,7 @@ module game {
   var translationFactor = 15;
   // Move the striker left
   export function leftClick(){
+    if (!isHumanTurn()) return;
     var posX = getStriker().position.x;
     var leftGuard = settings["bottomOuterStrikerPlacementLineStartX"];
     if ((posX - translationFactor) > leftGuard) Matter.Body.translate(getStriker(), { x: -translationFactor, y: 0 });
@@ -367,7 +369,7 @@ module game {
 
   // Move the striker right
   export function rightClick(){
-    console.log("rightClick");
+    if (!isHumanTurn()) return;
     var posX = getStriker().position.x;
     var rightGuard = settings["bottomOuterStrikerPlacementLineEndX"];
     if (posX + translationFactor < rightGuard) Matter.Body.translate(getStriker(), { x: translationFactor, y: 0 });
@@ -379,11 +381,13 @@ module game {
 
   // Rotate the striker left
   export function leftRotate(){
+    if (!isHumanTurn()) return;
     rotate(RotateDirection.Left);
   }
   
   // Rotate the striker right
   export function rightRotate(){
+    if (!isHumanTurn()) return;
     rotate(RotateDirection.Right);
   }
 

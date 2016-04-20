@@ -355,6 +355,7 @@ var game;
     game.currentTurn = CurrentTurn.White; // White goes first
     game.turnIndex = 0; // Initialize turn index
     game.settings = null;
+    game.enableButtons = true;
     // Engine initial variables
     game._objectsInMotion = 0;
     game.defaultCategory = 0x0001, game.removedCategory = 0x0002, game.movableCategory = 0x0003;
@@ -611,6 +612,8 @@ var game;
     var translationFactor = 15;
     // Move the striker left
     function leftClick() {
+        if (!isHumanTurn())
+            return;
         var posX = getStriker().position.x;
         var leftGuard = game.settings["bottomOuterStrikerPlacementLineStartX"];
         if ((posX - translationFactor) > leftGuard)
@@ -623,7 +626,8 @@ var game;
     game.leftClick = leftClick;
     // Move the striker right
     function rightClick() {
-        console.log("rightClick");
+        if (!isHumanTurn())
+            return;
         var posX = getStriker().position.x;
         var rightGuard = game.settings["bottomOuterStrikerPlacementLineEndX"];
         if (posX + translationFactor < rightGuard)
@@ -636,11 +640,15 @@ var game;
     game.rightClick = rightClick;
     // Rotate the striker left
     function leftRotate() {
+        if (!isHumanTurn())
+            return;
         rotate(RotateDirection.Left);
     }
     game.leftRotate = leftRotate;
     // Rotate the striker right
     function rightRotate() {
+        if (!isHumanTurn())
+            return;
         rotate(RotateDirection.Right);
     }
     game.rightRotate = rightRotate;
