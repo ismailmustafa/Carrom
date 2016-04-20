@@ -578,10 +578,11 @@ var game;
     }
     game.updateInitialUI = updateInitialUI;
     function getStriker() {
-        for (var body in game._engine.world.bodies)
+        for (var body in game._engine.world.bodies) {
             if (game._engine.world.bodies[body].label == "Striker") {
                 return game._engine.world.bodies[body];
             }
+        }
     }
     game.getStriker = getStriker;
     // Reset the position of the striker relative to the current player
