@@ -438,7 +438,6 @@ var game;
             game.currentMode = CurrentMode.Practice;
         else
             game.currentMode = CurrentMode.Opponent;
-        resetStrikerPosition();
         game.didMakeMove = false;
         game.currentUpdateUI = params;
         game.state = params.move.stateAfterMove;
@@ -571,16 +570,14 @@ var game;
                     var nextMove = gameLogic.createMove(game.state, currentState, game.currentUpdateUI.move.turnIndexAfterMove, game.settings);
                     moveService.makeMove(nextMove);
                     game._engine.enableSleeping = false;
-                    // resetStrikerPosition();
-                    $timeout(makeComputerMove, 1000);
+                    resetStrikerPosition();
+                    makeComputerMove();
                 }
             });
         }
     }
     game.updateInitialUI = updateInitialUI;
     function getStriker() {
-        if (game._engine === undefined)
-            return undefined;
         for (var body in game._engine.world.bodies)
             if (game._engine.world.bodies[body].label == "Striker") {
                 return game._engine.world.bodies[body];
@@ -591,6 +588,8 @@ var game;
     game.getStriker = getStriker;
     // Reset the position of the striker relative to the current player
     function resetStrikerPosition() {
+        if (!isHumanTurn())
+            return; // only reset to this position for humans
         var striker = getStriker();
         if (striker === undefined)
             return;
@@ -605,6 +604,22 @@ var game;
         }
     }
     game.resetStrikerPosition = resetStrikerPosition;
+    // Set striker position to top for computer
+    function resetStrikerPositionForComputer() {
+        var striker = getStriker();
+        if (striker === undefined)
+            return;
+        var strikerCenterX = (game.settings["topOuterStrikerPlacementLineStartX"] + game.settings["topOuterStrikerPlacementLineEndX"]) / 2;
+        var strikerCenterY = game.settings["topInnerStrikerPlacementLineStartY"] - (game.settings["innerStrikerPlacementLineOffset"] / 2);
+        Matter.Body.setPosition(striker, { x: strikerCenterX, y: strikerCenterY });
+        Matter.Body.setAngle(striker, (6.0 * Math.PI) / 4.0);
+        for (var body in game._engine.world.bodies) {
+            if (game._engine.world.bodies[body].label != "Pocket") {
+                Matter.Sleeping.set(game._engine.world.bodies[body], false);
+            }
+        }
+    }
+    game.resetStrikerPositionForComputer = resetStrikerPositionForComputer;
     var translationFactor = 15;
     // Move the striker left
     function leftClick() {
@@ -709,6 +724,11 @@ var game;
     function makeComputerMove() {
         if (!isComputerTurn())
             return;
+        resetStrikerPositionForComputer();
+        $timeout(makeComputerMoveHelper, 1000);
+    }
+    game.makeComputerMove = makeComputerMove;
+    function makeComputerMoveHelper() {
         var move = aiService.randomMove();
         // Do translation move
         for (var i = 0; i < move.translationCount; i++) {
@@ -737,7 +757,7 @@ var game;
         Matter.Body.applyForce(striker, { x: position.x, y: position.y }, { x: force * Math.cos(striker.angle), y: force * Math.sin(striker.angle) });
         game._engine.enableSleeping = true;
     }
-    game.makeComputerMove = makeComputerMove;
+    game.makeComputerMoveHelper = makeComputerMoveHelper;
 })(game || (game = {}));
 angular.module('myApp', ['ngTouch', 'ui.bootstrap', 'gameServices'])
     .run(function () {

@@ -151,8 +151,6 @@ module game {
     else if (params.playMode === "playAgainstTheComputer") currentMode = CurrentMode.Practice;
     else currentMode = CurrentMode.Opponent;
     
-    resetStrikerPosition();
-    
     didMakeMove = false;
     currentUpdateUI = params;
     state = params.move.stateAfterMove;
@@ -317,8 +315,8 @@ module game {
 
           _engine.enableSleeping = false;
           
-          // resetStrikerPosition();
-          $timeout(makeComputerMove, 1000);
+          resetStrikerPosition();
+          makeComputerMove();
 
           // if (isComputerTurn()) {
           //   if (computerTurnFlag) $timeout(makeComputerMove, 1000);
@@ -333,7 +331,6 @@ module game {
   }
 
   export function getStriker() : Matter.Body {
-    if (_engine === undefined) return undefined;
     for (let body in _engine.world.bodies) 
     if (_engine.world.bodies[body].label == "Striker") {
       return _engine.world.bodies[body];
@@ -343,10 +340,27 @@ module game {
   
   // Reset the position of the striker relative to the current player
   export function resetStrikerPosition() {
+    if (!isHumanTurn()) return; // only reset to this position for humans
     var striker = getStriker();
     if (striker === undefined) return;
     var strikerCenterX = (settings["bottomOuterStrikerPlacementLineStartX"] + settings["bottomOuterStrikerPlacementLineEndX"]) / 2;
     var strikerCenterY = settings["bottomOuterStrikerPlacementLineStartY"] - (settings["innerStrikerPlacementLineOffset"] / 2);
+    Matter.Body.setPosition(striker, {x:strikerCenterX, y:strikerCenterY});
+    Matter.Body.setAngle(striker, (6.0 * Math.PI) / 4.0);
+
+    for (let body in _engine.world.bodies) {
+      if (_engine.world.bodies[body].label != "Pocket") {
+        Matter.Sleeping.set(_engine.world.bodies[body], false);
+      }
+    }
+  }
+  
+  // Set striker position to top for computer
+  export function resetStrikerPositionForComputer() {
+    var striker = getStriker();
+    if (striker === undefined) return;
+    var strikerCenterX = (settings["topOuterStrikerPlacementLineStartX"] + settings["topOuterStrikerPlacementLineEndX"]) / 2;
+    var strikerCenterY = settings["topInnerStrikerPlacementLineStartY"] - (settings["innerStrikerPlacementLineOffset"] / 2);
     Matter.Body.setPosition(striker, {x:strikerCenterX, y:strikerCenterY});
     Matter.Body.setAngle(striker, (6.0 * Math.PI) / 4.0);
 
@@ -459,8 +473,12 @@ module game {
   // Simulate computer move 
   export function makeComputerMove() {
     if (!isComputerTurn()) return;
-    
-    let move : Move = aiService.randomMove();
+    resetStrikerPositionForComputer();
+    $timeout(makeComputerMoveHelper, 1000);
+  }
+  
+  export function makeComputerMoveHelper() {
+  let move : Move = aiService.randomMove();
     // Do translation move
     for (let i = 0; i < move.translationCount; i++) {
       if (move.translationDirection == Direction.Left) leftClick();
@@ -486,6 +504,8 @@ module game {
     _engine.enableSleeping = true;
   }
 }
+
+
 
 angular.module('myApp', ['ngTouch', 'ui.bootstrap', 'gameServices'])
   .run(function() {
