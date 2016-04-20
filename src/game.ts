@@ -468,7 +468,19 @@ module game {
       if (move.angleDirection == Direction.Left) rotate(RotateDirection.Left);
       else rotate(RotateDirection.Right);
     }
-    shootClick();
+    // Same as shoot click, but without human limitation
+    if (didMakeMove) return;
+    didMakeMove = true;
+    var striker = getStriker();
+    var position = {
+        x: striker.position.x + 1.0 * Math.cos(striker.angle),
+        y: striker.position.y + 1.0 * Math.sin(striker.angle)
+      };
+    var force : number = 0.1;
+    Matter.Body.applyForce(striker, 
+      { x: position.x, y: position.y }, 
+      { x: force * Math.cos(striker.angle), y: force * Math.sin(striker.angle) })
+    _engine.enableSleeping = true;
   }
 }
 
