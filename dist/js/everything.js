@@ -326,7 +326,7 @@ var game;
     game.turnIndex = 0; // Initialize turn index
     game.settings = null;
     // Enable or disable player buttons
-    game.enableButtons = true;
+    // export let enableButtons : Boolean = true;
     // Engine initial variables
     game._objectsInMotion = 0;
     game.defaultCategory = 0x0001, game.removedCategory = 0x0002, game.movableCategory = 0x0003;
@@ -552,7 +552,7 @@ var game;
                     moveService.makeMove(stateTransition.move);
                     // Not neeeded, only for local storage
                     // localStorage.setItem("boardState", JSON.stringify(<any>state));
-                    game.enableButtons = true;
+                    // enableButtons = true;
                     game._engine.enableSleeping = false;
                     resetStrikerPosition();
                     // PRACTICE MODE
@@ -684,14 +684,16 @@ var game;
         var force = 0.1;
         Matter.Body.applyForce(striker, { x: position.x, y: position.y }, { x: force * Math.cos(striker.angle), y: force * Math.sin(striker.angle) });
         // Disable buttons to prevent user interaction
-        game.enableButtons = false;
+        // enableButtons = false;
         game._engine.enableSleeping = true;
     }
     game.shootClick = shootClick;
     // Simulate computer move 
     function makeComputerMove() {
-        // Disable buttons 
-        game.enableButtons = false;
+        if (!isComputerTurn())
+            return;
+        // // Disable buttons 
+        // enableButtons = false;
         if (game.currentMode === CurrentMode.Practice) {
             var move = aiService.randomMove();
             // Do translation move

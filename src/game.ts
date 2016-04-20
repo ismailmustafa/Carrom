@@ -49,7 +49,7 @@ module game {
   export let settings : any = null;
 
   // Enable or disable player buttons
-  export let enableButtons : Boolean = true;
+  // export let enableButtons : Boolean = true;
 
   // Engine initial variables
   export let _engine: any, _objectsInMotion = 0, clickPromise : any,
@@ -330,7 +330,7 @@ module game {
           // Not neeeded, only for local storage
           // localStorage.setItem("boardState", JSON.stringify(<any>state));
 
-          enableButtons = true;
+          // enableButtons = true;
 
           _engine.enableSleeping = false;
 
@@ -374,7 +374,6 @@ module game {
   }
 
   var translationFactor = 15;
-
   // Move the striker left
   export function leftClick(){
     var posX = getStriker().position.x;
@@ -468,15 +467,16 @@ module game {
       { x: force * Math.cos(striker.angle), y: force * Math.sin(striker.angle) })
     
     // Disable buttons to prevent user interaction
-    enableButtons = false;
+    // enableButtons = false;
     
     _engine.enableSleeping = true;
   }
   
   // Simulate computer move 
   export function makeComputerMove() {
-    // Disable buttons 
-    enableButtons = false;
+    if (!isComputerTurn()) return;
+    // // Disable buttons 
+    // enableButtons = false;
     
     if (currentMode === CurrentMode.Practice) {
       let move : Move = aiService.randomMove();
@@ -493,7 +493,6 @@ module game {
       shootClick();
     }
   }
-  
 }
 
 angular.module('myApp', ['ngTouch', 'ui.bootstrap', 'gameServices'])
