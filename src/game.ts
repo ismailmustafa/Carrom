@@ -48,9 +48,6 @@ module game {
   export let turnIndex : number = 0; // Initialize turn index
   export let settings : any = null;
 
-  // Enable or disable player buttons
-  // export let enableButtons : Boolean = true;
-
   // Engine initial variables
   export let _engine: any, _objectsInMotion = 0, clickPromise : any,
              _world : any, _sceneWidth : any, _sceneHeight : any;
@@ -159,6 +156,7 @@ module game {
     
     if (isFirstMove()) {
       updateInitialUI();
+      makeComputerMove();
     }
   }
   
@@ -307,30 +305,12 @@ module game {
         }
 
         if (isWorldStatic) {
-          console.log("World is Static (New)");
-
-          // Generate current state of the board
-          var state = getBoardState();
-          
-          // Create state transition
-          var stateTransition : IStateTransition = {
-            turnIndexBeforeMove: 0,
-            stateBeforeMove: state,
-            numberOfPlayers: 2,
-            move: {
-              endMatchScores: null,
-              turnIndexAfterMove: 1,
-              stateAfterMove: state
-            }
-          }        
-          
-          // Send move
-          moveService.makeMove(stateTransition.move);
-          
           // Not neeeded, only for local storage
           // localStorage.setItem("boardState", JSON.stringify(<any>state));
 
-          // enableButtons = true;
+          var currentState = getBoardState();
+          var nextMove = gameLogic.createMove(state, currentState, currentUpdateUI.move.turnIndexAfterMove, settings);
+          moveService.makeMove(nextMove);
 
           _engine.enableSleeping = false;
 
@@ -466,32 +446,25 @@ module game {
       { x: position.x, y: position.y }, 
       { x: force * Math.cos(striker.angle), y: force * Math.sin(striker.angle) })
     
-    // Disable buttons to prevent user interaction
-    // enableButtons = false;
-    
     _engine.enableSleeping = true;
   }
   
   // Simulate computer move 
   export function makeComputerMove() {
     if (!isComputerTurn()) return;
-    // // Disable buttons 
-    // enableButtons = false;
     
-    if (currentMode === CurrentMode.Practice) {
-      let move : Move = aiService.randomMove();
-      // Do translation move
-      for (let i = 0; i < move.translationCount; i++) {
-        if (move.translationDirection == Direction.Left) leftClick();
-        else rightClick();
-      }
-      // Do angle turn
-      for (let i = 0; i < move.angleTurnCount; i++) {
-        if (move.angleDirection == Direction.Left) rotate(RotateDirection.Left);
-        else rotate(RotateDirection.Right);
-      }
-      shootClick();
+    let move : Move = aiService.randomMove();
+    // Do translation move
+    for (let i = 0; i < move.translationCount; i++) {
+      if (move.translationDirection == Direction.Left) leftClick();
+      else rightClick();
     }
+    // Do angle turn
+    for (let i = 0; i < move.angleTurnCount; i++) {
+      if (move.angleDirection == Direction.Left) rotate(RotateDirection.Left);
+      else rotate(RotateDirection.Right);
+    }
+    shootClick();
   }
 }
 

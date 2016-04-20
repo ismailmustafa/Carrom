@@ -339,6 +339,36 @@ module gameLogic {
     };
   }
   
+  export function createMove(stateBeforeMove: IState, stateAfterMove: IState, row: number, col: number, turnIndexBeforeMove: number, gameSettings: any): IMove {
+    if (!stateBeforeMove) { // stateBeforeMove is null in a new match.
+      stateBeforeMove = getInitialState(gameSettings);
+    }
+    let board: Board = stateBeforeMove.board;
+    // if (board[row][col] !== '') {
+    //   throw new Error("One can only make a move in an empty position!");
+    // }
+    // if (getWinner(board) !== '' || isTie(board)) {
+    //   throw new Error("Can only make a move if the game is not over!");
+    // }
+    // let boardAfterMove = angular.copy(board);
+    // boardAfterMove[row][col] = turnIndexBeforeMove === 0 ? 'X' : 'O';
+    // let winner = getWinner(boardAfterMove);
+    let endMatchScores: number[];
+    let turnIndexAfterMove: number;
+    // if (winner !== '' || isTie(boardAfterMove)) {
+    //   // Game over.
+    //   turnIndexAfterMove = -1;
+    //   endMatchScores = winner === 'X' ? [1, 0] : winner === 'O' ? [0, 1] : [0, 0];
+    // } else {
+    //   // Game continues. Now it's the opponent's turn (the turn switches from 0 to 1 and 1 to 0).
+    //   turnIndexAfterMove = 1 - turnIndexBeforeMove;
+    //   endMatchScores = null;
+    // }
+    turnIndexAfterMove = 1 - turnIndexBeforeMove;
+    endMatchScores = null;
+    return {endMatchScores: endMatchScores, turnIndexAfterMove: turnIndexAfterMove, stateAfterMove: stateAfterMove};
+  }
+  
   // GAME RULES
   
   // Check if game is over
