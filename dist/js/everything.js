@@ -570,7 +570,10 @@ var game;
                     var nextMove = gameLogic.createMove(game.state, currentState, game.currentUpdateUI.move.turnIndexAfterMove, game.settings);
                     moveService.makeMove(nextMove);
                     game._engine.enableSleeping = false;
-                    resetStrikerPosition();
+                    if (isComputerTurn())
+                        resetStrikerPositionForComputer();
+                    else
+                        resetStrikerPosition();
                     $timeout(makeComputerMoveTest, 1000);
                 }
             });
