@@ -161,16 +161,16 @@ module game {
       makeComputerMove();
     }
     else {
-      // HANDLE REDRAWING FOR OTHER TWO MODES (opponent + passAndPlay)
-      if (currentMode === CurrentMode.PassAndPlay) {
-        setBoardState(state);
-      }
-      else if (currentMode === CurrentMode.Opponent) {
-        // Only redraw and invert for current player
-        if (isMyTurn()) {
-          setBoardState(state);
-        }
-      }
+      // // HANDLE REDRAWING FOR OTHER TWO MODES (opponent + passAndPlay)
+      // if (currentMode === CurrentMode.PassAndPlay) {
+      //   setBoardState(state);
+      // }
+      // else if (currentMode === CurrentMode.Opponent) {
+      //   // Only redraw and invert for current player
+      //   if (isMyTurn()) {
+      //     setBoardState(state);
+      //   }
+      // }
     }
   }
   
@@ -329,14 +329,14 @@ module game {
           _engine.enableSleeping = false;
           
           // Handle next turn
-          $timeout(handleNextTurn, 1000);
+          $timeout(function() {handleNextTurn(currentState)}, 1000);
         }
       });
     }
   }
   
   // Handle next turn
-  export function handleNextTurn() {
+  export function handleNextTurn(newState : IState) {
     // Practice
     if (currentMode === CurrentMode.Practice) {
       resetStrikerPosition();
@@ -345,10 +345,14 @@ module game {
     // Play against random opponent
     else if (currentMode === CurrentMode.Opponent) {
       resetStrikerPosition();
+      if (isMyTurn()) {
+        setBoardState(newState);
+      }
     }
     // pass and play
     else {
       resetStrikerPosition();
+      setBoardState(newState);
     }
   }
 

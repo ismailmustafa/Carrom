@@ -447,16 +447,6 @@ var game;
             makeComputerMove();
         }
         else {
-            // HANDLE REDRAWING FOR OTHER TWO MODES (opponent + passAndPlay)
-            if (game.currentMode === CurrentMode.PassAndPlay) {
-                setBoardState(game.state);
-            }
-            else if (game.currentMode === CurrentMode.Opponent) {
-                // Only redraw and invert for current player
-                if (isMyTurn()) {
-                    setBoardState(game.state);
-                }
-            }
         }
     }
     game.updateUI = updateUI;
@@ -584,14 +574,14 @@ var game;
                     moveService.makeMove(nextMove);
                     game._engine.enableSleeping = false;
                     // Handle next turn
-                    $timeout(handleNextTurn, 1000);
+                    $timeout(function () { handleNextTurn(currentState); }, 1000);
                 }
             });
         }
     }
     game.updateInitialUI = updateInitialUI;
     // Handle next turn
-    function handleNextTurn() {
+    function handleNextTurn(newState) {
         // Practice
         if (game.currentMode === CurrentMode.Practice) {
             resetStrikerPosition();
@@ -599,9 +589,13 @@ var game;
         }
         else if (game.currentMode === CurrentMode.Opponent) {
             resetStrikerPosition();
+            if (isMyTurn()) {
+                setBoardState(newState);
+            }
         }
         else {
             resetStrikerPosition();
+            setBoardState(newState);
         }
     }
     game.handleNextTurn = handleNextTurn;
