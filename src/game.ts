@@ -367,9 +367,9 @@ module game {
     if (!isComputerTurn()) return;
     console.log("reseting striker for computer");
     var strikerCenterX = (settings["bottomOuterStrikerPlacementLineStartX"] + settings["bottomOuterStrikerPlacementLineEndX"]) / 2;
-    var strikerCenterY = settings["topInnerStrikerPlacementLineStartY"] - (settings["innerStrikerPlacementLineOffset"] / 2);
+    var strikerCenterY = settings["outerBoardHeight"] - (settings["bottomOuterStrikerPlacementLineStartY"] - (settings["innerStrikerPlacementLineOffset"] / 2));
     var striker = getStriker();
-    Matter.Body.setPosition(striker, {x:strikerCenterX, y:200});
+    Matter.Body.setPosition(striker, {x:strikerCenterX, y:strikerCenterY});
     Matter.Body.setAngle(striker, (6.0 * Math.PI) / 4.0);
 
     for (let body in _engine.world.bodies) {

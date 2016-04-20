@@ -615,9 +615,9 @@ var game;
             return;
         console.log("reseting striker for computer");
         var strikerCenterX = (game.settings["bottomOuterStrikerPlacementLineStartX"] + game.settings["bottomOuterStrikerPlacementLineEndX"]) / 2;
-        var strikerCenterY = game.settings["topInnerStrikerPlacementLineStartY"] - (game.settings["innerStrikerPlacementLineOffset"] / 2);
+        var strikerCenterY = game.settings["outerBoardHeight"] - (game.settings["bottomOuterStrikerPlacementLineStartY"] - (game.settings["innerStrikerPlacementLineOffset"] / 2));
         var striker = getStriker();
-        Matter.Body.setPosition(striker, { x: strikerCenterX, y: 200 });
+        Matter.Body.setPosition(striker, { x: strikerCenterX, y: strikerCenterY });
         Matter.Body.setAngle(striker, (6.0 * Math.PI) / 4.0);
         for (var body in game._engine.world.bodies) {
             if (game._engine.world.bodies[body].label != "Pocket") {
