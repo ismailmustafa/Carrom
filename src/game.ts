@@ -477,6 +477,7 @@ module game {
   
   // Simulate computer move 
   export function makeComputerMove() {
+    console.log(isComputerTurn());
     if (!isComputerTurn()) return;
     resetStrikerPositionForComputer();
     console.log("BEFORE TIMEOUT");

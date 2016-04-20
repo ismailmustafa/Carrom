@@ -725,6 +725,7 @@ var game;
     game.shootClick = shootClick;
     // Simulate computer move 
     function makeComputerMove() {
+        console.log(isComputerTurn());
         if (!isComputerTurn())
             return;
         resetStrikerPositionForComputer();
