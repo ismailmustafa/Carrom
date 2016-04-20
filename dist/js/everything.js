@@ -438,6 +438,7 @@ var game;
             game.currentMode = CurrentMode.Practice;
         else
             game.currentMode = CurrentMode.Opponent;
+        resetStrikerPosition();
         game.didMakeMove = false;
         game.currentUpdateUI = params;
         game.state = params.move.stateAfterMove;
@@ -570,7 +571,7 @@ var game;
                     var nextMove = gameLogic.createMove(game.state, currentState, game.currentUpdateUI.move.turnIndexAfterMove, game.settings);
                     moveService.makeMove(nextMove);
                     game._engine.enableSleeping = false;
-                    resetStrikerPosition();
+                    // resetStrikerPosition();
                     $timeout(makeComputerMove, 1000);
                 }
             });

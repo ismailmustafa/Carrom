@@ -151,6 +151,8 @@ module game {
     else if (params.playMode === "playAgainstTheComputer") currentMode = CurrentMode.Practice;
     else currentMode = CurrentMode.Opponent;
     
+    resetStrikerPosition();
+    
     didMakeMove = false;
     currentUpdateUI = params;
     state = params.move.stateAfterMove;
@@ -315,7 +317,7 @@ module game {
 
           _engine.enableSleeping = false;
           
-          resetStrikerPosition();
+          // resetStrikerPosition();
           $timeout(makeComputerMove, 1000);
 
           // if (isComputerTurn()) {
