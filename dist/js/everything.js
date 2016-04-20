@@ -571,6 +571,7 @@ var game;
                     moveService.makeMove(nextMove);
                     game._engine.enableSleeping = false;
                     resetStrikerPosition();
+                    makeComputerMove();
                 }
             });
         }

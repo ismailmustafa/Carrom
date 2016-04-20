@@ -316,7 +316,7 @@ module game {
           _engine.enableSleeping = false;
           
           resetStrikerPosition();
-          // makeComputerMove();
+          makeComputerMove();
 
           // if (isComputerTurn()) {
           //   if (computerTurnFlag) $timeout(makeComputerMove, 1000);
