@@ -157,7 +157,7 @@ module game {
     
     if (isFirstMove()) {
       updateInitialUI();
-      makeComputerMove();
+      $timeout(makeComputerMove, 1000);
     }
   }
   
@@ -314,14 +314,17 @@ module game {
           moveService.makeMove(nextMove);
 
           _engine.enableSleeping = false;
+          
+          resetStrikerPosition();
+          $timeout(makeComputerMove, 1000);
 
-          if (isComputerTurn()) {
-            if (computerTurnFlag) $timeout(makeComputerMove, 1000);
-            computerTurnFlag = !computerTurnFlag;
-          }
-          else {
-            resetStrikerPosition();
-          }
+          // if (isComputerTurn()) {
+          //   if (computerTurnFlag) $timeout(makeComputerMove, 1000);
+          //   computerTurnFlag = !computerTurnFlag;
+          // }
+          // else {
+          //   resetStrikerPosition();
+          // }
         }
       });
     }

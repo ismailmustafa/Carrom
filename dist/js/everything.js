@@ -443,7 +443,7 @@ var game;
         game.state = params.move.stateAfterMove;
         if (isFirstMove()) {
             updateInitialUI();
-            makeComputerMove();
+            $timeout(makeComputerMove, 1000);
         }
     }
     game.updateUI = updateUI;
@@ -570,14 +570,8 @@ var game;
                     var nextMove = gameLogic.createMove(game.state, currentState, game.currentUpdateUI.move.turnIndexAfterMove, game.settings);
                     moveService.makeMove(nextMove);
                     game._engine.enableSleeping = false;
-                    if (isComputerTurn()) {
-                        if (game.computerTurnFlag)
-                            $timeout(makeComputerMove, 1000);
-                        game.computerTurnFlag = !game.computerTurnFlag;
-                    }
-                    else {
-                        resetStrikerPosition();
-                    }
+                    resetStrikerPosition();
+                    $timeout(makeComputerMove, 1000);
                 }
             });
         }
