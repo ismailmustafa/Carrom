@@ -431,6 +431,7 @@ var game;
     game.drawObjects = drawObjects;
     // This gets called after every move
     function updateUI(params) {
+        console.log("I AM IN THE UPDATE UI FUNCTION HELLO");
         // SET CURRENT MODE
         if (params.playMode === "passAndPlay")
             game.currentMode = CurrentMode.PassAndPlay;

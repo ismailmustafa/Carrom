@@ -146,6 +146,7 @@ module game {
 
   // This gets called after every move
   export function updateUI(params : IUpdateUI) : void {
+    console.log("I AM IN THE UPDATE UI FUNCTION HELLO");
     // SET CURRENT MODE
     if (params.playMode === "passAndPlay") currentMode = CurrentMode.PassAndPlay;
     else if (params.playMode === "playAgainstTheComputer") currentMode = CurrentMode.Practice;
