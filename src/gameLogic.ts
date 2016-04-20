@@ -117,11 +117,14 @@ module gameLogic {
     };
   }
   
-  // Game rules
+  // GAME RULES
+  
+  // Check if game is over
   export function gameIsOver(state : IState) : Boolean {
     return state.board.length === 0;
   }
   
+  // Check if queen has been pocketed
   export function queenPocketed(state : IState) : Boolean {
     let queenFound : Boolean = false;
     for (let i = 0; i < state.board.length; i++) {
@@ -131,4 +134,9 @@ module gameLogic {
     }
     return queenFound;
   }
+  
+  // export function calculateScore(state : IState, currentTurn : game.CurrentTurn, currentScore : game.GameScore) : game.GameScore {
+  //   let pocketedCoins
+    
+  // }
 }

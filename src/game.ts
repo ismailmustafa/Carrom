@@ -32,6 +32,14 @@ module game {
   }
   
   // ALL INITIAL VARIABLES
+  
+  // These variable taken from TicTacToe logic
+  export let currentUpdateUI: IUpdateUI = null;
+  export let didMakeMove: boolean = false;
+  export let state: IState = null;
+  export let isHelpModalShown: boolean = false;
+  
+  // My variables
   export let currentMode : CurrentMode; // Current mode
   export let isComputerTurn : Boolean  = true; // check if computer should play in practice mode
   export let gameScore : GameScore = {White: 0, Black: 0}; // Keep track of game score
@@ -41,8 +49,6 @@ module game {
 
   // Enable or disable player buttons
   export let enableButtons : Boolean = true;
-  
-  export let state: IState;
 
   export let board: Board;
 
@@ -326,20 +332,6 @@ module game {
 
   };
 
-  export function fullscreen() {
-    var _fullscreenElement = _engine.render.canvas;
-
-    if (!document.fullscreenElement && !(<any>document).mozFullScreenElement && !document.webkitFullscreenElement) {
-      if (_fullscreenElement.requestFullscreen) {
-        _fullscreenElement.requestFullscreen();
-      } else if (_fullscreenElement.mozRequestFullScreen) {
-        _fullscreenElement.mozRequestFullScreen();
-      } else if (_fullscreenElement.webkitRequestFullscreen) {
-        _fullscreenElement.webkitRequestFullscreen((<any>Element).ALLOW_KEYBOARD_INPUT);
-      }
-    }
-  };
-
   export function drawObjects(currentBoard : Board, redrawingForMultiplayer : Boolean) : IState {
     
     if (currentBoard == undefined) {
@@ -470,32 +462,50 @@ module game {
     return {board:currentBoard};
   }
 
-  export function isNumber(n : any) {
-    return !isNaN(parseFloat(n)) && isFinite(n);
+  // This gets called after every move
+  export function updateUI(params : IUpdateUI) : void {
+    // SET CURRENT MODE
+    if (params.playMode === "passAndPlay") currentMode = CurrentMode.PassAndPlay;
+    else if (params.playMode === "playAgainstTheComputer") currentMode = CurrentMode.Practice;
+    else currentMode = CurrentMode.Opponent;
+    
+    // Update params
+    currentUpdateUI = params;
+
+    
+    if (isFirstMove()) {
+      updateInitialUI();
+    }
+    
+    
+  }
+  
+  function isFirstMove() {
+    return !currentUpdateUI.move.stateAfterMove;
   }
 
-  export function updateUI(params : IUpdateUI) : void {
-    console.log("IN UPDATE UI");
-    console.log("params.move:", params.move);
-    // SET CURRENT MODE
-    // Play against person next to you
-    if (params.playMode === "passAndPlay") {
-      currentMode = CurrentMode.PassAndPlay;
-    }
-    // Play against computer
-    else if (params.playMode === "playAgainstTheComputer") {
-      currentMode = CurrentMode.Practice;
-    }
-    // Play against random opponent
-    else {
-      currentMode = CurrentMode.Opponent;
-    }
+  export function init() {
     
-    // DEBUGGING FORCE
-    // currentMode = CurrentMode.Practice;
+    // Set for offline use
+    currentMode = CurrentMode.Practice;
+
+    console.log("intial init");
     
-    console.log("CURRENT MODE NEW:", currentMode);
+    resizeGameAreaService.setWidthToHeight(1);
+
+    var mS = moveService.setGame({
+      minNumberOfPlayers: 2,
+      maxNumberOfPlayers: 2,
+      checkMoveOk: gameLogic.checkMoveOk,
+      updateUI: updateUI
+    });
     
+    console.log("MOVE SERVICE:", mS);
+
+  }
+  
+  // This should be only called once
+  export function updateInitialUI() {
     // create a Matter.js engine
     _engine = Matter.Engine.create(document.getElementById("gameArea"), <any>{
       render: {
@@ -613,7 +623,7 @@ module game {
           console.log("World is Static (New)");
 
           // Generate current state of the board
-          var state = createBoardState();
+          var state = getBoardState();
           
           // Create state transition
           var stateTransition : IStateTransition = {
@@ -663,32 +673,8 @@ module game {
     }
   }
 
-  export function init() {
-    
-    // Set for offline use
-    currentMode = CurrentMode.Practice;
-
-    console.log("intial init");
-    
-    resizeGameAreaService.setWidthToHeight(1);
-
-    var mS = moveService.setGame({
-      minNumberOfPlayers: 2,
-      maxNumberOfPlayers: 2,
-      checkMoveOk: gameLogic.checkMoveOk,
-      updateUI: updateUI
-    });
-    
-    console.log("MOVE SERVICE:", mS);
-
-  }
-
   export function getStriker() : Matter.Body {
-    for (let body in _engine.world.bodies) {
-      if (_engine.world.bodies[body].label == "Striker") {
-        return _engine.world.bodies[body];
-      }
-    }
+    for (let body in _engine.world.bodies) if (_engine.world.bodies[body].label == "Striker") return _engine.world.bodies[body];
   }
   
   // Reset the position of the striker relative to the current player
@@ -708,31 +694,11 @@ module game {
 
   var translationFactor = 15;
 
-  export function mouseUp(dir: string) {
-    $interval.cancel(clickPromise);
-  };
-
-  export function mouseDown(dir: string) {
-    // if (!enableButtons) return;
-    clickPromise = $interval(function() {
-      if (dir === "left")
-        game.leftClick();
-      else if (dir === "right")
-        game.rightClick();
-      else if (dir === "leftRotate")
-        game.leftRotate();
-      else if (dir === "rightRotate")
-        game.rightRotate();
-    }, 50);
-  };
-
   // Move the striker left
   export function leftClick(){
     var posX = getStriker().position.x;
     var leftGuard = settings["bottomOuterStrikerPlacementLineStartX"];
-    if ((posX - translationFactor) > leftGuard) {
-      Matter.Body.translate(getStriker(), { x: -translationFactor, y: 0 });
-    }
+    if ((posX - translationFactor) > leftGuard) Matter.Body.translate(getStriker(), { x: -translationFactor, y: 0 });
     else {
       var newTranslationFactor = posX - leftGuard;
       Matter.Body.translate(getStriker(), { x: -newTranslationFactor, y: 0 });
@@ -744,9 +710,7 @@ module game {
     console.log("rightClick");
     var posX = getStriker().position.x;
     var rightGuard = settings["bottomOuterStrikerPlacementLineEndX"];
-    if (posX + translationFactor < rightGuard) {
-      Matter.Body.translate(getStriker(), { x: translationFactor, y: 0 });
-    }
+    if (posX + translationFactor < rightGuard) Matter.Body.translate(getStriker(), { x: translationFactor, y: 0 });
     else {
       var newTranslationFactor = Math.abs(rightGuard - posX);
       Matter.Body.translate(getStriker(), { x: newTranslationFactor, y: 0 });
@@ -766,9 +730,7 @@ module game {
   // Generic rotate function
   export function rotate(direction: RotateDirection) {
     var striker = getStriker();
-    
     var deltaAngle = (direction == RotateDirection.Left) ? -0.1 : 0.1;
-
     var newAngle = (striker.angle + deltaAngle) % (2 * Math.PI);
     var diff = 0.0;
 
@@ -783,24 +745,15 @@ module game {
   }
 
   // Create the current state of the board
-  export function createBoardState() {
+  export function getBoardState() {
     var allCoins : Coin[] = [];
     for (var i = 0; i < _engine.world.bodies.length; i++) {
-      
       var currentCoin = _engine.world.bodies[i];
-      // console.log(currentCoin.label);
-      // console.log(currentCoin.position);
-      // console.log(currentCoin.render.fillStyle);
       if(currentCoin.label == "Coin"){
-
-        var newCoin : Coin = {coordinate: {xPos: currentCoin.position.x/settings["outerBoardWidth"], yPos: currentCoin.position.y/settings["outerBoardHeight"]},
-                              color: currentCoin.render.fillStyle,
-                              shouldRescale: true
-                            };
+        var newCoin : Coin = {coordinate: {xPos: currentCoin.position.x/settings["outerBoardWidth"], yPos: currentCoin.position.y/settings["outerBoardHeight"]}, color: currentCoin.render.fillStyle, shouldRescale: true};
         allCoins.push(newCoin);
       }
     }
-    
     var state : IState = {board: allCoins};
     return state;
   }
@@ -855,22 +808,14 @@ module game {
       
       // Do translation move
       for (let i = 0; i < move.translationCount; i++) {
-        if (move.translationDirection == Direction.Left) {
-          leftClick();
-        }
-        else {
-          rightClick();
-        }
+        if (move.translationDirection == Direction.Left) leftClick();
+        else rightClick();
       }
       
       // Do angle turn
       for (let i = 0; i < move.angleTurnCount; i++) {
-        if (move.angleDirection == Direction.Left) {
-          rotate(RotateDirection.Left);
-        }
-        else {
-          rotate(RotateDirection.Right);
-        }
+        if (move.angleDirection == Direction.Left) rotate(RotateDirection.Left);
+        else rotate(RotateDirection.Right);
       }
       
       // Shoot!!

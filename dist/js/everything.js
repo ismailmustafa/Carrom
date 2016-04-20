@@ -76,11 +76,13 @@ var gameLogic;
         };
     }
     gameLogic.getInitialState = getInitialState;
-    // Game rules
+    // GAME RULES
+    // Check if game is over
     function gameIsOver(state) {
         return state.board.length === 0;
     }
     gameLogic.gameIsOver = gameIsOver;
+    // Check if queen has been pocketed
     function queenPocketed(state) {
         var queenFound = false;
         for (var i = 0; i < state.board.length; i++) {
@@ -118,6 +120,12 @@ var game;
         CurrentTurn[CurrentTurn["Black"] = 1] = "Black";
     })(game.CurrentTurn || (game.CurrentTurn = {}));
     var CurrentTurn = game.CurrentTurn;
+    // ALL INITIAL VARIABLES
+    // These variable taken from TicTacToe logic
+    game.currentUpdateUI = null;
+    game.didMakeMove = false;
+    game.state = null;
+    game.isHelpModalShown = false;
     game.isComputerTurn = true; // check if computer should play in practice mode
     game.gameScore = { White: 0, Black: 0 }; // Keep track of game score
     game.queenPocketed = false; // Keep track of if queen was pocketed
@@ -353,22 +361,6 @@ var game;
     }
     game.updateScene = updateScene;
     ;
-    function fullscreen() {
-        var _fullscreenElement = game._engine.render.canvas;
-        if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement) {
-            if (_fullscreenElement.requestFullscreen) {
-                _fullscreenElement.requestFullscreen();
-            }
-            else if (_fullscreenElement.mozRequestFullScreen) {
-                _fullscreenElement.mozRequestFullScreen();
-            }
-            else if (_fullscreenElement.webkitRequestFullscreen) {
-                _fullscreenElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-            }
-        }
-    }
-    game.fullscreen = fullscreen;
-    ;
     function drawObjects(currentBoard, redrawingForMultiplayer) {
         if (currentBoard == undefined) {
             game.state = gameLogic.getInitialState(game.settings);
@@ -479,27 +471,41 @@ var game;
         return { board: currentBoard };
     }
     game.drawObjects = drawObjects;
-    function isNumber(n) {
-        return !isNaN(parseFloat(n)) && isFinite(n);
-    }
-    game.isNumber = isNumber;
+    // This gets called after every move
     function updateUI(params) {
-        console.log("IN UPDATE UI");
-        console.log("params.move:", params.move);
         // SET CURRENT MODE
-        // Play against person next to you
-        if (params.playMode === "passAndPlay") {
+        if (params.playMode === "passAndPlay")
             game.currentMode = CurrentMode.PassAndPlay;
-        }
-        else if (params.playMode === "playAgainstTheComputer") {
+        else if (params.playMode === "playAgainstTheComputer")
             game.currentMode = CurrentMode.Practice;
-        }
-        else {
+        else
             game.currentMode = CurrentMode.Opponent;
+        // Update params
+        game.currentUpdateUI = params;
+        if (isFirstMove()) {
+            updateInitialUI();
         }
-        // DEBUGGING FORCE
-        // currentMode = CurrentMode.Practice;
-        console.log("CURRENT MODE NEW:", game.currentMode);
+    }
+    game.updateUI = updateUI;
+    function isFirstMove() {
+        return !game.currentUpdateUI.move.stateAfterMove;
+    }
+    function init() {
+        // Set for offline use
+        game.currentMode = CurrentMode.Practice;
+        console.log("intial init");
+        resizeGameAreaService.setWidthToHeight(1);
+        var mS = moveService.setGame({
+            minNumberOfPlayers: 2,
+            maxNumberOfPlayers: 2,
+            checkMoveOk: gameLogic.checkMoveOk,
+            updateUI: updateUI
+        });
+        console.log("MOVE SERVICE:", mS);
+    }
+    game.init = init;
+    // This should be only called once
+    function updateInitialUI() {
         // create a Matter.js engine
         game._engine = Matter.Engine.create(document.getElementById("gameArea"), {
             render: {
@@ -588,7 +594,7 @@ var game;
                 if (isWorldStatic) {
                     console.log("World is Static (New)");
                     // Generate current state of the board
-                    var state = createBoardState();
+                    var state = getBoardState();
                     // Create state transition
                     var stateTransition = {
                         turnIndexBeforeMove: 0,
@@ -627,27 +633,11 @@ var game;
             });
         }
     }
-    game.updateUI = updateUI;
-    function init() {
-        // Set for offline use
-        game.currentMode = CurrentMode.Practice;
-        console.log("intial init");
-        resizeGameAreaService.setWidthToHeight(1);
-        var mS = moveService.setGame({
-            minNumberOfPlayers: 2,
-            maxNumberOfPlayers: 2,
-            checkMoveOk: gameLogic.checkMoveOk,
-            updateUI: updateUI
-        });
-        console.log("MOVE SERVICE:", mS);
-    }
-    game.init = init;
+    game.updateInitialUI = updateInitialUI;
     function getStriker() {
-        for (var body in game._engine.world.bodies) {
-            if (game._engine.world.bodies[body].label == "Striker") {
+        for (var body in game._engine.world.bodies)
+            if (game._engine.world.bodies[body].label == "Striker")
                 return game._engine.world.bodies[body];
-            }
-        }
     }
     game.getStriker = getStriker;
     // Reset the position of the striker relative to the current player
@@ -665,33 +655,12 @@ var game;
     }
     game.resetStrikerPosition = resetStrikerPosition;
     var translationFactor = 15;
-    function mouseUp(dir) {
-        $interval.cancel(game.clickPromise);
-    }
-    game.mouseUp = mouseUp;
-    ;
-    function mouseDown(dir) {
-        // if (!enableButtons) return;
-        game.clickPromise = $interval(function () {
-            if (dir === "left")
-                game.leftClick();
-            else if (dir === "right")
-                game.rightClick();
-            else if (dir === "leftRotate")
-                game.leftRotate();
-            else if (dir === "rightRotate")
-                game.rightRotate();
-        }, 50);
-    }
-    game.mouseDown = mouseDown;
-    ;
     // Move the striker left
     function leftClick() {
         var posX = getStriker().position.x;
         var leftGuard = game.settings["bottomOuterStrikerPlacementLineStartX"];
-        if ((posX - translationFactor) > leftGuard) {
+        if ((posX - translationFactor) > leftGuard)
             Matter.Body.translate(getStriker(), { x: -translationFactor, y: 0 });
-        }
         else {
             var newTranslationFactor = posX - leftGuard;
             Matter.Body.translate(getStriker(), { x: -newTranslationFactor, y: 0 });
@@ -703,9 +672,8 @@ var game;
         console.log("rightClick");
         var posX = getStriker().position.x;
         var rightGuard = game.settings["bottomOuterStrikerPlacementLineEndX"];
-        if (posX + translationFactor < rightGuard) {
+        if (posX + translationFactor < rightGuard)
             Matter.Body.translate(getStriker(), { x: translationFactor, y: 0 });
-        }
         else {
             var newTranslationFactor = Math.abs(rightGuard - posX);
             Matter.Body.translate(getStriker(), { x: newTranslationFactor, y: 0 });
@@ -739,25 +707,19 @@ var game;
     }
     game.rotate = rotate;
     // Create the current state of the board
-    function createBoardState() {
+    function getBoardState() {
         var allCoins = [];
         for (var i = 0; i < game._engine.world.bodies.length; i++) {
             var currentCoin = game._engine.world.bodies[i];
-            // console.log(currentCoin.label);
-            // console.log(currentCoin.position);
-            // console.log(currentCoin.render.fillStyle);
             if (currentCoin.label == "Coin") {
-                var newCoin = { coordinate: { xPos: currentCoin.position.x / game.settings["outerBoardWidth"], yPos: currentCoin.position.y / game.settings["outerBoardHeight"] },
-                    color: currentCoin.render.fillStyle,
-                    shouldRescale: true
-                };
+                var newCoin = { coordinate: { xPos: currentCoin.position.x / game.settings["outerBoardWidth"], yPos: currentCoin.position.y / game.settings["outerBoardHeight"] }, color: currentCoin.render.fillStyle, shouldRescale: true };
                 allCoins.push(newCoin);
             }
         }
         var state = { board: allCoins };
         return state;
     }
-    game.createBoardState = createBoardState;
+    game.getBoardState = getBoardState;
     // Redraw the board with the new state
     function setBoardState(state) {
         Matter.World.clear(game._engine.world, false);
@@ -797,21 +759,17 @@ var game;
             var move = aiService.randomMove();
             // Do translation move
             for (var i = 0; i < move.translationCount; i++) {
-                if (move.translationDirection == Direction.Left) {
+                if (move.translationDirection == Direction.Left)
                     leftClick();
-                }
-                else {
+                else
                     rightClick();
-                }
             }
             // Do angle turn
             for (var i = 0; i < move.angleTurnCount; i++) {
-                if (move.angleDirection == Direction.Left) {
+                if (move.angleDirection == Direction.Left)
                     rotate(RotateDirection.Left);
-                }
-                else {
+                else
                     rotate(RotateDirection.Right);
-                }
             }
             // Shoot!!
             shootClick();
