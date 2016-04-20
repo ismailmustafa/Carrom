@@ -444,7 +444,8 @@ var game;
         if (isFirstMove()) {
             updateInitialUI();
             console.log("MAKE COMPUTER MOVE CALLED FROM UPDATE UI");
-            $timeout(makeComputerMoveTest, 1000);
+            // $timeout(makeComputerMoveTest, 1000);
+            makeComputerMove();
         }
     }
     game.updateUI = updateUI;
@@ -576,7 +577,9 @@ var game;
                     else
                         resetStrikerPosition();
                     console.log("CALLING MAKE COMPUTER MOVE FROM STATIC FUNCTION");
-                    $timeout(makeComputerMoveTest, 1000);
+                    // makeComputerMoveTest();
+                    // $timeout(makeComputerMoveTest,1000);
+                    makeComputerMove();
                 }
             });
         }
@@ -725,10 +728,12 @@ var game;
         if (!isComputerTurn())
             return;
         resetStrikerPositionForComputer();
+        console.log("BEFORE TIMEOUT");
         $timeout(makeComputerMoveHelper, 1000);
     }
     game.makeComputerMove = makeComputerMove;
     function makeComputerMoveHelper() {
+        console.log("AFTER TIMEOUT");
         var move = aiService.randomMove();
         // Do translation move
         for (var i = 0; i < move.translationCount; i++) {

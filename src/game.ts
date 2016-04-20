@@ -158,8 +158,8 @@ module game {
     if (isFirstMove()) {
       updateInitialUI();
       console.log("MAKE COMPUTER MOVE CALLED FROM UPDATE UI");
-      $timeout(makeComputerMoveTest, 1000);
-      // makeComputerMove();
+      // $timeout(makeComputerMoveTest, 1000);
+      makeComputerMove();
     }
   }
   
@@ -320,8 +320,9 @@ module game {
           if (isComputerTurn()) resetStrikerPositionForComputer();
           else resetStrikerPosition();
           console.log("CALLING MAKE COMPUTER MOVE FROM STATIC FUNCTION");
-          $timeout(makeComputerMoveTest,1000);
-          // makeComputerMove();
+          // makeComputerMoveTest();
+          // $timeout(makeComputerMoveTest,1000);
+          makeComputerMove();
 
           // if (isComputerTurn()) {
           //   if (computerTurnFlag) $timeout(makeComputerMove, 1000);
@@ -478,10 +479,12 @@ module game {
   export function makeComputerMove() {
     if (!isComputerTurn()) return;
     resetStrikerPositionForComputer();
+    console.log("BEFORE TIMEOUT");
     $timeout(makeComputerMoveHelper, 1000);
   }
   
   export function makeComputerMoveHelper() {
+    console.log("AFTER TIMEOUT");
     let move : Move = aiService.randomMove();
     // Do translation move
     for (let i = 0; i < move.translationCount; i++) {
