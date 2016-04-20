@@ -189,7 +189,7 @@ module game {
   }
 
   export function init() {
-    resizeGameAreaService.setWidthToHeight(1);
+    // resizeGameAreaService.setWidthToHeight(1);
     moveService.setGame({
       minNumberOfPlayers: 2,
       maxNumberOfPlayers: 2,

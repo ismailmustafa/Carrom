@@ -469,7 +469,7 @@ var game;
             game.currentUpdateUI.yourPlayerIndex === game.currentUpdateUI.move.turnIndexAfterMove; // it's my turn
     }
     function init() {
-        resizeGameAreaService.setWidthToHeight(1);
+        // resizeGameAreaService.setWidthToHeight(1);
         moveService.setGame({
             minNumberOfPlayers: 2,
             maxNumberOfPlayers: 2,
