@@ -588,9 +588,9 @@ var game;
     // Reset the position of the striker relative to the current player
     function resetStrikerPosition() {
         console.log("resetting striker normally");
-        var striker = getStriker();
         var strikerCenterX = (game.settings["bottomOuterStrikerPlacementLineStartX"] + game.settings["bottomOuterStrikerPlacementLineEndX"]) / 2;
         var strikerCenterY = game.settings["bottomOuterStrikerPlacementLineStartY"] - (game.settings["innerStrikerPlacementLineOffset"] / 2);
+        var striker = getStriker();
         Matter.Body.setPosition(striker, { x: strikerCenterX, y: strikerCenterY });
         Matter.Body.setAngle(striker, (6.0 * Math.PI) / 4.0);
         for (var body in game._engine.world.bodies) {
@@ -603,9 +603,9 @@ var game;
     // Set striker position to top for computer
     function resetStrikerPositionForComputer() {
         console.log("reseting striker for computer");
-        var striker = getStriker();
         var strikerCenterX = (game.settings["topOuterStrikerPlacementLineStartX"] + game.settings["topOuterStrikerPlacementLineEndX"]) / 2;
         var strikerCenterY = game.settings["topInnerStrikerPlacementLineStartY"] - (game.settings["innerStrikerPlacementLineOffset"] / 2);
+        var striker = getStriker();
         Matter.Body.setPosition(striker, { x: strikerCenterX, y: strikerCenterY });
         Matter.Body.setAngle(striker, (6.0 * Math.PI) / 4.0);
         for (var body in game._engine.world.bodies) {
@@ -719,7 +719,7 @@ var game;
     function makeComputerMove() {
         if (!isComputerTurn())
             return;
-        // resetStrikerPositionForComputer();
+        resetStrikerPositionForComputer();
         $timeout(makeComputerMoveHelper, 1000);
     }
     game.makeComputerMove = makeComputerMove;
