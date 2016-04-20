@@ -580,15 +580,20 @@ var game;
     game.updateInitialUI = updateInitialUI;
     function getStriker() {
         for (var body in game._engine.world.bodies)
-            if (game._engine.world.bodies[body].label == "Striker")
+            if (game._engine.world.bodies[body].label == "Striker") {
                 return game._engine.world.bodies[body];
+            }
+            else
+                return undefined;
     }
     game.getStriker = getStriker;
     // Reset the position of the striker relative to the current player
     function resetStrikerPosition() {
+        var striker = getStriker();
+        if (striker === undefined)
+            return;
         var strikerCenterX = (game.settings["bottomOuterStrikerPlacementLineStartX"] + game.settings["bottomOuterStrikerPlacementLineEndX"]) / 2;
         var strikerCenterY = game.settings["bottomOuterStrikerPlacementLineStartY"] - (game.settings["innerStrikerPlacementLineOffset"] / 2);
-        var striker = getStriker();
         Matter.Body.setPosition(striker, { x: strikerCenterX, y: strikerCenterY });
         Matter.Body.setAngle(striker, (6.0 * Math.PI) / 4.0);
         for (var body in game._engine.world.bodies) {

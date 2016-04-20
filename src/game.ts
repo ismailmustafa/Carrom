@@ -333,14 +333,19 @@ module game {
   }
 
   export function getStriker() : Matter.Body {
-    for (let body in _engine.world.bodies) if (_engine.world.bodies[body].label == "Striker") return _engine.world.bodies[body];
+    for (let body in _engine.world.bodies) 
+    if (_engine.world.bodies[body].label == "Striker") {
+      return _engine.world.bodies[body];
+    }
+    else return undefined;
   }
   
   // Reset the position of the striker relative to the current player
   export function resetStrikerPosition() {
+    var striker = getStriker();
+    if (striker === undefined) return;
     var strikerCenterX = (settings["bottomOuterStrikerPlacementLineStartX"] + settings["bottomOuterStrikerPlacementLineEndX"]) / 2;
     var strikerCenterY = settings["bottomOuterStrikerPlacementLineStartY"] - (settings["innerStrikerPlacementLineOffset"] / 2);
-    var striker = getStriker();
     Matter.Body.setPosition(striker, {x:strikerCenterX, y:strikerCenterY});
     Matter.Body.setAngle(striker, (6.0 * Math.PI) / 4.0);
 
