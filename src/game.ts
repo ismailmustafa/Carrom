@@ -339,6 +339,7 @@ module game {
   
   // Reset the position of the striker relative to the current player
   export function resetStrikerPosition() {
+    console.log("resetting striker normally");
     var striker = getStriker();
     var strikerCenterX = (settings["bottomOuterStrikerPlacementLineStartX"] + settings["bottomOuterStrikerPlacementLineEndX"]) / 2;
     var strikerCenterY = settings["bottomOuterStrikerPlacementLineStartY"] - (settings["innerStrikerPlacementLineOffset"] / 2);
@@ -354,6 +355,7 @@ module game {
   
   // Set striker position to top for computer
   export function resetStrikerPositionForComputer() {
+    console.log("reseting striker for computer");
     var striker = getStriker();
     var strikerCenterX = (settings["topOuterStrikerPlacementLineStartX"] + settings["topOuterStrikerPlacementLineEndX"]) / 2;
     var strikerCenterY = settings["topInnerStrikerPlacementLineStartY"] - (settings["innerStrikerPlacementLineOffset"] / 2);
@@ -469,12 +471,12 @@ module game {
   // Simulate computer move 
   export function makeComputerMove() {
     if (!isComputerTurn()) return;
-    resetStrikerPositionForComputer();
+    // resetStrikerPositionForComputer();
     $timeout(makeComputerMoveHelper, 1000);
   }
   
   export function makeComputerMoveHelper() {
-  let move : Move = aiService.randomMove();
+    let move : Move = aiService.randomMove();
     // Do translation move
     for (let i = 0; i < move.translationCount; i++) {
       if (move.translationDirection == Direction.Left) leftClick();
