@@ -327,6 +327,7 @@ module game {
           // Not neeeded, only for local storage
           // localStorage.setItem("boardState", JSON.stringify(<any>state));
 
+          console.log("WORLD IS STATIC");
           var currentState = getBoardState();
           var nextMove = gameLogic.createMove(state, currentState, currentUpdateUI.move.turnIndexAfterMove, settings);
           moveService.makeMove(nextMove);
