@@ -335,14 +335,11 @@ module game {
     if (_engine.world.bodies[body].label == "Striker") {
       return _engine.world.bodies[body];
     }
-    else return undefined;
   }
   
   // Reset the position of the striker relative to the current player
   export function resetStrikerPosition() {
-    if (!isHumanTurn()) return; // only reset to this position for humans
     var striker = getStriker();
-    if (striker === undefined) return;
     var strikerCenterX = (settings["bottomOuterStrikerPlacementLineStartX"] + settings["bottomOuterStrikerPlacementLineEndX"]) / 2;
     var strikerCenterY = settings["bottomOuterStrikerPlacementLineStartY"] - (settings["innerStrikerPlacementLineOffset"] / 2);
     Matter.Body.setPosition(striker, {x:strikerCenterX, y:strikerCenterY});
@@ -358,7 +355,6 @@ module game {
   // Set striker position to top for computer
   export function resetStrikerPositionForComputer() {
     var striker = getStriker();
-    if (striker === undefined) return;
     var strikerCenterX = (settings["topOuterStrikerPlacementLineStartX"] + settings["topOuterStrikerPlacementLineEndX"]) / 2;
     var strikerCenterY = settings["topInnerStrikerPlacementLineStartY"] - (settings["innerStrikerPlacementLineOffset"] / 2);
     Matter.Body.setPosition(striker, {x:strikerCenterX, y:strikerCenterY});

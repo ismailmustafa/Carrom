@@ -581,17 +581,11 @@ var game;
             if (game._engine.world.bodies[body].label == "Striker") {
                 return game._engine.world.bodies[body];
             }
-            else
-                return undefined;
     }
     game.getStriker = getStriker;
     // Reset the position of the striker relative to the current player
     function resetStrikerPosition() {
-        if (!isHumanTurn())
-            return; // only reset to this position for humans
         var striker = getStriker();
-        if (striker === undefined)
-            return;
         var strikerCenterX = (game.settings["bottomOuterStrikerPlacementLineStartX"] + game.settings["bottomOuterStrikerPlacementLineEndX"]) / 2;
         var strikerCenterY = game.settings["bottomOuterStrikerPlacementLineStartY"] - (game.settings["innerStrikerPlacementLineOffset"] / 2);
         Matter.Body.setPosition(striker, { x: strikerCenterX, y: strikerCenterY });
@@ -606,8 +600,6 @@ var game;
     // Set striker position to top for computer
     function resetStrikerPositionForComputer() {
         var striker = getStriker();
-        if (striker === undefined)
-            return;
         var strikerCenterX = (game.settings["topOuterStrikerPlacementLineStartX"] + game.settings["topOuterStrikerPlacementLineEndX"]) / 2;
         var strikerCenterY = game.settings["topInnerStrikerPlacementLineStartY"] - (game.settings["innerStrikerPlacementLineOffset"] / 2);
         Matter.Body.setPosition(striker, { x: strikerCenterX, y: strikerCenterY });
