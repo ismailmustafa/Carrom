@@ -269,6 +269,36 @@ var gameLogic;
         };
     }
     gameLogic.getInitialState = getInitialState;
+    function createMove(stateBeforeMove, stateAfterMove, turnIndexBeforeMove, gameSettings) {
+        if (!stateBeforeMove) {
+            stateBeforeMove = getInitialState(gameSettings);
+        }
+        var board = stateBeforeMove.board;
+        // if (board[row][col] !== '') {
+        //   throw new Error("One can only make a move in an empty position!");
+        // }
+        // if (getWinner(board) !== '' || isTie(board)) {
+        //   throw new Error("Can only make a move if the game is not over!");
+        // }
+        // let boardAfterMove = angular.copy(board);
+        // boardAfterMove[row][col] = turnIndexBeforeMove === 0 ? 'X' : 'O';
+        // let winner = getWinner(boardAfterMove);
+        var endMatchScores;
+        var turnIndexAfterMove;
+        // if (winner !== '' || isTie(boardAfterMove)) {
+        //   // Game over.
+        //   turnIndexAfterMove = -1;
+        //   endMatchScores = winner === 'X' ? [1, 0] : winner === 'O' ? [0, 1] : [0, 0];
+        // } else {
+        //   // Game continues. Now it's the opponent's turn (the turn switches from 0 to 1 and 1 to 0).
+        //   turnIndexAfterMove = 1 - turnIndexBeforeMove;
+        //   endMatchScores = null;
+        // }
+        turnIndexAfterMove = 1 - turnIndexBeforeMove;
+        endMatchScores = null;
+        return { endMatchScores: endMatchScores, turnIndexAfterMove: turnIndexAfterMove, stateAfterMove: stateAfterMove };
+    }
+    gameLogic.createMove = createMove;
     // GAME RULES
     // Check if game is over
     function gameIsOver(state) {
@@ -325,8 +355,6 @@ var game;
     game.currentTurn = CurrentTurn.White; // White goes first
     game.turnIndex = 0; // Initialize turn index
     game.settings = null;
-    // Enable or disable player buttons
-    // export let enableButtons : Boolean = true;
     // Engine initial variables
     game._objectsInMotion = 0;
     game.defaultCategory = 0x0001, game.removedCategory = 0x0002, game.movableCategory = 0x0003;
@@ -414,6 +442,7 @@ var game;
         game.state = params.move.stateAfterMove;
         if (isFirstMove()) {
             updateInitialUI();
+            makeComputerMove();
         }
     }
     game.updateUI = updateUI;
@@ -534,25 +563,11 @@ var game;
                     }
                 }
                 if (isWorldStatic) {
-                    console.log("World is Static (New)");
-                    // Generate current state of the board
-                    var state = getBoardState();
-                    // Create state transition
-                    var stateTransition = {
-                        turnIndexBeforeMove: 0,
-                        stateBeforeMove: state,
-                        numberOfPlayers: 2,
-                        move: {
-                            endMatchScores: null,
-                            turnIndexAfterMove: 1,
-                            stateAfterMove: state
-                        }
-                    };
-                    // Send move
-                    moveService.makeMove(stateTransition.move);
                     // Not neeeded, only for local storage
                     // localStorage.setItem("boardState", JSON.stringify(<any>state));
-                    // enableButtons = true;
+                    var currentState = getBoardState();
+                    var nextMove = gameLogic.createMove(game.state, currentState, game.currentUpdateUI.move.turnIndexAfterMove, game.settings);
+                    moveService.makeMove(nextMove);
                     game._engine.enableSleeping = false;
                     resetStrikerPosition();
                     // PRACTICE MODE
@@ -683,8 +698,6 @@ var game;
         };
         var force = 0.1;
         Matter.Body.applyForce(striker, { x: position.x, y: position.y }, { x: force * Math.cos(striker.angle), y: force * Math.sin(striker.angle) });
-        // Disable buttons to prevent user interaction
-        // enableButtons = false;
         game._engine.enableSleeping = true;
     }
     game.shootClick = shootClick;
@@ -692,26 +705,22 @@ var game;
     function makeComputerMove() {
         if (!isComputerTurn())
             return;
-        // // Disable buttons 
-        // enableButtons = false;
-        if (game.currentMode === CurrentMode.Practice) {
-            var move = aiService.randomMove();
-            // Do translation move
-            for (var i = 0; i < move.translationCount; i++) {
-                if (move.translationDirection == Direction.Left)
-                    leftClick();
-                else
-                    rightClick();
-            }
-            // Do angle turn
-            for (var i = 0; i < move.angleTurnCount; i++) {
-                if (move.angleDirection == Direction.Left)
-                    rotate(RotateDirection.Left);
-                else
-                    rotate(RotateDirection.Right);
-            }
-            shootClick();
+        var move = aiService.randomMove();
+        // Do translation move
+        for (var i = 0; i < move.translationCount; i++) {
+            if (move.translationDirection == Direction.Left)
+                leftClick();
+            else
+                rightClick();
         }
+        // Do angle turn
+        for (var i = 0; i < move.angleTurnCount; i++) {
+            if (move.angleDirection == Direction.Left)
+                rotate(RotateDirection.Left);
+            else
+                rotate(RotateDirection.Right);
+        }
+        shootClick();
     }
     game.makeComputerMove = makeComputerMove;
 })(game || (game = {}));

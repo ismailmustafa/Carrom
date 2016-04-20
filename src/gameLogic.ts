@@ -339,7 +339,7 @@ module gameLogic {
     };
   }
   
-  export function createMove(stateBeforeMove: IState, stateAfterMove: IState, row: number, col: number, turnIndexBeforeMove: number, gameSettings: any): IMove {
+  export function createMove(stateBeforeMove: IState, stateAfterMove: IState, turnIndexBeforeMove: number, gameSettings: any): IMove {
     if (!stateBeforeMove) { // stateBeforeMove is null in a new match.
       stateBeforeMove = getInitialState(gameSettings);
     }
