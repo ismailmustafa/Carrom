@@ -447,9 +447,22 @@ var game;
             makeComputerMove();
         }
         else {
+            $timeout(handleStateUpdate, 500);
         }
     }
     game.updateUI = updateUI;
+    function handleStateUpdate() {
+        // HANDLE REDRAWING FOR OTHER TWO MODES (opponent + passAndPlay)
+        if (game.currentMode === CurrentMode.PassAndPlay) {
+            setBoardState(game.state);
+        }
+        else if (game.currentMode === CurrentMode.Opponent) {
+            // Only redraw and invert for current player
+            if (isMyTurn()) {
+                setBoardState(game.state);
+            }
+        }
+    }
     function isFirstMove() {
         return !game.currentUpdateUI.move.stateAfterMove;
     }
@@ -573,32 +586,22 @@ var game;
                     var nextMove = gameLogic.createMove(game.state, currentState, game.currentUpdateUI.move.turnIndexAfterMove, game.settings);
                     moveService.makeMove(nextMove);
                     game._engine.enableSleeping = false;
-                    // Handle next turn
-                    $timeout(function () { handleNextTurn(currentState); }, 1000);
+                    // Handle next turn for practice
+                    $timeout(handlePracticeMode, 1000);
                 }
             });
         }
     }
     game.updateInitialUI = updateInitialUI;
     // Handle next turn
-    function handleNextTurn(newState) {
+    function handlePracticeMode() {
         // Practice
         if (game.currentMode === CurrentMode.Practice) {
             resetStrikerPosition();
             makeComputerMove();
         }
-        else if (game.currentMode === CurrentMode.Opponent) {
-            resetStrikerPosition();
-            if (isMyTurn()) {
-                setBoardState(newState);
-            }
-        }
-        else {
-            resetStrikerPosition();
-            setBoardState(newState);
-        }
     }
-    game.handleNextTurn = handleNextTurn;
+    game.handlePracticeMode = handlePracticeMode;
     function getStriker() {
         for (var body in game._engine.world.bodies) {
             if (game._engine.world.bodies[body].label == "Striker") {
