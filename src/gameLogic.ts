@@ -24,25 +24,20 @@ interface Coin {
     shouldRescale: Boolean;
 }
 
-enum Color {
-  White,
-  Black,
-  Nothing
+interface PlayerIndex {
+  player1: number,
+  player2: number
 }
 
-interface Player {
-  color: Color,
-  index: number
-}
-
-interface PlayerColor {
-  player1: Player,
-  player2: Player
+interface GameScore {
+  player1 : number,
+  player2 : number
 }
 
 interface IState {
     board: Board,
-    playerColor: PlayerColor
+    playerIndex: PlayerIndex,
+    gameScore: GameScore
 }
 
 module gameLogic {
@@ -353,17 +348,12 @@ module gameLogic {
 
   export function getInitialState(gameSettings : {[setting : string] : number}): IState {
     return {
+      // Location of all coins
       board: getInitialBoard(gameSettings),
-      playerColor: {
-        player1: {
-          color: Color.Nothing,
-          index: 0
-        },
-        player2: {
-          color: Color.Nothing,
-          index: 0
-        }
-      }
+      // relate player to respective index
+      playerIndex: {player1: 0, player2: 0},
+      // Game score tracking
+      gameScore: {player1: 0, player2: 0}
     };
   }
   
@@ -400,24 +390,23 @@ module gameLogic {
   // GAME RULES
   
   // Check if game is over
-  export function gameIsOver(state : IState) : Boolean {
-    
+  export function gameIsOver(state : IState) : boolean {
     return state.board.length === 0;
   }
   
   // Check if queen has been pocketed
-  export function queenPocketed(state : IState) : Boolean {
-    let queenFound : Boolean = false;
+  export function queenPocketed(state : IState) : boolean {
+    let queenFound : boolean = false;
     for (let i = 0; i < state.board.length; i++) {
       if (state.board[i].color === "pink") {
         queenFound = true;
       }
     }
-    return queenFound;
+    return !queenFound;
   }
   
-  // export function calculateScore(state : IState, currentTurn : game.CurrentTurn, currentScore : game.GameScore) : game.GameScore {
-  //   let pocketedCoins
-    
-  // }
+  // Calculate score given previous and current state
+  export function calculateScore(previousState : IState, currentState : IState, playerIndex : number) : GameScore {
+    return {player1: 0, player2: 0};
+  }
 }

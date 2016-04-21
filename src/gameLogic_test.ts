@@ -66,14 +66,82 @@ describe("In Carrom Game Logic", function() {
     }
   }
   
+  // Helper function to fuzzy compare two floats
   function compare(a : number, b : number): boolean {
     let absDiff = Math.abs(a - b);
     if (absDiff < 0.0001) return true;
     else return false;
   }
   
+//   interface IState {
+//     board: Board,
+//     playerColor: PlayerColor,
+//     gameScore: GameScore
+// }
+
+// {
+//       // Location of all coins
+//       board: getInitialBoard(gameSettings),
+//       // Relation between player index and color
+//       playerColor: {
+//         player1: {
+//           color: Color.Nothing,
+//           index: 0
+//         },
+//         player2: {
+//           color: Color.Nothing,
+//           index: 0
+//         }
+//       },
+//       // Game score tracking
+//       gameScore: {White: 0, Black: 0}
+//     };
+  
+  // Use this function to generate arbitrary state
+  function generateState(numBlack: number, numWhite: number, includeQueen: boolean, whiteScore: number, blackScore: number) : IState {
+    
+    // Coins
+    let allCoins : Board = [];
+    for (let i = 0; i < numBlack; i++) allCoins.push({coordinate: {xPos: 0, yPos: 0}, color: "black", shouldRescale: false});
+    for (let i = 0; i < numWhite; i++) allCoins.push({coordinate: {xPos: 0, yPos: 0}, color: "white", shouldRescale: false});
+    if (includeQueen) allCoins.push({coordinate: {xPos: 0, yPos: 0}, color: "pink", shouldRescale: false});
+    
+    // Player color
+    let playerIndex : PlayerIndex = {player1: 0, player2: 1};
+    
+    // Game score
+    let gameScore =  {player1: whiteScore, player2: blackScore};
+    
+    return {board: allCoins, playerIndex: playerIndex, gameScore: gameScore};
+  }
+  
+  // Test initial board state
   it("should ensure that all coins are placed on correct initial positions", function() {
     testInitialBoardState();
+  });
+  
+  // Test if queen is pocketed
+  it("should ensure that we can tell when the queen is pocketed", function() {
+    let stateWithQueen = generateState(5,5,true,0,0);
+    let stateWithoutQueen = generateState(5,5,false,0,0);
+    if (gameLogic.queenPocketed(stateWithQueen)) { 
+      throw new Error("'queenPocketed' returned true even though queen was on the board");
+    }
+    if (!gameLogic.queenPocketed(stateWithoutQueen)) {
+      throw new Error("'queenPocketed' returned false even though queen was pocketed");
+    } 
+  });
+  
+  // Test if game is over
+  it("should ensure that we can tell when the game is over", function() {
+    let emptyState = generateState(0,0,false,0,0);
+    let nonEmptyState = generateState(5,5,true,0,0);
+    if (!gameLogic.gameIsOver(emptyState)) {
+      throw new Error("'gameIsOver' returned false when the board was supposed to be over");
+    }
+    if (gameLogic.gameIsOver(nonEmptyState)) {
+      throw new Error("'gameIsOver' returned true when there were still coins on the board");
+    }
   });
   
 });

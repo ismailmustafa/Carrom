@@ -15,16 +15,6 @@ module game {
     Left,
     Right
   }
-
-  export enum Players {
-    Player1,
-    Player2
-  }
-  
-  export interface GameScore {
-    White : number,
-    Black : number
-  }
   
   // ALL INITIAL VARIABLES
   export let currentUpdateUI: IUpdateUI = null;
@@ -32,7 +22,6 @@ module game {
   export let state: IState = null;
   export let isHelpModalShown: boolean = false;
   export let currentMode : CurrentMode; // Current mode
-  export let gameScore : GameScore = {White: 0, Black: 0}; // Keep track of game score
   export let settings : any = null;
   export let enableButtons: boolean = true;
 
@@ -126,6 +115,7 @@ module game {
   // This gets called after every move
   export function updateUI(params : IUpdateUI) : void {
     console.log("I AM IN THE UPDATE UI FUNCTION HELLO");
+    console.log(params);
     // SET CURRENT MODE
     if (params.playMode === "passAndPlay") currentMode = CurrentMode.PassAndPlay;
     else if (params.playMode === "playAgainstTheComputer") currentMode = CurrentMode.Practice;
@@ -423,7 +413,7 @@ module game {
         allCoins.push(newCoin);
       }
     }
-    var returnedState : IState = {board: allCoins, playerColor: state.playerColor};
+    var returnedState : IState = {board: allCoins, playerIndex: state.playerIndex, gameScore: state.gameScore};
     return returnedState;
   }
   

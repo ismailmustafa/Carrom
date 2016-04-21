@@ -1,9 +1,3 @@
-var Color;
-(function (Color) {
-    Color[Color["White"] = 0] = "White";
-    Color[Color["Black"] = 1] = "Black";
-    Color[Color["Nothing"] = 2] = "Nothing";
-})(Color || (Color = {}));
 var gameLogic;
 (function (gameLogic) {
     // Create all dimensions for board
@@ -271,17 +265,12 @@ var gameLogic;
     gameLogic.getInitialSize = getInitialSize;
     function getInitialState(gameSettings) {
         return {
+            // Location of all coins
             board: getInitialBoard(gameSettings),
-            playerColor: {
-                player1: {
-                    color: Color.Nothing,
-                    index: 0
-                },
-                player2: {
-                    color: Color.Nothing,
-                    index: 0
-                }
-            }
+            // relate player to respective index
+            playerIndex: { player1: 0, player2: 0 },
+            // Game score tracking
+            gameScore: { player1: 0, player2: 0 }
         };
     }
     gameLogic.getInitialState = getInitialState;
@@ -329,9 +318,14 @@ var gameLogic;
                 queenFound = true;
             }
         }
-        return queenFound;
+        return !queenFound;
     }
     gameLogic.queenPocketed = queenPocketed;
+    // Calculate score given previous and current state
+    function calculateScore(previousState, currentState, playerIndex) {
+        return { player1: 0, player2: 0 };
+    }
+    gameLogic.calculateScore = calculateScore;
 })(gameLogic || (gameLogic = {}));
 //# sourceMappingURL=gameLogic.js.map
 ;
@@ -349,17 +343,11 @@ var game;
         RotateDirection[RotateDirection["Right"] = 1] = "Right";
     })(game.RotateDirection || (game.RotateDirection = {}));
     var RotateDirection = game.RotateDirection;
-    (function (Players) {
-        Players[Players["Player1"] = 0] = "Player1";
-        Players[Players["Player2"] = 1] = "Player2";
-    })(game.Players || (game.Players = {}));
-    var Players = game.Players;
     // ALL INITIAL VARIABLES
     game.currentUpdateUI = null;
     game.didMakeMove = false;
     game.state = null;
     game.isHelpModalShown = false;
-    game.gameScore = { White: 0, Black: 0 }; // Keep track of game score
     game.settings = null;
     game.enableButtons = true;
     // Engine initial variables
@@ -438,6 +426,7 @@ var game;
     // This gets called after every move
     function updateUI(params) {
         console.log("I AM IN THE UPDATE UI FUNCTION HELLO");
+        console.log(params);
         // SET CURRENT MODE
         if (params.playMode === "passAndPlay")
             game.currentMode = CurrentMode.PassAndPlay;
@@ -713,7 +702,7 @@ var game;
                 allCoins.push(newCoin);
             }
         }
-        var returnedState = { board: allCoins, playerColor: game.state.playerColor };
+        var returnedState = { board: allCoins, playerIndex: game.state.playerIndex, gameScore: game.state.gameScore };
         return returnedState;
     }
     game.getBoardState = getBoardState;
