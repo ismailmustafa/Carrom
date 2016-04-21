@@ -13,7 +13,7 @@ then
   exit 1
 fi
 
-grunt
+grunt --force
 git add -A
 git commit -m "$1" || error_exit "deploy script error: no changes to commit"
 git push origin master

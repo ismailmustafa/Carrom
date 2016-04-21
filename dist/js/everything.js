@@ -1,5 +1,28 @@
+var Pair = (function () {
+    function Pair(fst, snd) {
+        this.fstVal = fst;
+        this.sndVal = snd;
+    }
+    Object.defineProperty(Pair.prototype, "fst", {
+        get: function () {
+            return this.fstVal;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Pair.prototype, "snd", {
+        get: function () {
+            return this.sndVal;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return Pair;
+})();
 var gameLogic;
 (function (gameLogic) {
+    // game score global variable
+    gameLogic.gameScoreGlobal = { player1: 0, player2: 0 };
     // Create all dimensions for board
     function drawBoard(width, height) {
         var size = width < height ? width : height;
@@ -267,10 +290,12 @@ var gameLogic;
         return {
             // Location of all coins
             board: getInitialBoard(gameSettings),
-            // relate player to respective index
-            playerIndex: { player1: 0, player2: 0 },
+            // specify player index
+            playerIndex: { player1: 0, player2: 1 },
             // Game score tracking
-            gameScore: { player1: 0, player2: 0 }
+            gameScore: { player1: 0, player2: 0 },
+            // queen starts off as not pocketed
+            shouldCoverQueen: false
         };
     }
     gameLogic.getInitialState = getInitialState;
@@ -278,30 +303,25 @@ var gameLogic;
         if (!stateBeforeMove) {
             stateBeforeMove = getInitialState(gameSettings);
         }
-        var board = stateBeforeMove.board;
-        // if (board[row][col] !== '') {
-        //   throw new Error("One can only make a move in an empty position!");
-        // }
-        // if (getWinner(board) !== '' || isTie(board)) {
-        //   throw new Error("Can only make a move if the game is not over!");
-        // }
-        // let boardAfterMove = angular.copy(board);
-        // boardAfterMove[row][col] = turnIndexBeforeMove === 0 ? 'X' : 'O';
-        // let winner = getWinner(boardAfterMove);
+        var nextState = modifyStateForNextRound(stateBeforeMove, stateAfterMove);
         var endMatchScores;
         var turnIndexAfterMove;
-        // if (winner !== '' || isTie(boardAfterMove)) {
-        //   // Game over.
-        //   turnIndexAfterMove = -1;
-        //   endMatchScores = winner === 'X' ? [1, 0] : winner === 'O' ? [0, 1] : [0, 0];
-        // } else {
-        //   // Game continues. Now it's the opponent's turn (the turn switches from 0 to 1 and 1 to 0).
-        //   turnIndexAfterMove = 1 - turnIndexBeforeMove;
-        //   endMatchScores = null;
-        // }
-        turnIndexAfterMove = 1 - turnIndexBeforeMove;
-        endMatchScores = null;
-        return { endMatchScores: endMatchScores, turnIndexAfterMove: turnIndexAfterMove, stateAfterMove: stateAfterMove };
+        var pair = calculateScore(stateBeforeMove, stateAfterMove, turnIndexBeforeMove);
+        var score = pair.fst;
+        gameLogic.gameScoreGlobal = score;
+        var turnShouldSwitch = pair.snd;
+        if (gameIsOver(nextState)) {
+            endMatchScores = [score.player1, score.player2];
+            turnIndexAfterMove = -1;
+        }
+        else {
+            if (turnShouldSwitch)
+                turnIndexAfterMove = 1 - turnIndexBeforeMove;
+            else
+                turnIndexAfterMove = turnIndexBeforeMove;
+            endMatchScores = null;
+        }
+        return { endMatchScores: endMatchScores, turnIndexAfterMove: turnIndexAfterMove, stateAfterMove: nextState };
     }
     gameLogic.createMove = createMove;
     // GAME RULES
@@ -321,11 +341,106 @@ var gameLogic;
         return !queenFound;
     }
     gameLogic.queenPocketed = queenPocketed;
-    // Calculate score given previous and current state
+    // Check if queen was pocketed in the most recent move
+    function queenJustPocketed(previousState, currentState) {
+        return !queenPocketed(previousState) && queenPocketed(currentState);
+    }
+    gameLogic.queenJustPocketed = queenJustPocketed;
+    // Calculate score given previous and current state. Also determine if turn should be switched
     function calculateScore(previousState, currentState, playerIndex) {
-        return { player1: 0, player2: 0 };
+        var pocketedCoinCount = getPocketedCoinCount(previousState, currentState);
+        var gameScore = angular.copy(previousState.gameScore);
+        var turnShouldSwitch = true;
+        // PLAYER 1
+        if (playerIndex === 0) {
+            if (previousState.shouldCoverQueen) {
+                // Queen covered successfully
+                if (coinsPocketed(pocketedCoinCount))
+                    gameScore.player1 = gameScore.player1 + 5 * pocketedCoinCount.black + 10 * pocketedCoinCount.white;
+                else
+                    gameScore.player1 -= 25;
+            }
+            else
+                gameScore.player1 = gameScore.player1 + 5 * pocketedCoinCount.black + 10 * pocketedCoinCount.white + (pocketedCoinCount.pink ? 25 : 0);
+        }
+        else {
+            if (previousState.shouldCoverQueen) {
+                if (coinsPocketed(pocketedCoinCount))
+                    gameScore.player2 = gameScore.player2 + 5 * pocketedCoinCount.black + 10 * pocketedCoinCount.white;
+                else
+                    gameScore.player2 -= 25;
+            }
+            else
+                gameScore.player2 = gameScore.player2 + 5 * pocketedCoinCount.black + 10 * pocketedCoinCount.white + (pocketedCoinCount.pink ? 25 : 0);
+        }
+        // Check if turn should switch
+        if (coinsPocketed(pocketedCoinCount)) {
+            turnShouldSwitch = false;
+        }
+        var pair = new Pair(gameScore, turnShouldSwitch);
+        return pair;
     }
     gameLogic.calculateScore = calculateScore;
+    // This function modifes the state in preperation for the next round
+    function modifyStateForNextRound(previousState, currentState) {
+        var newState = angular.copy(currentState);
+        var pocketedCoinCount = getPocketedCoinCount(previousState, currentState);
+        // Modify state to account for covering the queen
+        if (previousState.shouldCoverQueen) {
+            // Always revert back to false 
+            newState.shouldCoverQueen = false;
+            // No coins pocketed to cover the queen so we place the queen on the center of the board
+            if (!coinsPocketed(pocketedCoinCount)) {
+                // First we find the queen
+                var queen = angular.copy(currentState.board[0]);
+                queen.color = "pink";
+                // Now we set the center of that queen
+                queen.coordinate = { xPos: game.centerOfBoard.xPos, yPos: game.centerOfBoard.yPos };
+                // Finally add the queen to the new state
+                newState.board.push(queen);
+            }
+        }
+        return newState;
+    }
+    gameLogic.modifyStateForNextRound = modifyStateForNextRound;
+    function coinsPocketed(pocketedCoinCount) {
+        if (pocketedCoinCount.black > 0 || pocketedCoinCount.white > 0 || pocketedCoinCount.pink) {
+            return true;
+        }
+        return false;
+    }
+    // Return all the coins that were pocketed in that turn
+    function getPocketedCoinCount(previousState, currentState) {
+        var previousStateColors = [];
+        var currentStateColors = [];
+        var blackCountPreviousState = 0;
+        var blackCountCurrentState = 0;
+        var whiteCountPreviousState = 0;
+        var whiteCountCurrentState = 0;
+        var queenExistsPreviousState = false;
+        var queenExistsCurrentState = false;
+        for (var i = 0; i < previousState.board.length; i++) {
+            if (previousState.board[i].color === "black")
+                blackCountPreviousState++;
+            if (previousState.board[i].color === "white")
+                whiteCountPreviousState++;
+            if (previousState.board[i].color === "pink")
+                queenExistsPreviousState = true;
+        }
+        for (var i = 0; i < currentState.board.length; i++) {
+            if (currentState.board[i].color === "black")
+                blackCountCurrentState++;
+            if (currentState.board[i].color === "white")
+                whiteCountCurrentState++;
+            if (currentState.board[i].color === "pink")
+                queenExistsCurrentState = true;
+        }
+        var blackDiff = blackCountPreviousState - blackCountCurrentState;
+        var whiteDiff = whiteCountPreviousState - whiteCountCurrentState;
+        var pinkLost = queenExistsPreviousState && !queenExistsCurrentState;
+        return { black: blackDiff, white: whiteDiff, pink: pinkLost };
+    }
+    gameLogic.getPocketedCoinCount = getPocketedCoinCount;
 })(gameLogic || (gameLogic = {}));
 //# sourceMappingURL=gameLogic.js.map
 ;
@@ -348,8 +463,10 @@ var game;
     game.didMakeMove = false;
     game.state = null;
     game.isHelpModalShown = false;
-    game.settings = null;
+    game.settings = undefined;
     game.enableButtons = true;
+    game.centerOfBoard = undefined;
+    game.gameScore = { player1: 0, player2: 0 };
     // Engine initial variables
     game._objectsInMotion = 0;
     game.defaultCategory = 0x0001, game.removedCategory = 0x0002, game.movableCategory = 0x0003;
@@ -425,6 +542,13 @@ var game;
     game.drawObjects = drawObjects;
     // This gets called after every move
     function updateUI(params) {
+        // update score
+        game.gameScore = angular.copy(gameLogic.gameScoreGlobal);
+        // Set center of board 
+        if (game.centerOfBoard === undefined && game.settings !== undefined) {
+            game.centerOfBoard.xPos = game.settings["outerBoardWidth"] / 2;
+            game.centerOfBoard.yPos = game.settings["outerBoardHeight"] / 2;
+        }
         console.log("I AM IN THE UPDATE UI FUNCTION HELLO");
         console.log(params);
         // SET CURRENT MODE
@@ -702,7 +826,7 @@ var game;
                 allCoins.push(newCoin);
             }
         }
-        var returnedState = { board: allCoins, playerIndex: game.state.playerIndex, gameScore: game.state.gameScore };
+        var returnedState = { board: allCoins, playerIndex: angular.copy(game.state.playerIndex), gameScore: angular.copy(game.state.gameScore), shouldCoverQueen: game.state.shouldCoverQueen };
         return returnedState;
     }
     game.getBoardState = getBoardState;
