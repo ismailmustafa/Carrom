@@ -309,6 +309,7 @@ var gameLogic;
         var pair = calculateScore(stateBeforeMove, stateAfterMove, turnIndexBeforeMove);
         var score = pair.fst;
         gameLogic.gameScoreGlobal = score;
+        nextState.gameScore = angular.copy(score);
         var turnShouldSwitch = pair.snd;
         if (gameIsOver(nextState)) {
             endMatchScores = [score.player1, score.player2];

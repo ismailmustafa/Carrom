@@ -396,6 +396,7 @@ module gameLogic {
     let pair : Pair = calculateScore(stateBeforeMove, stateAfterMove, turnIndexBeforeMove);
     let score : GameScore = pair.fst;
     gameScoreGlobal = score;
+    nextState.gameScore = angular.copy(score);
     let turnShouldSwitch : boolean = pair.snd;
     
     if (gameIsOver(nextState)) {
