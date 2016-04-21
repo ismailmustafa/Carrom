@@ -22,8 +22,10 @@ module game {
   export let state: IState = null;
   export let isHelpModalShown: boolean = false;
   export let currentMode : CurrentMode; // Current mode
-  export let settings : any = null;
+  export let settings : any = undefined;
   export let enableButtons: boolean = true;
+  export let centerOfBoard : Coordinate = undefined;
+  export let gameScore : GameScore = {player1: 0, player2: 0};
 
   // Engine initial variables
   export let _engine: any, _objectsInMotion = 0, clickPromise : any,
@@ -114,6 +116,15 @@ module game {
 
   // This gets called after every move
   export function updateUI(params : IUpdateUI) : void {
+    // update score
+    gameScore = angular.copy(gameLogic.gameScoreGlobal);
+    
+    // Set center of board 
+    if (centerOfBoard === undefined && settings !== undefined) {
+      centerOfBoard.xPos = settings["outerBoardWidth"]/2;
+      centerOfBoard.yPos = settings["outerBoardHeight"]/2;
+    }
+    
     console.log("I AM IN THE UPDATE UI FUNCTION HELLO");
     console.log(params);
     // SET CURRENT MODE
@@ -413,7 +424,7 @@ module game {
         allCoins.push(newCoin);
       }
     }
-    var returnedState : IState = {board: allCoins, playerIndex: state.playerIndex, gameScore: state.gameScore};
+    var returnedState : IState = {board: allCoins, playerIndex: angular.copy(state.playerIndex), gameScore: angular.copy(state.gameScore), shouldCoverQueen: state.shouldCoverQueen};
     return returnedState;
   }
   

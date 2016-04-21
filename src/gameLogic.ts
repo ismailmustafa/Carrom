@@ -35,12 +35,37 @@ interface GameScore {
 }
 
 interface IState {
-    board: Board,
-    playerIndex: PlayerIndex,
-    gameScore: GameScore
+  board: Board,
+  playerIndex: PlayerIndex,
+  gameScore: GameScore,
+  shouldCoverQueen: boolean
+}
+
+interface PocketedCoinCount {
+  black: number,
+  white: number,
+  pink: boolean
+}
+
+class Pair {
+  fstVal : any;
+  sndVal : any;
+  constructor(fst : any, snd : any) {
+    this.fstVal = fst;
+    this.sndVal = snd;
+  }
+  get fst() {
+    return this.fstVal;
+  }
+  get snd() {
+    return this.sndVal;
+  }
 }
 
 module gameLogic {
+  
+  // game score global variable
+  export let gameScoreGlobal : GameScore = {player1: 0, player2: 0};
   
   // Create all dimensions for board
   export function drawBoard(width: number, height: number) : Object {
@@ -350,10 +375,12 @@ module gameLogic {
     return {
       // Location of all coins
       board: getInitialBoard(gameSettings),
-      // relate player to respective index
-      playerIndex: {player1: 0, player2: 0},
+      // specify player index
+      playerIndex: {player1: 0, player2: 1},
       // Game score tracking
-      gameScore: {player1: 0, player2: 0}
+      gameScore: {player1: 0, player2: 0},
+      // queen starts off as not pocketed
+      shouldCoverQueen: false
     };
   }
   
@@ -361,30 +388,26 @@ module gameLogic {
     if (!stateBeforeMove) { // stateBeforeMove is null in a new match.
       stateBeforeMove = getInitialState(gameSettings);
     }
-    let board: Board = stateBeforeMove.board;
-    // if (board[row][col] !== '') {
-    //   throw new Error("One can only make a move in an empty position!");
-    // }
-    // if (getWinner(board) !== '' || isTie(board)) {
-    //   throw new Error("Can only make a move if the game is not over!");
-    // }
-    // let boardAfterMove = angular.copy(board);
-    // boardAfterMove[row][col] = turnIndexBeforeMove === 0 ? 'X' : 'O';
-    // let winner = getWinner(boardAfterMove);
+    
+    let nextState = modifyStateForNextRound(stateBeforeMove, stateAfterMove);
     let endMatchScores: number[];
     let turnIndexAfterMove: number;
-    // if (winner !== '' || isTie(boardAfterMove)) {
-    //   // Game over.
-    //   turnIndexAfterMove = -1;
-    //   endMatchScores = winner === 'X' ? [1, 0] : winner === 'O' ? [0, 1] : [0, 0];
-    // } else {
-    //   // Game continues. Now it's the opponent's turn (the turn switches from 0 to 1 and 1 to 0).
-    //   turnIndexAfterMove = 1 - turnIndexBeforeMove;
-    //   endMatchScores = null;
-    // }
-    turnIndexAfterMove = 1 - turnIndexBeforeMove;
-    endMatchScores = null;
-    return {endMatchScores: endMatchScores, turnIndexAfterMove: turnIndexAfterMove, stateAfterMove: stateAfterMove};
+    
+    let pair : Pair = calculateScore(stateBeforeMove, stateAfterMove, turnIndexBeforeMove);
+    let score : GameScore = pair.fst;
+    gameScoreGlobal = score;
+    let turnShouldSwitch : boolean = pair.snd;
+    
+    if (gameIsOver(nextState)) {
+      endMatchScores = [score.player1, score.player2];
+      turnIndexAfterMove = -1;
+    }
+    else {
+      if (turnShouldSwitch) turnIndexAfterMove = 1 - turnIndexBeforeMove;
+      else turnIndexAfterMove = turnIndexBeforeMove;
+      endMatchScores = null;
+    }
+    return {endMatchScores: endMatchScores, turnIndexAfterMove: turnIndexAfterMove, stateAfterMove: nextState};
   }
   
   // GAME RULES
@@ -405,8 +428,100 @@ module gameLogic {
     return !queenFound;
   }
   
-  // Calculate score given previous and current state
-  export function calculateScore(previousState : IState, currentState : IState, playerIndex : number) : GameScore {
-    return {player1: 0, player2: 0};
+  // Check if queen was pocketed in the most recent move
+  export function queenJustPocketed(previousState : IState, currentState : IState) : boolean {
+    return !queenPocketed(previousState) && queenPocketed(currentState);
+  }
+  
+  // Calculate score given previous and current state. Also determine if turn should be switched
+  export function calculateScore(previousState : IState, currentState : IState, playerIndex : number) : Pair {
+    let pocketedCoinCount = getPocketedCoinCount(previousState, currentState);
+    let gameScore : GameScore = angular.copy(previousState.gameScore);
+    let turnShouldSwitch : boolean = true;
+    // PLAYER 1
+    if (playerIndex === 0) {
+      if (previousState.shouldCoverQueen) {
+        // Queen covered successfully
+        if (coinsPocketed(pocketedCoinCount)) gameScore.player1 = gameScore.player1 + 5*pocketedCoinCount.black + 10*pocketedCoinCount.white;
+        // Queen not covered successfully, so remove queen points (should return to board)
+        else gameScore.player1 -= 25;
+      }
+      // No need to cover queen
+      else gameScore.player1 = gameScore.player1 + 5*pocketedCoinCount.black + 10*pocketedCoinCount.white + (pocketedCoinCount.pink ? 25 : 0);
+    }
+    // PLAYER 2
+    else {
+      if (previousState.shouldCoverQueen) {
+        if (coinsPocketed(pocketedCoinCount)) gameScore.player2 = gameScore.player2 + 5*pocketedCoinCount.black + 10*pocketedCoinCount.white;
+        else gameScore.player2 -= 25;
+      }
+      else gameScore.player2 = gameScore.player2 + 5*pocketedCoinCount.black + 10*pocketedCoinCount.white + (pocketedCoinCount.pink ? 25 : 0);
+      
+    }
+    
+    // Check if turn should switch
+    if (coinsPocketed(pocketedCoinCount)) {
+     turnShouldSwitch = false; 
+    }
+    
+    let pair : Pair = new Pair(gameScore, turnShouldSwitch);
+    return pair;
+  }
+
+  // This function modifes the state in preperation for the next round
+  export function modifyStateForNextRound(previousState : IState, currentState : IState) : IState {
+    let newState = angular.copy(currentState);
+    let pocketedCoinCount = getPocketedCoinCount(previousState, currentState);
+    
+    // Modify state to account for covering the queen
+    if (previousState.shouldCoverQueen) {
+      // Always revert back to false 
+      newState.shouldCoverQueen = false;
+      
+      // No coins pocketed to cover the queen so we place the queen on the center of the board
+      if (!coinsPocketed(pocketedCoinCount)) {
+        // First we find the queen
+        let queen : Coin = angular.copy(currentState.board[0]);
+        queen.color = "pink";
+        // Now we set the center of that queen
+        queen.coordinate = {xPos:game.centerOfBoard.xPos, yPos:game.centerOfBoard.yPos};
+        // Finally add the queen to the new state
+        newState.board.push(queen);
+      }
+    }
+    return newState;
+  }
+  
+  function coinsPocketed(pocketedCoinCount : PocketedCoinCount) : boolean {
+    if (pocketedCoinCount.black > 0 || pocketedCoinCount.white > 0 || pocketedCoinCount.pink) {
+     return true;
+    }
+    return false;
+  }
+  
+  // Return all the coins that were pocketed in that turn
+  export function getPocketedCoinCount(previousState: IState, currentState: IState) : PocketedCoinCount {
+    let previousStateColors : any = [];
+    let currentStateColors : any = [];
+    let blackCountPreviousState : number = 0;
+    let blackCountCurrentState : number = 0;
+    let whiteCountPreviousState : number = 0;
+    let whiteCountCurrentState : number = 0;
+    let queenExistsPreviousState : boolean = false;
+    let queenExistsCurrentState : boolean = false;
+    for (let i = 0; i < previousState.board.length; i++) {
+      if (previousState.board[i].color === "black") blackCountPreviousState++;
+      if (previousState.board[i].color === "white") whiteCountPreviousState++;
+      if (previousState.board[i].color === "pink") queenExistsPreviousState = true;
+    }
+    for (let i = 0; i < currentState.board.length; i++) {
+      if (currentState.board[i].color === "black") blackCountCurrentState++;
+      if (currentState.board[i].color === "white") whiteCountCurrentState++;
+      if (currentState.board[i].color === "pink") queenExistsCurrentState = true;
+    }
+    let blackDiff = blackCountPreviousState - blackCountCurrentState;
+    let whiteDiff = whiteCountPreviousState - whiteCountCurrentState;
+    let pinkLost = queenExistsPreviousState && !queenExistsCurrentState;
+    return {black: blackDiff, white: whiteDiff, pink: pinkLost};
   }
 }
