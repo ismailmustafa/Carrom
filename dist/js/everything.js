@@ -401,6 +401,10 @@ var gameLogic;
                 newState.board.push(queen);
             }
         }
+        // Account for covering queen
+        if (queenJustPocketed(previousState, currentState)) {
+            newState.shouldCoverQueen = true;
+        }
         return newState;
     }
     gameLogic.modifyStateForNextRound = modifyStateForNextRound;
