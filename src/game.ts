@@ -121,8 +121,7 @@ module game {
     
     // Set center of board 
     if (centerOfBoard === undefined && settings !== undefined) {
-      centerOfBoard.xPos = settings["outerBoardWidth"]/2;
-      centerOfBoard.yPos = settings["outerBoardHeight"]/2;
+      centerOfBoard = {xPos: settings["outerBoardWidth"]/2, yPos: settings["outerBoardHeight"]/2};
     }
     
     console.log("I AM IN THE UPDATE UI FUNCTION HELLO");

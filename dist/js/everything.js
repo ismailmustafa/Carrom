@@ -546,8 +546,7 @@ var game;
         game.gameScore = angular.copy(gameLogic.gameScoreGlobal);
         // Set center of board 
         if (game.centerOfBoard === undefined && game.settings !== undefined) {
-            game.centerOfBoard.xPos = game.settings["outerBoardWidth"] / 2;
-            game.centerOfBoard.yPos = game.settings["outerBoardHeight"] / 2;
+            game.centerOfBoard = { xPos: game.settings["outerBoardWidth"] / 2, yPos: game.settings["outerBoardHeight"] / 2 };
         }
         console.log("I AM IN THE UPDATE UI FUNCTION HELLO");
         console.log(params);
