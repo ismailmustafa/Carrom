@@ -1,3 +1,9 @@
+var Color;
+(function (Color) {
+    Color[Color["White"] = 0] = "White";
+    Color[Color["Black"] = 1] = "Black";
+    Color[Color["Nothing"] = 2] = "Nothing";
+})(Color || (Color = {}));
 var gameLogic;
 (function (gameLogic) {
     // Create all dimensions for board
@@ -265,7 +271,17 @@ var gameLogic;
     gameLogic.getInitialSize = getInitialSize;
     function getInitialState(gameSettings) {
         return {
-            board: getInitialBoard(gameSettings)
+            board: getInitialBoard(gameSettings),
+            playerColor: {
+                player1: {
+                    color: Color.Nothing,
+                    index: 0
+                },
+                player2: {
+                    color: Color.Nothing,
+                    index: 0
+                }
+            }
         };
     }
     gameLogic.getInitialState = getInitialState;
@@ -338,22 +354,12 @@ var game;
         Players[Players["Player2"] = 1] = "Player2";
     })(game.Players || (game.Players = {}));
     var Players = game.Players;
-    (function (CurrentTurn) {
-        CurrentTurn[CurrentTurn["White"] = 0] = "White";
-        CurrentTurn[CurrentTurn["Black"] = 1] = "Black";
-    })(game.CurrentTurn || (game.CurrentTurn = {}));
-    var CurrentTurn = game.CurrentTurn;
     // ALL INITIAL VARIABLES
-    // These variable taken from TicTacToe logic
     game.currentUpdateUI = null;
     game.didMakeMove = false;
     game.state = null;
     game.isHelpModalShown = false;
-    game.computerTurnFlag = true; // check if computer should play in practice mode
     game.gameScore = { White: 0, Black: 0 }; // Keep track of game score
-    game.queenPocketed = false; // Keep track of if queen was pocketed
-    game.currentTurn = CurrentTurn.White; // White goes first
-    game.turnIndex = 0; // Initialize turn index
     game.settings = null;
     game.enableButtons = true;
     // Engine initial variables
@@ -518,16 +524,6 @@ var game;
         game._objectsInMotion = 0;
         updateScene();
         game.settings = gameLogic.drawBoard(game._sceneWidth, game._sceneHeight);
-        // This code saves the state to the local storage
-        // var localStorageState = localStorage.getItem("boardState");
-        // if (localStorageState != null) {
-        //   var localBoardState = JSON.parse(localStorageState);
-        //   if (localBoardState != undefined) {
-        //     setBoardState(localBoardState);
-        //   }
-        // } else {
-        //   drawObjects(undefined, undefined);
-        // }
         drawObjects(undefined, undefined); // In leiu of local storage
         // Background image
         var renderOptions = game._engine.render.options;
@@ -586,9 +582,6 @@ var game;
                     }
                 }
                 if (isWorldStatic) {
-                    // Not neeeded, only for local storage
-                    // localStorage.setItem("boardState", JSON.stringify(<any>state));
-                    console.log("WORLD IS STATIC");
                     var currentState = getBoardState();
                     var nextMove = gameLogic.createMove(game.state, currentState, game.currentUpdateUI.move.turnIndexAfterMove, game.settings);
                     moveService.makeMove(nextMove);
@@ -720,8 +713,8 @@ var game;
                 allCoins.push(newCoin);
             }
         }
-        var state = { board: allCoins };
-        return state;
+        var returnedState = { board: allCoins, playerColor: game.state.playerColor };
+        return returnedState;
     }
     game.getBoardState = getBoardState;
     // Redraw the board with the new state

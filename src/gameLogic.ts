@@ -23,8 +23,26 @@ interface Coin {
     color: string;
     shouldRescale: Boolean;
 }
+
+enum Color {
+  White,
+  Black,
+  Nothing
+}
+
+interface Player {
+  color: Color,
+  index: number
+}
+
+interface PlayerColor {
+  player1: Player,
+  player2: Player
+}
+
 interface IState {
-    board: Board;             // positons of all coins
+    board: Board,
+    playerColor: PlayerColor
 }
 
 module gameLogic {
@@ -335,7 +353,17 @@ module gameLogic {
 
   export function getInitialState(gameSettings : {[setting : string] : number}): IState {
     return {
-      board: getInitialBoard(gameSettings)
+      board: getInitialBoard(gameSettings),
+      playerColor: {
+        player1: {
+          color: Color.Nothing,
+          index: 0
+        },
+        player2: {
+          color: Color.Nothing,
+          index: 0
+        }
+      }
     };
   }
   
@@ -373,6 +401,7 @@ module gameLogic {
   
   // Check if game is over
   export function gameIsOver(state : IState) : Boolean {
+    
     return state.board.length === 0;
   }
   

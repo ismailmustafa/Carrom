@@ -26,26 +26,13 @@ module game {
     Black : number
   }
   
-  export enum CurrentTurn {
-    White,
-    Black
-  }
-  
   // ALL INITIAL VARIABLES
-  
-  // These variable taken from TicTacToe logic
   export let currentUpdateUI: IUpdateUI = null;
   export let didMakeMove: boolean = false;
   export let state: IState = null;
   export let isHelpModalShown: boolean = false;
-  
-  // My variables
   export let currentMode : CurrentMode; // Current mode
-  export let computerTurnFlag : Boolean  = true; // check if computer should play in practice mode
   export let gameScore : GameScore = {White: 0, Black: 0}; // Keep track of game score
-  export let queenPocketed : Boolean = false; // Keep track of if queen was pocketed
-  export let currentTurn : CurrentTurn = CurrentTurn.White; // White goes first
-  export let turnIndex : number = 0; // Initialize turn index
   export let settings : any = null;
   export let enableButtons: boolean = true;
 
@@ -57,27 +44,19 @@ module game {
              movableCategory = 0x0003;
 
   export function updateScene() {
-
     var c = (<any>$("canvas")).get(0);
-    
     var width = (<any>$(<any>window)).width();
     var height = (<any>$(<any>window)).height();
-    
     var size = width <= height ? width : height;
-
     _sceneWidth = size;
     _sceneHeight = size;
-
     var boundsMax = _engine.world.bounds.max,
       renderOptions = _engine.render.options,
       canvas = _engine.render.canvas;
-
     boundsMax.x = size;
     boundsMax.y = size;
-
     canvas.width = renderOptions.width = size;
     canvas.height = renderOptions.height = size;
-
   };
 
   // Takes in a board to draw and a flag specifying if the board should be drawn mirrored.
@@ -241,17 +220,6 @@ module game {
     updateScene();
 
     settings = gameLogic.drawBoard(_sceneWidth, _sceneHeight);
-
-    // This code saves the state to the local storage
-    // var localStorageState = localStorage.getItem("boardState");
-    // if (localStorageState != null) {
-    //   var localBoardState = JSON.parse(localStorageState);
-    //   if (localBoardState != undefined) {
-    //     setBoardState(localBoardState);
-    //   }
-    // } else {
-    //   drawObjects(undefined, undefined);
-    // }
     
     drawObjects(undefined, undefined); // In leiu of local storage
 
@@ -284,7 +252,6 @@ module game {
         context.lineWidth = 5.5;
         context.stroke();
       }
-
     });
 
     Matter.Events.on(_engine, 'collisionEnd', function(event) {
@@ -308,7 +275,6 @@ module game {
         }
       }
     }
-
     addSleepEventToEngineBodies();
   }
   
@@ -329,10 +295,6 @@ module game {
         }
 
         if (isWorldStatic) {
-          // Not neeeded, only for local storage
-          // localStorage.setItem("boardState", JSON.stringify(<any>state));
-
-          console.log("WORLD IS STATIC");
           var currentState = getBoardState();
           var nextMove = gameLogic.createMove(state, currentState, currentUpdateUI.move.turnIndexAfterMove, settings);
           moveService.makeMove(nextMove);
@@ -461,8 +423,8 @@ module game {
         allCoins.push(newCoin);
       }
     }
-    var state : IState = {board: allCoins};
-    return state;
+    var returnedState : IState = {board: allCoins, playerColor: state.playerColor};
+    return returnedState;
   }
   
   // Redraw the board with the new state
@@ -533,8 +495,6 @@ module game {
     _engine.enableSleeping = true;
   }
 }
-
-
 
 angular.module('myApp', ['ngTouch', 'ui.bootstrap', 'gameServices'])
   .run(function() {
