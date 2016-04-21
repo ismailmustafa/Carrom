@@ -350,7 +350,7 @@ var gameLogic;
     // Calculate score given previous and current state. Also determine if turn should be switched
     function calculateScore(previousState, currentState, playerIndex) {
         var pocketedCoinCount = getPocketedCoinCount(previousState, currentState);
-        var gameScore = angular.copy(previousState.gameScore);
+        var gameScore = angular.copy(currentState.gameScore);
         var turnShouldSwitch = true;
         // PLAYER 1
         if (playerIndex === 0) {
