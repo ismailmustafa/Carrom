@@ -396,15 +396,16 @@ var gameLogic;
                 var queen = angular.copy(currentState.board[0]);
                 queen.color = "pink";
                 // Now we set the center of that queen
-                queen.coordinate = { xPos: game.centerOfBoard.xPos, yPos: game.centerOfBoard.yPos };
+                // queen.coordinate = {xPos:game.centerOfBoard.xPos, yPos:game.centerOfBoard.yPos};
+                queen.coordinate = { xPos: 200, yPos: 200 };
                 // Finally add the queen to the new state
                 newState.board.push(queen);
             }
         }
-        // Account for covering queen
-        if (queenJustPocketed(previousState, currentState)) {
-            newState.shouldCoverQueen = true;
-        }
+        // // Account for covering queen
+        // if (queenJustPocketed(previousState, currentState)) {
+        //   newState.shouldCoverQueen = true;
+        // }
         return newState;
     }
     gameLogic.modifyStateForNextRound = modifyStateForNextRound;

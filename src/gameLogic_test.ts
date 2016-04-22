@@ -236,7 +236,7 @@ describe("In Carrom Game Logic", function() {
     
     // player1 COVERS QUEEN SUCCESSFULLY
     let previousState7 = generateState(5,5,false,25,0,true);
-    let currentState7 = generateState(5,4,false,0,0,false);
+    let currentState7 = generateState(5,4,false,25,0,false);
     let pair7 = gameLogic.calculateScore(previousState7, currentState7, 0);
     currentState7.gameScore = pair7.fst;
     let turnShouldSwitch7 = pair7.snd;
@@ -251,7 +251,7 @@ describe("In Carrom Game Logic", function() {
     
     // player1 COVERS QUEEN UN-SUCCESSFULLY
     let previousState8 = generateState(5,5,false,25,0,true);
-    let currentState8 = generateState(5,5,false,0,0,false);
+    let currentState8 = generateState(5,5,false,25,0,false);
     let pair8 = gameLogic.calculateScore(previousState8, currentState8, 0);
     currentState8.gameScore = pair8.fst;
     let turnShouldSwitch8 = pair8.snd;
@@ -266,7 +266,7 @@ describe("In Carrom Game Logic", function() {
     
     // player2 COVERS QUEEN SUCCESSFULLY
     let previousState9 = generateState(5,5,false,0,25,true);
-    let currentState9 = generateState(5,4,false,0,0,false);
+    let currentState9 = generateState(5,4,false,0,25,false);
     let pair9 = gameLogic.calculateScore(previousState9, currentState9, 1);
     currentState9.gameScore = pair9.fst;
     let turnShouldSwitch9 = pair9.snd;
@@ -281,7 +281,7 @@ describe("In Carrom Game Logic", function() {
     
     // player2 COVERS QUEEN UN-SUCCESSFULLY
     let previousState10 = generateState(5,5,false,0,25,true);
-    let currentState10 = generateState(5,5,false,0,0,false);
+    let currentState10 = generateState(5,5,false,0,25,false);
     let pair10 = gameLogic.calculateScore(previousState10, currentState10, 1);
     currentState10.gameScore = pair10.fst;
     let turnShouldSwitch10 = pair10.snd;
