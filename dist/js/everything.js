@@ -586,7 +586,7 @@ var game;
     game.updateUI = updateUI;
     function handleStateUpdate() {
         console.log("-----------------------------------------HANDLE UPDATE STATE");
-        if (isFirstMove() && isMyTurn()) {
+        if (isFirstMove()) {
             console.log("---------------------------------------UPDATE INITIAL UI INSIDE FOR SURE");
             updateInitialUI();
             makeComputerMove();
