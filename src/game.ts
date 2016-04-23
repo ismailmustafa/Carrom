@@ -153,7 +153,9 @@ module game {
   }
   
   function handleStateUpdate() {
+    console.log("-----------------------------------------HANDLE UPDATE STATE");
     if (isFirstMove() && isMyTurn()) {
+      console.log("---------------------------------------UPDATE INITIAL UI INSIDE FOR SURE");
       updateInitialUI();
       makeComputerMove();
     }
