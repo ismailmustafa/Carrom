@@ -531,16 +531,22 @@ module game {
     // Same as shoot click, but without human limitation
     if (didMakeMove) return;
     didMakeMove = true;
+    
     var striker = getStriker();
     var position = {
         x: striker.position.x + 1.0 * Math.cos(striker.angle),
         y: striker.position.y + 1.0 * Math.sin(striker.angle)
       };
-    var force : number = 0.1;
+    
+    var force : number = 0.05;
+
     Matter.Body.applyForce(striker, 
       { x: position.x, y: position.y }, 
-      { x: force * Math.cos(striker.angle), y: force * Math.sin(striker.angle) })
-    _engine.enableSleeping = true;
+      {
+        x: (_globalSize / document.documentElement.clientWidth) * force * striker.mass * Math.cos(striker.angle), 
+        y: (_globalSize / document.documentElement.clientHeight) * force * striker.mass * Math.sin(striker.angle)
+      })
+      _engine.enableSleeping = true;
   }
 }
 

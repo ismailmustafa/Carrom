@@ -932,8 +932,11 @@ var game;
             x: striker.position.x + 1.0 * Math.cos(striker.angle),
             y: striker.position.y + 1.0 * Math.sin(striker.angle)
         };
-        var force = 0.1;
-        Matter.Body.applyForce(striker, { x: position.x, y: position.y }, { x: force * Math.cos(striker.angle), y: force * Math.sin(striker.angle) });
+        var force = 0.05;
+        Matter.Body.applyForce(striker, { x: position.x, y: position.y }, {
+            x: (game._globalSize / document.documentElement.clientWidth) * force * striker.mass * Math.cos(striker.angle),
+            y: (game._globalSize / document.documentElement.clientHeight) * force * striker.mass * Math.sin(striker.angle)
+        });
         game._engine.enableSleeping = true;
     }
     game.makeComputerMoveHelper = makeComputerMoveHelper;
