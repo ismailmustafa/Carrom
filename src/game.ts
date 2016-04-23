@@ -152,9 +152,24 @@ module game {
     // }
   }
   
+  export let firstTimePlayer1 = true;
+  export let firstTimePlayer2 = true;
   function handleStateUpdate() {
     console.log("-----------------------------------------HANDLE UPDATE STATE");
-    if (isFirstMove()) {
+    // Make sure to draw on both screens
+    if (currentMode === CurrentMode.Opponent && currentUpdateUI.yourPlayerIndex !== -2) {
+      if (yourPlayerIndex() === 0 && firstTimePlayer1) {
+        firstTimePlayer1 = false;
+        updateInitialUI();
+      }
+      else if (yourPlayerIndex() === 1 && firstTimePlayer2) {
+        firstTimePlayer2 = false;
+        updateInitialUI();
+      }
+    }
+    
+    // Draw initially for both computer and pass and play
+    if (isFirstMove() && isMyTurn()) {
       console.log("---------------------------------------UPDATE INITIAL UI INSIDE FOR SURE");
       updateInitialUI();
       makeComputerMove();
