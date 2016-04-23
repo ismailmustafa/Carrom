@@ -136,12 +136,13 @@ module game {
     currentUpdateUI = params;
     state = params.move.stateAfterMove;
     
+    console.log("currentUpdateUI.yourPlayerIndex:", currentUpdateUI.yourPlayerIndex);
     if (isFirstMove() && isMyTurn()) { // FIXED BUG: This is called twice.
       updateInitialUI(); 
       console.log("MAKE COMPUTER MOVE CALLED FROM UPDATE UI");
       makeComputerMove();
     }
-    else if(params.yourPlayerIndex != -2){
+    else if (currentUpdateUI.yourPlayerIndex != -2) {
       $timeout(handleStateUpdate, 500);
     }
   }
