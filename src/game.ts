@@ -160,11 +160,11 @@ module game {
       makeComputerMove();
     }
     // HANDLE REDRAWING FOR OTHER TWO MODES (opponent + passAndPlay)
-    if (currentMode === CurrentMode.PassAndPlay) {
+    if (currentMode === CurrentMode.PassAndPlay && currentUpdateUI.yourPlayerIndex !== -2) {
       console.log("$$$$$$$$$$$$$$$$$$$CURRENT MODE IS PASS AND PLAY");
       setBoardState(state);
     }
-    else if (currentMode === CurrentMode.Opponent) {
+    else if (currentMode === CurrentMode.Opponent && currentUpdateUI.yourPlayerIndex !== -2) {
       console.log("$$$$$$$$$$$$$$$$$$$$$$$CURRENT MODE IS OPPONENT");
       // Only redraw and invert for current player
       if (isMyTurn()) {
