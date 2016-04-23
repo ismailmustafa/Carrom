@@ -593,17 +593,17 @@ var game;
             // Player one always goes first
             if (yourPlayerIndex() === 0 && game.firstTimePlayer1) {
                 game.firstTimePlayer1 = false;
-                updateInitialUI();
+                updateInitialUI(undefined);
             }
             else if (yourPlayerIndex() === 1 && game.firstTimePlayer2) {
                 game.firstTimePlayer2 = false;
-                drawObjects(game.state.board, game.state.shouldFlipBoard);
+                updateInitialUI(game.state);
             }
         }
         // Draw initially for both computer and pass and play
         if (isFirstMove() && isMyTurn()) {
             console.log("---------------------------------------UPDATE INITIAL UI INSIDE FOR SURE");
-            updateInitialUI();
+            updateInitialUI(undefined);
             makeComputerMove();
         }
         // HANDLE REDRAWING FOR OTHER TWO MODES (opponent + passAndPlay)
@@ -651,7 +651,7 @@ var game;
     }
     game.init = init;
     // This should be only called once
-    function updateInitialUI() {
+    function updateInitialUI(stateToDraw) {
         // create a Matter.js engine
         console.log("ONCE");
         game._engine = Matter.Engine.create(document.getElementById("gameArea"), {
@@ -675,7 +675,10 @@ var game;
         game._objectsInMotion = 0;
         updateScene();
         game.settings = gameLogic.drawBoard(game._sceneWidth, game._sceneHeight);
-        drawObjects(undefined, undefined); // In leiu of local storage
+        if (stateToDraw === undefined)
+            drawObjects(undefined, undefined);
+        else
+            drawObjects(stateToDraw.board, stateToDraw.shouldFlipBoard);
         // Background image
         var renderOptions = game._engine.render.options;
         renderOptions.background = 'imgs/carromBackground.png';
