@@ -255,9 +255,20 @@ module game {
             isWorldStatic = false;
           }
         }
-        /// Update check if striker is in reset position.
-        if(isWorldStatic) {
 
+        var strikerCenterX = (settings["bottomOuterStrikerPlacementLineStartX"] + settings["bottomOuterStrikerPlacementLineEndX"]) / 2;
+        var strikerCenterY = settings["bottomOuterStrikerPlacementLineStartY"] - (settings["innerStrikerPlacementLineOffset"] / 2);
+
+        var strikerCenterComputerX = (settings["bottomOuterStrikerPlacementLineStartX"] + settings["bottomOuterStrikerPlacementLineEndX"]) / 2;
+        var strikerCenterComputerY = settings["outerBoardHeight"] - (settings["bottomOuterStrikerPlacementLineStartY"] - (settings["innerStrikerPlacementLineOffset"] / 2));
+
+        /// Update check if striker is in reset position.
+        if(striker.position.x === strikerCenterX
+          && striker.position.y === strikerCenterY) {
+          drawGuideLines(context, startPoint, endPoint);
+        } else if (striker.position.x === strikerCenterComputerX
+          && striker.position.y === strikerCenterComputerY
+          ){
           drawGuideLines(context, startPoint, endPoint);
         }
         
