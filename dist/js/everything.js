@@ -556,7 +556,6 @@ var game;
         }
         console.log("I AM IN THE UPDATE UI FUNCTION HELLO 2");
         console.log(params);
-        console.log("currentUpdateUI.yourPlayerIndex:", game.currentUpdateUI.yourPlayerIndex);
         // SET CURRENT MODE
         if (params.playMode === "passAndPlay")
             game.currentMode = CurrentMode.PassAndPlay;
@@ -567,6 +566,7 @@ var game;
         game.didMakeMove = false;
         game.currentUpdateUI = params;
         game.state = params.move.stateAfterMove;
+        console.log("currentUpdateUI.yourPlayerIndex:", game.currentUpdateUI.yourPlayerIndex);
         if (isFirstMove() && isMyTurn()) {
             updateInitialUI();
             console.log("MAKE COMPUTER MOVE CALLED FROM UPDATE UI");
@@ -672,7 +672,9 @@ var game;
                 var strikerCenterComputerX = (game.settings["bottomOuterStrikerPlacementLineStartX"] + game.settings["bottomOuterStrikerPlacementLineEndX"]) / 2;
                 var strikerCenterComputerY = game.settings["outerBoardHeight"] - (game.settings["bottomOuterStrikerPlacementLineStartY"] - (game.settings["innerStrikerPlacementLineOffset"] / 2));
                 /// Update check if striker is in reset position.
-                if (striker.position.x === strikerCenterX
+                var leftGuard = game.settings["bottomOuterStrikerPlacementLineStartX"];
+                var rightGuard = game.settings["bottomOuterStrikerPlacementLineEndX"];
+                if ((striker.position.x >= leftGuard && striker.position.x <= rightGuard)
                     && striker.position.y === strikerCenterY) {
                     drawGuideLines(context, startPoint, endPoint);
                 }
