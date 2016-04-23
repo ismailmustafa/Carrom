@@ -584,9 +584,23 @@ var game;
         // }
     }
     game.updateUI = updateUI;
+    game.firstTimePlayer1 = true;
+    game.firstTimePlayer2 = true;
     function handleStateUpdate() {
         console.log("-----------------------------------------HANDLE UPDATE STATE");
-        if (isFirstMove()) {
+        // Make sure to draw on both screens
+        if (game.currentMode === CurrentMode.Opponent && game.currentUpdateUI.yourPlayerIndex !== -2) {
+            if (yourPlayerIndex() === 0 && game.firstTimePlayer1) {
+                game.firstTimePlayer1 = false;
+                updateInitialUI();
+            }
+            else if (yourPlayerIndex() === 1 && game.firstTimePlayer2) {
+                game.firstTimePlayer2 = false;
+                updateInitialUI();
+            }
+        }
+        // Draw initially for both computer and pass and play
+        if (isFirstMove() && isMyTurn()) {
             console.log("---------------------------------------UPDATE INITIAL UI INSIDE FOR SURE");
             updateInitialUI();
             makeComputerMove();
