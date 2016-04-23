@@ -139,19 +139,24 @@ module game {
     state = params.move.stateAfterMove;
     
     
-    if (isFirstMove()) { // FIXED BUG: This is called twice.
-      updateInitialUI(); 
-      console.log("MAKE COMPUTER MOVE CALLED FROM UPDATE UI");
-      makeComputerMove();
-    }
-    else if (currentUpdateUI != null && 
-      currentUpdateUI != undefined && 
-      currentUpdateUI.yourPlayerIndex != -2) {
-      $timeout(handleStateUpdate, 500);
-    }
+    $timeout(handleStateUpdate, 500);
+    // if (isFirstMove()) { // FIXED BUG: This is called twice.
+    //   updateInitialUI(); 
+    //   console.log("MAKE COMPUTER MOVE CALLED FROM UPDATE UI");
+    //   makeComputerMove();
+    // }
+    // else if (currentUpdateUI != null && 
+    //   currentUpdateUI != undefined && 
+    //   currentUpdateUI.yourPlayerIndex != -2) {
+    //   $timeout(handleStateUpdate, 500);
+    // }
   }
   
   function handleStateUpdate() {
+    if (isFirstMove()) {
+      updateInitialUI();
+      makeComputerMove();
+    }
     // HANDLE REDRAWING FOR OTHER TWO MODES (opponent + passAndPlay)
     if (currentMode === CurrentMode.PassAndPlay) {
       setBoardState(state);
