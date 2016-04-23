@@ -29,7 +29,8 @@ module game {
 
   // Engine initial variables
   export let _engine: any, _objectsInMotion = 0, clickPromise : any,
-             _world : any, _sceneWidth : any, _sceneHeight : any;
+             _world : any, _sceneWidth : any, _sceneHeight : any,
+             _globalSize : any;
   export let defaultCategory = 0x0001,
              removedCategory = 0x0002,
              movableCategory = 0x0003;
@@ -94,7 +95,7 @@ module game {
         xCoord = settings["outerBoardWidth"] - xCoord;
         yCoord = settings["outerBoardHeight"] - yCoord;
       }
-      circles.push(Matter.Bodies.circle(xCoord, yCoord, settings["coinDiameter"] / 2.0, <any>{isStatic: false, collisionFilter: {mask: defaultCategory}, restitution: 1, render: { fillStyle: currentBoard[i].color, strokeStyle: 'black' }, label: 'Coin'}));
+      circles.push(Matter.Bodies.circle(xCoord, yCoord, settings["coinDiameter"] / 2.0, <any>{ isStatic: false, collisionFilter: { mask: defaultCategory }, restitution: 1, frictionAir: 0.02, render: { fillStyle: currentBoard[i].color, strokeStyle: 'black' }, label: 'Coin' }));
     }
     Matter.World.add(_engine.world, circles); // add coins
 
@@ -232,6 +233,8 @@ module game {
 
     Matter.Engine.run(_engine);
 
+    _globalSize = _sceneWidth < _sceneHeight ? _sceneWidth : _sceneHeight;
+
     Matter.Events.on(_engine.render, 'afterRender', function() {
       var context = _engine.render.context,
         bodies = Matter.Composite.allBodies(_engine.world)
@@ -240,17 +243,31 @@ module game {
       if (striker != undefined) {
         var startPoint = { x: striker.position.x, y: striker.position.y },
           endPoint = {
-            x: striker.position.x + 32.0 * Math.cos(striker.angle),
-            y: striker.position.y + 32.0 * Math.sin(striker.angle)
+            x: striker.position.x + (_globalSize/5) * Math.cos(striker.angle),
+            y: striker.position.y + (_globalSize/5) * Math.sin(striker.angle)
           };
 
-        context.beginPath();
-        context.moveTo(startPoint.x, startPoint.y);
-        context.lineTo(endPoint.x, endPoint.y);
+        var isWorldStatic = true;
 
-        context.strokeStyle = 'red';
-        context.lineWidth = 5.5;
-        context.stroke();
+        for (let bodyId in _engine.world.bodies) {
+          if (_engine.world.bodies[bodyId].motion != 0) {
+            isWorldStatic = false;
+          }
+        }
+
+        if(isWorldStatic) {
+          context.globalAlpha = 0.5;
+          context.beginPath();
+          context.setLineDash([3]);
+          context.moveTo(startPoint.x, startPoint.y);
+          context.lineTo(endPoint.x, endPoint.y);
+
+          context.strokeStyle = 'red';
+          context.lineWidth = 5.5;
+          context.stroke();
+          context.setLineDash([]);
+        }
+        
       }
     });
 
@@ -449,10 +466,20 @@ module game {
         y: striker.position.y + 1.0 * Math.sin(striker.angle)
       };
     
-    var force : number = 0.1;
+    var force : number = 0.01;
+    console.log({
+      x: (_globalSize / document.documentElement.clientWidth) * force  * striker.mass * Math.cos(striker.angle),
+      y: (_globalSize / document.documentElement.clientHeight) * force  * striker.mass * Math.sin(striker.angle)
+    });
+    
+    // Object {x: -1.8369701987210297e-17, y: -0.1 }
+
     Matter.Body.applyForce(striker, 
       { x: position.x, y: position.y }, 
-      { x: force * Math.cos(striker.angle), y: force * Math.sin(striker.angle) })
+      {
+        x: (_globalSize / document.documentElement.clientWidth) * force * striker.mass * Math.cos(striker.angle), 
+        y: (_globalSize / document.documentElement.clientHeight) * force * striker.mass * Math.sin(striker.angle)
+      })
     
     _engine.enableSleeping = true;
   }
