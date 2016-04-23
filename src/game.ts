@@ -153,7 +153,7 @@ module game {
   }
   
   function handleStateUpdate() {
-    if (isFirstMove()) {
+    if (isFirstMove() && isMyTurn()) {
       updateInitialUI();
       makeComputerMove();
     }
