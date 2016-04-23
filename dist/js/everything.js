@@ -295,7 +295,8 @@ var gameLogic;
             // Game score tracking
             gameScore: { player1: 0, player2: 0 },
             // queen starts off as not pocketed
-            shouldCoverQueen: false
+            shouldCoverQueen: false,
+            shouldFlipBoard: true
         };
     }
     gameLogic.getInitialState = getInitialState;
@@ -316,10 +317,14 @@ var gameLogic;
             turnIndexAfterMove = -1;
         }
         else {
-            if (turnShouldSwitch)
+            if (turnShouldSwitch) {
                 turnIndexAfterMove = 1 - turnIndexBeforeMove;
-            else
+                nextState.shouldFlipBoard = true;
+            }
+            else {
                 turnIndexAfterMove = turnIndexBeforeMove;
+                nextState.shouldFlipBoard = false;
+            }
             endMatchScores = null;
         }
         return { endMatchScores: endMatchScores, turnIndexAfterMove: turnIndexAfterMove, stateAfterMove: nextState };
@@ -861,7 +866,7 @@ var game;
                 allCoins.push(newCoin);
             }
         }
-        var returnedState = { board: allCoins, playerIndex: angular.copy(game.state.playerIndex), gameScore: angular.copy(game.state.gameScore), shouldCoverQueen: game.state.shouldCoverQueen };
+        var returnedState = { board: allCoins, playerIndex: angular.copy(game.state.playerIndex), gameScore: angular.copy(game.state.gameScore), shouldCoverQueen: game.state.shouldCoverQueen, shouldFlipBoard: game.state.shouldFlipBoard };
         return returnedState;
     }
     game.getBoardState = getBoardState;
@@ -869,7 +874,10 @@ var game;
     function setBoardState(state) {
         Matter.World.clear(game._engine.world, false);
         var newBoard = state.board;
-        drawObjects(newBoard, true);
+        if (state.shouldFlipBoard)
+            drawObjects(newBoard, true);
+        else
+            drawObjects(newBoard, false);
         addSleepEventToEngineBodies();
     }
     game.setBoardState = setBoardState;

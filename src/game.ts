@@ -467,7 +467,7 @@ module game {
         allCoins.push(newCoin);
       }
     }
-    var returnedState : IState = {board: allCoins, playerIndex: angular.copy(state.playerIndex), gameScore: angular.copy(state.gameScore), shouldCoverQueen: state.shouldCoverQueen};
+    var returnedState : IState = {board: allCoins, playerIndex: angular.copy(state.playerIndex), gameScore: angular.copy(state.gameScore), shouldCoverQueen: state.shouldCoverQueen, shouldFlipBoard: state.shouldFlipBoard};
     return returnedState;
   }
   
@@ -475,7 +475,8 @@ module game {
   export function setBoardState(state : IState) {
     Matter.World.clear(_engine.world, false);
     var newBoard : Board = state.board;
-    drawObjects(newBoard, true);
+    if (state.shouldFlipBoard) drawObjects(newBoard, true);
+    else drawObjects(newBoard, false);
     addSleepEventToEngineBodies();
   }
 
