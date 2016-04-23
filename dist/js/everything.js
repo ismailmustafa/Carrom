@@ -571,7 +571,7 @@ var game;
         game.didMakeMove = false;
         game.currentUpdateUI = params;
         game.state = params.move.stateAfterMove;
-        if (isFirstMove() && isMyTurn()) {
+        if (isFirstMove()) {
             updateInitialUI();
             console.log("MAKE COMPUTER MOVE CALLED FROM UPDATE UI");
             makeComputerMove();
