@@ -9,6 +9,8 @@ a > .material-icons {
   margin-top: 10px;
 }
 
+#element  { position:fixed; top:80%; right:50%; z-index: 99999; }
+
 .icon-flipped {
   transform: scaleX(-1);
   -moz-transform: scaleX(-1);
@@ -35,7 +37,7 @@ canvas:active {
 
 #glasspane {
   position: absolute;
-  left: 38%;
+  left: 50%;
   top: 82%;
   z-index: 9999;
   padding: 0px 20px 1px 1px;
@@ -48,6 +50,7 @@ canvas:active {
   -webkit-box-shadow: rgba(0,0,0,0.5) 5px 5px 20px;
   -moz-box-shadow: rgba(0,0,0,0.5) 5px 5px 20px;
   box-shadow: rgba(0,0,0,0.5) 5px 5px 20px;
+  transform: translate(-50%, -50%);
 }
 
 #glasspane h2 {

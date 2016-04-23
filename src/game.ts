@@ -136,8 +136,8 @@ module game {
     currentUpdateUI = params;
     state = params.move.stateAfterMove;
     
-    if (isFirstMove()) {
-      updateInitialUI();
+    if (isFirstMove() && isMyTurn()) { // FIXED BUG: This is called twice.
+      updateInitialUI(); 
       console.log("MAKE COMPUTER MOVE CALLED FROM UPDATE UI");
       makeComputerMove();
     }
@@ -198,6 +198,7 @@ module game {
   // This should be only called once
   export function updateInitialUI() {
     // create a Matter.js engine
+    console.log("ONCE")
     _engine = Matter.Engine.create(document.getElementById("gameArea"), <any>{
       render: {
         options: {
@@ -254,22 +255,27 @@ module game {
             isWorldStatic = false;
           }
         }
-
+        /// Update check if striker is in reset position.
         if(isWorldStatic) {
-          context.globalAlpha = 0.5;
-          context.beginPath();
-          context.setLineDash([3]);
-          context.moveTo(startPoint.x, startPoint.y);
-          context.lineTo(endPoint.x, endPoint.y);
 
-          context.strokeStyle = 'red';
-          context.lineWidth = 5.5;
-          context.stroke();
-          context.setLineDash([]);
+          drawGuideLines(context, startPoint, endPoint);
         }
         
       }
     });
+
+    function drawGuideLines(context: any, startPoint: any, endPoint: any){
+      context.globalAlpha = 0.5;
+      context.beginPath();
+      context.setLineDash([3]);
+      context.moveTo(startPoint.x, startPoint.y);
+      context.lineTo(endPoint.x, endPoint.y);
+
+      context.strokeStyle = 'red';
+      context.lineWidth = 5.5;
+      context.stroke();
+      context.setLineDash([]);
+    }
 
     Matter.Events.on(_engine, 'collisionEnd', function(event) {
       handlePocketCollision(event);
@@ -466,13 +472,7 @@ module game {
         y: striker.position.y + 1.0 * Math.sin(striker.angle)
       };
     
-    var force : number = 0.01;
-    console.log({
-      x: (_globalSize / document.documentElement.clientWidth) * force  * striker.mass * Math.cos(striker.angle),
-      y: (_globalSize / document.documentElement.clientHeight) * force  * striker.mass * Math.sin(striker.angle)
-    });
-    
-    // Object {x: -1.8369701987210297e-17, y: -0.1 }
+    var force : number = 0.05;
 
     Matter.Body.applyForce(striker, 
       { x: position.x, y: position.y }, 
