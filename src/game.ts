@@ -125,8 +125,10 @@ module game {
       centerOfBoard = {xPos: settings["outerBoardWidth"]/2, yPos: settings["outerBoardHeight"]/2};
     }
     
-    console.log("I AM IN THE UPDATE UI FUNCTION HELLO");
+    console.log("I AM IN THE UPDATE UI FUNCTION HELLO 2");
     console.log(params);
+    console.log("currentUpdateUI.yourPlayerIndex:", currentUpdateUI.yourPlayerIndex);
+
     // SET CURRENT MODE
     if (params.playMode === "passAndPlay") currentMode = CurrentMode.PassAndPlay;
     else if (params.playMode === "playAgainstTheComputer") currentMode = CurrentMode.Practice;
@@ -136,12 +138,13 @@ module game {
     currentUpdateUI = params;
     state = params.move.stateAfterMove;
     
+    
     if (isFirstMove() && isMyTurn()) { // FIXED BUG: This is called twice.
       updateInitialUI(); 
       console.log("MAKE COMPUTER MOVE CALLED FROM UPDATE UI");
       makeComputerMove();
     }
-    else if(params.yourPlayerIndex != -2){
+    else if (currentUpdateUI.yourPlayerIndex != -2) {
       $timeout(handleStateUpdate, 500);
     }
   }
