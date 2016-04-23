@@ -139,7 +139,7 @@ module game {
     state = params.move.stateAfterMove;
     
     
-    if (isFirstMove() && isMyTurn()) { // FIXED BUG: This is called twice.
+    if (isFirstMove()) { // FIXED BUG: This is called twice.
       updateInitialUI(); 
       console.log("MAKE COMPUTER MOVE CALLED FROM UPDATE UI");
       makeComputerMove();
