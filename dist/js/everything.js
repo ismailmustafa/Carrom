@@ -554,7 +554,7 @@ var game;
         if (game.centerOfBoard === undefined && game.settings !== undefined) {
             game.centerOfBoard = { xPos: game.settings["outerBoardWidth"] / 2, yPos: game.settings["outerBoardHeight"] / 2 };
         }
-        console.log("I AM IN THE UPDATE UI FUNCTION HELLO 2");
+        console.log("I AM IN THE UPDATE UI FUNCTION HELLO 3");
         console.log(params);
         // SET CURRENT MODE
         if (params.playMode === "passAndPlay")
@@ -566,13 +566,14 @@ var game;
         game.didMakeMove = false;
         game.currentUpdateUI = params;
         game.state = params.move.stateAfterMove;
-        console.log("currentUpdateUI.yourPlayerIndex:", game.currentUpdateUI.yourPlayerIndex);
         if (isFirstMove() && isMyTurn()) {
             updateInitialUI();
             console.log("MAKE COMPUTER MOVE CALLED FROM UPDATE UI");
             makeComputerMove();
         }
-        else if (game.currentUpdateUI.yourPlayerIndex != -2) {
+        else if (game.currentUpdateUI != null &&
+            game.currentUpdateUI != undefined &&
+            game.currentUpdateUI.yourPlayerIndex != -2) {
             $timeout(handleStateUpdate, 500);
         }
     }
