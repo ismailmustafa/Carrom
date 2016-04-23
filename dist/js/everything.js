@@ -590,18 +590,16 @@ var game;
         console.log("-----------------------------------------HANDLE UPDATE STATE");
         // Make sure to draw on both screens
         if (game.currentMode === CurrentMode.Opponent && game.currentUpdateUI.yourPlayerIndex !== -2) {
+            // Player one always goes first
             if (yourPlayerIndex() === 0 && game.firstTimePlayer1) {
                 game.firstTimePlayer1 = false;
                 updateInitialUI();
             }
             else if (yourPlayerIndex() === 1 && game.firstTimePlayer2) {
                 game.firstTimePlayer2 = false;
-                updateInitialUI();
+                drawObjects(game.state.board, game.state.shouldFlipBoard);
             }
         }
-        $timeout(handleDrawingBoard, 500);
-    }
-    function handleDrawingBoard() {
         // Draw initially for both computer and pass and play
         if (isFirstMove() && isMyTurn()) {
             console.log("---------------------------------------UPDATE INITIAL UI INSIDE FOR SURE");
