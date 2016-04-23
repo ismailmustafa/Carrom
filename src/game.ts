@@ -127,7 +127,7 @@ module game {
     
     console.log("I AM IN THE UPDATE UI FUNCTION HELLO 2");
     console.log(params);
-    console.log("currentUpdateUI.yourPlayerIndex:", currentUpdateUI.yourPlayerIndex);
+    
 
     // SET CURRENT MODE
     if (params.playMode === "passAndPlay") currentMode = CurrentMode.PassAndPlay;
@@ -138,7 +138,7 @@ module game {
     currentUpdateUI = params;
     state = params.move.stateAfterMove;
     
-    
+    console.log("currentUpdateUI.yourPlayerIndex:", currentUpdateUI.yourPlayerIndex);
     if (isFirstMove() && isMyTurn()) { // FIXED BUG: This is called twice.
       updateInitialUI(); 
       console.log("MAKE COMPUTER MOVE CALLED FROM UPDATE UI");
@@ -266,9 +266,14 @@ module game {
         var strikerCenterComputerY = settings["outerBoardHeight"] - (settings["bottomOuterStrikerPlacementLineStartY"] - (settings["innerStrikerPlacementLineOffset"] / 2));
 
         /// Update check if striker is in reset position.
-        if(striker.position.x === strikerCenterX
+        var leftGuard = settings["bottomOuterStrikerPlacementLineStartX"];
+        var rightGuard = settings["bottomOuterStrikerPlacementLineEndX"];
+
+        if ( (striker.position.x >= leftGuard && striker.position.x <= rightGuard)
           && striker.position.y === strikerCenterY) {
           drawGuideLines(context, startPoint, endPoint);
+
+
         } else if (striker.position.x === strikerCenterComputerX
           && striker.position.y === strikerCenterComputerY
           ){
@@ -395,7 +400,7 @@ module game {
       }
     }
   }
-
+  
   var translationFactor = 15;
   // Move the striker left
   export function leftClick(){
