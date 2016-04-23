@@ -571,7 +571,7 @@ var game;
             console.log("MAKE COMPUTER MOVE CALLED FROM UPDATE UI");
             makeComputerMove();
         }
-        else {
+        else if (params.yourPlayerIndex != -2) {
             $timeout(handleStateUpdate, 500);
         }
     }
