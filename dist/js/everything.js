@@ -599,6 +599,9 @@ var game;
                 updateInitialUI();
             }
         }
+        $timeout(handleDrawingBoard, 500);
+    }
+    function handleDrawingBoard() {
         // Draw initially for both computer and pass and play
         if (isFirstMove() && isMyTurn()) {
             console.log("---------------------------------------UPDATE INITIAL UI INSIDE FOR SURE");
