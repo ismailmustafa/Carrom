@@ -620,6 +620,7 @@ var game;
         return isMyTurn() && !isComputer();
     }
     function isMyTurn() {
+        console.log("A:", game.currentUpdateUI.yourPlayerIndex, "B:", game.currentUpdateUI.move.turnIndexAfterMove, "C: ", game.didMakeMove);
         return !game.didMakeMove &&
             game.currentUpdateUI.move.turnIndexAfterMove >= 0 &&
             game.currentUpdateUI.yourPlayerIndex === game.currentUpdateUI.move.turnIndexAfterMove; // it's my turn

@@ -194,6 +194,9 @@ module game {
   }
   
   function isMyTurn() {
+
+    console.log("A:", currentUpdateUI.yourPlayerIndex, "B:",currentUpdateUI.move.turnIndexAfterMove, "C: ", didMakeMove);
+
     return !didMakeMove && // you can only make one move per updateUI.
       currentUpdateUI.move.turnIndexAfterMove >= 0 && // game is ongoing
       currentUpdateUI.yourPlayerIndex === currentUpdateUI.move.turnIndexAfterMove; // it's my turn
