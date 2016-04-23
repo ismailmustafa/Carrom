@@ -554,8 +554,9 @@ var game;
         if (game.centerOfBoard === undefined && game.settings !== undefined) {
             game.centerOfBoard = { xPos: game.settings["outerBoardWidth"] / 2, yPos: game.settings["outerBoardHeight"] / 2 };
         }
-        console.log("I AM IN THE UPDATE UI FUNCTION HELLO");
+        console.log("I AM IN THE UPDATE UI FUNCTION HELLO 2");
         console.log(params);
+        console.log("currentUpdateUI.yourPlayerIndex:", game.currentUpdateUI.yourPlayerIndex);
         // SET CURRENT MODE
         if (params.playMode === "passAndPlay")
             game.currentMode = CurrentMode.PassAndPlay;
@@ -571,7 +572,7 @@ var game;
             console.log("MAKE COMPUTER MOVE CALLED FROM UPDATE UI");
             makeComputerMove();
         }
-        else if (params.yourPlayerIndex != -2) {
+        else if (game.currentUpdateUI.yourPlayerIndex != -2) {
             $timeout(handleStateUpdate, 500);
         }
     }
