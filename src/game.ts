@@ -161,18 +161,18 @@ module game {
       // Player one always goes first
       if (yourPlayerIndex() === 0 && firstTimePlayer1) {
         firstTimePlayer1 = false;
-        updateInitialUI();
+        updateInitialUI(undefined);
       }
       else if (yourPlayerIndex() === 1 && firstTimePlayer2) {
         firstTimePlayer2 = false;
-        drawObjects(state.board, state.shouldFlipBoard);
+        updateInitialUI(state);
       }
     }
     
     // Draw initially for both computer and pass and play
     if (isFirstMove() && isMyTurn()) {
       console.log("---------------------------------------UPDATE INITIAL UI INSIDE FOR SURE");
-      updateInitialUI();
+      updateInitialUI(undefined);
       makeComputerMove();
     }
     // HANDLE REDRAWING FOR OTHER TWO MODES (opponent + passAndPlay)
@@ -230,7 +230,7 @@ module game {
   }
   
   // This should be only called once
-  export function updateInitialUI() {
+  export function updateInitialUI(stateToDraw : IState) {
     // create a Matter.js engine
     console.log("ONCE")
     _engine = Matter.Engine.create(document.getElementById("gameArea"), <any>{
@@ -257,7 +257,8 @@ module game {
 
     settings = gameLogic.drawBoard(_sceneWidth, _sceneHeight);
     
-    drawObjects(undefined, undefined); // In leiu of local storage
+    if (stateToDraw === undefined) drawObjects(undefined, undefined);
+    else drawObjects(stateToDraw.board, stateToDraw.shouldFlipBoard);
 
     // Background image
     var renderOptions = _engine.render.options;
