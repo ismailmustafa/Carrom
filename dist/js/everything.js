@@ -593,9 +593,11 @@ var game;
         }
         // HANDLE REDRAWING FOR OTHER TWO MODES (opponent + passAndPlay)
         if (game.currentMode === CurrentMode.PassAndPlay) {
+            console.log("$$$$$$$$$$$$$$$$$$$CURRENT MODE IS PASS AND PLAY");
             setBoardState(game.state);
         }
         else if (game.currentMode === CurrentMode.Opponent) {
+            console.log("$$$$$$$$$$$$$$$$$$$$$$$CURRENT MODE IS OPPONENT");
             // Only redraw and invert for current player
             if (isMyTurn()) {
                 setBoardState(game.state);
