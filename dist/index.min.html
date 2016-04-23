@@ -109,30 +109,38 @@
   <!--BOARD DRAWING-->
 
   <div id="gameArea">
-
+    
     <div id='glasspane' class="text-center">
       
-      <div style="color: white;">
+      <div style="color: white; text-align: center;">
         <h3>P1 : {{ game.gameScore.player1 }} - P2 : {{ game.gameScore.player2 }}</h3>
       </div>
-      <a href="">
-        <i class="medium material-icons" ng-click="game.enableButtons && game.leftRotate()">replay</i>
-      </a>
+      <div style="color: white; text-align: center;">
+        <a class="icon-link" href="#" ng-click="game.enableButtons && game.leftRotate()">
+          <i class="hide-on-small-only medium material-icons">replay</i>
+          <i class="small hide-on-med-and-up material-icons">replay</i>
+        </a>
 
-      <a class="icon-link" href="#" ng-click="game.enableButtons && game.leftClick()">
-        <i class="medium material-icons icon-flipped">play_arrow</i>
-      </a>
+        <a class="icon-link" href="#" ng-click="game.enableButtons && game.leftClick()">
+          <i class="hide-on-small-only medium material-icons icon-flipped">play_arrow</i>
+          <i class="small hide-on-med-and-up material-icons icon-flipped">play_arrow</i>
+        </a>
+        
+        <a class="icon-link" href="" ng-click="game.enableButtons && game.shootClick()">
+          <i class="hide-on-small-only medium material-icons icon-flipped">navigation</i>
+          <i class="small hide-on-med-and-up material-icons icon-flipped">navigation</i>
+        </a>
+
+        <a class="icon-link" href="" ng-click="game.enableButtons && game.rightClick()">
+          <i class="hide-on-small-only medium material-icons">play_arrow</i>
+          <i class="small hide-on-med-and-up material-icons">play_arrow</i>
+        </a>
+        <a class="icon-link" href="#" ng-click="game.enableButtons && game.rightRotate()">
+          <i class="hide-on-small-only medium material-icons icon-flipped">replay</i>
+          <i class="small hide-on-med-and-up material-icons icon-flipped">replay</i>
+        </a>
+      </div>
       
-      <a class="icon-link" href="" ng-click="game.enableButtons && game.shootClick()">
-        <i class="medium material-icons">navigation</i>
-      </a>
-
-      <a class="icon-link" href="" ng-click="game.enableButtons && game.rightClick()">
-        <i class="medium material-icons">play_arrow</i>
-      </a>
-      <a class="icon-link" href="">
-        <i class="medium material-icons icon-flipped" ng-click="game.enableButtons && game.rightRotate()">replay</i>
-      </a>
       
     </div>
 

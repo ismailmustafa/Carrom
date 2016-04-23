@@ -529,7 +529,7 @@ var game;
                 xCoord = game.settings["outerBoardWidth"] - xCoord;
                 yCoord = game.settings["outerBoardHeight"] - yCoord;
             }
-            circles.push(Matter.Bodies.circle(xCoord, yCoord, game.settings["coinDiameter"] / 2.0, { isStatic: false, collisionFilter: { mask: game.defaultCategory }, restitution: 1, render: { fillStyle: currentBoard[i].color, strokeStyle: 'black' }, label: 'Coin' }));
+            circles.push(Matter.Bodies.circle(xCoord, yCoord, game.settings["coinDiameter"] / 2.0, { isStatic: false, collisionFilter: { mask: game.defaultCategory }, restitution: 1, frictionAir: 0.02, render: { fillStyle: currentBoard[i].color, strokeStyle: 'black' }, label: 'Coin' }));
         }
         Matter.World.add(game._engine.world, circles); // add coins
         // Create pockets and add them
@@ -566,7 +566,7 @@ var game;
         game.didMakeMove = false;
         game.currentUpdateUI = params;
         game.state = params.move.stateAfterMove;
-        if (isFirstMove()) {
+        if (isFirstMove() && isMyTurn()) {
             updateInitialUI();
             console.log("MAKE COMPUTER MOVE CALLED FROM UPDATE UI");
             makeComputerMove();
@@ -621,6 +621,7 @@ var game;
     // This should be only called once
     function updateInitialUI() {
         // create a Matter.js engine
+        console.log("ONCE");
         game._engine = Matter.Engine.create(document.getElementById("gameArea"), {
             render: {
                 options: {
@@ -650,22 +651,47 @@ var game;
         renderOptions.wireframes = false;
         renderOptions.showDebug = false;
         Matter.Engine.run(game._engine);
+        game._globalSize = game._sceneWidth < game._sceneHeight ? game._sceneWidth : game._sceneHeight;
         Matter.Events.on(game._engine.render, 'afterRender', function () {
             var context = game._engine.render.context, bodies = Matter.Composite.allBodies(game._engine.world);
             var striker = getStriker();
             if (striker != undefined) {
                 var startPoint = { x: striker.position.x, y: striker.position.y }, endPoint = {
-                    x: striker.position.x + 32.0 * Math.cos(striker.angle),
-                    y: striker.position.y + 32.0 * Math.sin(striker.angle)
+                    x: striker.position.x + (game._globalSize / 5) * Math.cos(striker.angle),
+                    y: striker.position.y + (game._globalSize / 5) * Math.sin(striker.angle)
                 };
-                context.beginPath();
-                context.moveTo(startPoint.x, startPoint.y);
-                context.lineTo(endPoint.x, endPoint.y);
-                context.strokeStyle = 'red';
-                context.lineWidth = 5.5;
-                context.stroke();
+                var isWorldStatic = true;
+                for (var bodyId in game._engine.world.bodies) {
+                    if (game._engine.world.bodies[bodyId].motion != 0) {
+                        isWorldStatic = false;
+                    }
+                }
+                var strikerCenterX = (game.settings["bottomOuterStrikerPlacementLineStartX"] + game.settings["bottomOuterStrikerPlacementLineEndX"]) / 2;
+                var strikerCenterY = game.settings["bottomOuterStrikerPlacementLineStartY"] - (game.settings["innerStrikerPlacementLineOffset"] / 2);
+                var strikerCenterComputerX = (game.settings["bottomOuterStrikerPlacementLineStartX"] + game.settings["bottomOuterStrikerPlacementLineEndX"]) / 2;
+                var strikerCenterComputerY = game.settings["outerBoardHeight"] - (game.settings["bottomOuterStrikerPlacementLineStartY"] - (game.settings["innerStrikerPlacementLineOffset"] / 2));
+                /// Update check if striker is in reset position.
+                if (striker.position.x === strikerCenterX
+                    && striker.position.y === strikerCenterY) {
+                    drawGuideLines(context, startPoint, endPoint);
+                }
+                else if (striker.position.x === strikerCenterComputerX
+                    && striker.position.y === strikerCenterComputerY) {
+                    drawGuideLines(context, startPoint, endPoint);
+                }
             }
         });
+        function drawGuideLines(context, startPoint, endPoint) {
+            context.globalAlpha = 0.5;
+            context.beginPath();
+            context.setLineDash([3]);
+            context.moveTo(startPoint.x, startPoint.y);
+            context.lineTo(endPoint.x, endPoint.y);
+            context.strokeStyle = 'red';
+            context.lineWidth = 5.5;
+            context.stroke();
+            context.setLineDash([]);
+        }
         Matter.Events.on(game._engine, 'collisionEnd', function (event) {
             handlePocketCollision(event);
         });
@@ -858,8 +884,11 @@ var game;
             x: striker.position.x + 1.0 * Math.cos(striker.angle),
             y: striker.position.y + 1.0 * Math.sin(striker.angle)
         };
-        var force = 0.1;
-        Matter.Body.applyForce(striker, { x: position.x, y: position.y }, { x: force * Math.cos(striker.angle), y: force * Math.sin(striker.angle) });
+        var force = 0.05;
+        Matter.Body.applyForce(striker, { x: position.x, y: position.y }, {
+            x: (game._globalSize / document.documentElement.clientWidth) * force * striker.mass * Math.cos(striker.angle),
+            y: (game._globalSize / document.documentElement.clientHeight) * force * striker.mass * Math.sin(striker.angle)
+        });
         game._engine.enableSleeping = true;
     }
     game.shootClick = shootClick;
