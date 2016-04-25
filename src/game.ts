@@ -139,30 +139,56 @@ module game {
     state = params.move.stateAfterMove;
     
     
-    if (isFirstMove() && isMyTurn()) { // FIXED BUG: This is called twice.
-      updateInitialUI(); 
-      console.log("MAKE COMPUTER MOVE CALLED FROM UPDATE UI");
-      makeComputerMove();
-    }
-    else if (currentUpdateUI != null && 
-      currentUpdateUI != undefined && 
-      currentUpdateUI.yourPlayerIndex != -2) {
-      $timeout(handleStateUpdate, 500);
-    }
+    $timeout(handleStateUpdate, 500);
+    // if (isFirstMove()) { // FIXED BUG: This is called twice.
+    //   updateInitialUI(); 
+    //   console.log("MAKE COMPUTER MOVE CALLED FROM UPDATE UI");
+    //   makeComputerMove();
+    // }
+    // else if (currentUpdateUI != null && 
+    //   currentUpdateUI != undefined && 
+    //   currentUpdateUI.yourPlayerIndex != -2) {
+    //   $timeout(handleStateUpdate, 500);
+    // }
   }
   
+  export let firstTimePlayer1 = true;
+  export let firstTimePlayer2 = true;
   function handleStateUpdate() {
+    console.log("-----------------------------------------HANDLE UPDATE STATE");
+    // Make sure to draw on both screens
+    if (currentMode === CurrentMode.Opponent && currentUpdateUI.yourPlayerIndex !== -2) {
+      // Player one always goes first
+      if (yourPlayerIndex() === 0 && firstTimePlayer1) {
+        firstTimePlayer1 = false;
+        updateInitialUI(undefined);
+      }
+      else if (yourPlayerIndex() === 1 && firstTimePlayer2) {
+        firstTimePlayer2 = false;
+        updateInitialUI(state);
+      }
+    }
+    
+    // Draw initially for both computer and pass and play
+    if (isFirstMove() && isMyTurn()) {
+      console.log("---------------------------------------UPDATE INITIAL UI INSIDE FOR SURE");
+      updateInitialUI(undefined);
+      makeComputerMove();
+    }
     // HANDLE REDRAWING FOR OTHER TWO MODES (opponent + passAndPlay)
-    if (currentMode === CurrentMode.PassAndPlay) {
+    if (currentMode === CurrentMode.PassAndPlay && currentUpdateUI.yourPlayerIndex !== -2) {
+      console.log("$$$$$$$$$$$$$$$$$$$CURRENT MODE IS PASS AND PLAY");
       setBoardState(state);
     }
-    else if (currentMode === CurrentMode.Opponent) {
+    else if (currentMode === CurrentMode.Opponent && currentUpdateUI.yourPlayerIndex !== -2) {
+      console.log("$$$$$$$$$$$$$$$$$$$$$$$CURRENT MODE IS OPPONENT");
       // Only redraw and invert for current player
       if (isMyTurn()) {
         setBoardState(state);
       }
     }
   }
+  
   
   function isFirstMove() {
     return !currentUpdateUI.move.stateAfterMove;
@@ -185,6 +211,9 @@ module game {
   }
   
   function isMyTurn() {
+
+    console.log("A:", currentUpdateUI.yourPlayerIndex, "B:",currentUpdateUI.move.turnIndexAfterMove, "C: ", didMakeMove);
+
     return !didMakeMove && // you can only make one move per updateUI.
       currentUpdateUI.move.turnIndexAfterMove >= 0 && // game is ongoing
       currentUpdateUI.yourPlayerIndex === currentUpdateUI.move.turnIndexAfterMove; // it's my turn
@@ -201,7 +230,7 @@ module game {
   }
   
   // This should be only called once
-  export function updateInitialUI() {
+  export function updateInitialUI(stateToDraw : IState) {
     // create a Matter.js engine
     console.log("ONCE")
     _engine = Matter.Engine.create(document.getElementById("gameArea"), <any>{
@@ -228,7 +257,8 @@ module game {
 
     settings = gameLogic.drawBoard(_sceneWidth, _sceneHeight);
     
-    drawObjects(undefined, undefined); // In leiu of local storage
+    if (stateToDraw === undefined) drawObjects(undefined, undefined);
+    else drawObjects(stateToDraw.board, stateToDraw.shouldFlipBoard);
 
     // Background image
     var renderOptions = _engine.render.options;
@@ -467,7 +497,7 @@ module game {
         allCoins.push(newCoin);
       }
     }
-    var returnedState : IState = {board: allCoins, playerIndex: angular.copy(state.playerIndex), gameScore: angular.copy(state.gameScore), shouldCoverQueen: state.shouldCoverQueen};
+    var returnedState : IState = {board: allCoins, playerIndex: angular.copy(state.playerIndex), gameScore: angular.copy(state.gameScore), shouldCoverQueen: state.shouldCoverQueen, shouldFlipBoard: state.shouldFlipBoard};
     return returnedState;
   }
   
@@ -475,7 +505,8 @@ module game {
   export function setBoardState(state : IState) {
     Matter.World.clear(_engine.world, false);
     var newBoard : Board = state.board;
-    drawObjects(newBoard, true);
+    if (state.shouldFlipBoard) drawObjects(newBoard, true);
+    else drawObjects(newBoard, false);
     addSleepEventToEngineBodies();
   }
 
@@ -531,16 +562,22 @@ module game {
     // Same as shoot click, but without human limitation
     if (didMakeMove) return;
     didMakeMove = true;
+    
     var striker = getStriker();
     var position = {
         x: striker.position.x + 1.0 * Math.cos(striker.angle),
         y: striker.position.y + 1.0 * Math.sin(striker.angle)
       };
-    var force : number = 0.1;
+    
+    var force : number = 0.05;
+
     Matter.Body.applyForce(striker, 
       { x: position.x, y: position.y }, 
-      { x: force * Math.cos(striker.angle), y: force * Math.sin(striker.angle) })
-    _engine.enableSleeping = true;
+      {
+        x: (_globalSize / document.documentElement.clientWidth) * force * striker.mass * Math.cos(striker.angle), 
+        y: (_globalSize / document.documentElement.clientHeight) * force * striker.mass * Math.sin(striker.angle)
+      })
+      _engine.enableSleeping = true;
   }
 }
 
