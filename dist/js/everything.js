@@ -295,7 +295,8 @@ var gameLogic;
             // Game score tracking
             gameScore: { player1: 0, player2: 0 },
             // queen starts off as not pocketed
-            shouldCoverQueen: false
+            shouldCoverQueen: false,
+            shouldFlipBoard: true
         };
     }
     gameLogic.getInitialState = getInitialState;
@@ -316,10 +317,14 @@ var gameLogic;
             turnIndexAfterMove = -1;
         }
         else {
-            if (turnShouldSwitch)
+            if (turnShouldSwitch) {
                 turnIndexAfterMove = 1 - turnIndexBeforeMove;
-            else
+                nextState.shouldFlipBoard = true;
+            }
+            else {
                 turnIndexAfterMove = turnIndexBeforeMove;
+                nextState.shouldFlipBoard = false;
+            }
             endMatchScores = null;
         }
         return { endMatchScores: endMatchScores, turnIndexAfterMove: turnIndexAfterMove, stateAfterMove: nextState };
@@ -566,24 +571,48 @@ var game;
         game.didMakeMove = false;
         game.currentUpdateUI = params;
         game.state = params.move.stateAfterMove;
-        if (isFirstMove() && isMyTurn()) {
-            updateInitialUI();
-            console.log("MAKE COMPUTER MOVE CALLED FROM UPDATE UI");
-            makeComputerMove();
-        }
-        else if (game.currentUpdateUI != null &&
-            game.currentUpdateUI != undefined &&
-            game.currentUpdateUI.yourPlayerIndex != -2) {
-            $timeout(handleStateUpdate, 500);
-        }
+        $timeout(handleStateUpdate, 500);
+        // if (isFirstMove()) { // FIXED BUG: This is called twice.
+        //   updateInitialUI(); 
+        //   console.log("MAKE COMPUTER MOVE CALLED FROM UPDATE UI");
+        //   makeComputerMove();
+        // }
+        // else if (currentUpdateUI != null && 
+        //   currentUpdateUI != undefined && 
+        //   currentUpdateUI.yourPlayerIndex != -2) {
+        //   $timeout(handleStateUpdate, 500);
+        // }
     }
     game.updateUI = updateUI;
+    game.firstTimePlayer1 = true;
+    game.firstTimePlayer2 = true;
     function handleStateUpdate() {
+        console.log("-----------------------------------------HANDLE UPDATE STATE");
+        // Make sure to draw on both screens
+        if (game.currentMode === CurrentMode.Opponent && game.currentUpdateUI.yourPlayerIndex !== -2) {
+            // Player one always goes first
+            if (yourPlayerIndex() === 0 && game.firstTimePlayer1) {
+                game.firstTimePlayer1 = false;
+                updateInitialUI(undefined);
+            }
+            else if (yourPlayerIndex() === 1 && game.firstTimePlayer2) {
+                game.firstTimePlayer2 = false;
+                updateInitialUI(game.state);
+            }
+        }
+        // Draw initially for both computer and pass and play
+        if (isFirstMove() && isMyTurn()) {
+            console.log("---------------------------------------UPDATE INITIAL UI INSIDE FOR SURE");
+            updateInitialUI(undefined);
+            makeComputerMove();
+        }
         // HANDLE REDRAWING FOR OTHER TWO MODES (opponent + passAndPlay)
-        if (game.currentMode === CurrentMode.PassAndPlay) {
+        if (game.currentMode === CurrentMode.PassAndPlay && game.currentUpdateUI.yourPlayerIndex !== -2) {
+            console.log("$$$$$$$$$$$$$$$$$$$CURRENT MODE IS PASS AND PLAY");
             setBoardState(game.state);
         }
-        else if (game.currentMode === CurrentMode.Opponent) {
+        else if (game.currentMode === CurrentMode.Opponent && game.currentUpdateUI.yourPlayerIndex !== -2) {
+            console.log("$$$$$$$$$$$$$$$$$$$$$$$CURRENT MODE IS OPPONENT");
             // Only redraw and invert for current player
             if (isMyTurn()) {
                 setBoardState(game.state);
@@ -606,6 +635,7 @@ var game;
         return isMyTurn() && !isComputer();
     }
     function isMyTurn() {
+        console.log("A:", game.currentUpdateUI.yourPlayerIndex, "B:", game.currentUpdateUI.move.turnIndexAfterMove, "C: ", game.didMakeMove);
         return !game.didMakeMove &&
             game.currentUpdateUI.move.turnIndexAfterMove >= 0 &&
             game.currentUpdateUI.yourPlayerIndex === game.currentUpdateUI.move.turnIndexAfterMove; // it's my turn
@@ -621,7 +651,7 @@ var game;
     }
     game.init = init;
     // This should be only called once
-    function updateInitialUI() {
+    function updateInitialUI(stateToDraw) {
         // create a Matter.js engine
         console.log("ONCE");
         game._engine = Matter.Engine.create(document.getElementById("gameArea"), {
@@ -645,7 +675,10 @@ var game;
         game._objectsInMotion = 0;
         updateScene();
         game.settings = gameLogic.drawBoard(game._sceneWidth, game._sceneHeight);
-        drawObjects(undefined, undefined); // In leiu of local storage
+        if (stateToDraw === undefined)
+            drawObjects(undefined, undefined);
+        else
+            drawObjects(stateToDraw.board, stateToDraw.shouldFlipBoard);
         // Background image
         var renderOptions = game._engine.render.options;
         renderOptions.background = 'imgs/carromBackground.png';
@@ -861,7 +894,7 @@ var game;
                 allCoins.push(newCoin);
             }
         }
-        var returnedState = { board: allCoins, playerIndex: angular.copy(game.state.playerIndex), gameScore: angular.copy(game.state.gameScore), shouldCoverQueen: game.state.shouldCoverQueen };
+        var returnedState = { board: allCoins, playerIndex: angular.copy(game.state.playerIndex), gameScore: angular.copy(game.state.gameScore), shouldCoverQueen: game.state.shouldCoverQueen, shouldFlipBoard: game.state.shouldFlipBoard };
         return returnedState;
     }
     game.getBoardState = getBoardState;
@@ -869,7 +902,10 @@ var game;
     function setBoardState(state) {
         Matter.World.clear(game._engine.world, false);
         var newBoard = state.board;
-        drawObjects(newBoard, true);
+        if (state.shouldFlipBoard)
+            drawObjects(newBoard, true);
+        else
+            drawObjects(newBoard, false);
         addSleepEventToEngineBodies();
     }
     game.setBoardState = setBoardState;
@@ -932,8 +968,11 @@ var game;
             x: striker.position.x + 1.0 * Math.cos(striker.angle),
             y: striker.position.y + 1.0 * Math.sin(striker.angle)
         };
-        var force = 0.1;
-        Matter.Body.applyForce(striker, { x: position.x, y: position.y }, { x: force * Math.cos(striker.angle), y: force * Math.sin(striker.angle) });
+        var force = 0.05;
+        Matter.Body.applyForce(striker, { x: position.x, y: position.y }, {
+            x: (game._globalSize / document.documentElement.clientWidth) * force * striker.mass * Math.cos(striker.angle),
+            y: (game._globalSize / document.documentElement.clientHeight) * force * striker.mass * Math.sin(striker.angle)
+        });
         game._engine.enableSleeping = true;
     }
     game.makeComputerMoveHelper = makeComputerMoveHelper;

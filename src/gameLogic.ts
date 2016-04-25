@@ -38,7 +38,8 @@ interface IState {
   board: Board,
   playerIndex: PlayerIndex,
   gameScore: GameScore,
-  shouldCoverQueen: boolean
+  shouldCoverQueen: boolean,
+  shouldFlipBoard: boolean
 }
 
 interface PocketedCoinCount {
@@ -380,7 +381,8 @@ module gameLogic {
       // Game score tracking
       gameScore: {player1: 0, player2: 0},
       // queen starts off as not pocketed
-      shouldCoverQueen: false
+      shouldCoverQueen: false,
+      shouldFlipBoard: true
     };
   }
   
@@ -404,8 +406,14 @@ module gameLogic {
       turnIndexAfterMove = -1;
     }
     else {
-      if (turnShouldSwitch) turnIndexAfterMove = 1 - turnIndexBeforeMove;
-      else turnIndexAfterMove = turnIndexBeforeMove;
+      if (turnShouldSwitch) {
+        turnIndexAfterMove = 1 - turnIndexBeforeMove;
+        nextState.shouldFlipBoard = true;
+      }
+      else {
+        turnIndexAfterMove = turnIndexBeforeMove;
+        nextState.shouldFlipBoard = false;
+      }
       endMatchScores = null;
     }
     return {endMatchScores: endMatchScores, turnIndexAfterMove: turnIndexAfterMove, stateAfterMove: nextState};
