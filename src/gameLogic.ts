@@ -438,6 +438,7 @@ module gameLogic {
     
     // Modify state to account for covering the queen
     if (previousState.shouldCoverQueen) {
+      newState.shouldCoverQueen = false;
       // if (previousState.queenCoverCheck === QueenCover.none) {
       //   newState.queenCoverCheck = QueenCover.firstCheck;
       // }

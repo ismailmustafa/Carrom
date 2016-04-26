@@ -346,6 +346,7 @@ var gameLogic;
         }
         // Modify state to account for covering the queen
         if (previousState.shouldCoverQueen) {
+            newState.shouldCoverQueen = false;
             // if (previousState.queenCoverCheck === QueenCover.none) {
             //   newState.queenCoverCheck = QueenCover.firstCheck;
             // }
@@ -581,6 +582,7 @@ var game;
         game.didMakeMove = false;
         game.currentUpdateUI = params;
         game.state = params.move.stateAfterMove;
+        console.log("STATE:-------------------------------------------------------------", game.state);
         $timeout(handleStateUpdate, 500);
         // if (isFirstMove()) { // FIXED BUG: This is called twice.
         //   updateInitialUI(); 
