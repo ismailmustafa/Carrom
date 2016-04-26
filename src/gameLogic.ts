@@ -45,7 +45,7 @@ interface IState {
   playerIndex: PlayerIndex,
   gameScore: GameScore,
   shouldCoverQueen: boolean,
-  queenCoverCheck: QueenCover,
+  // queenCoverCheck: QueenCover,
   shouldFlipBoard: boolean
 }
 
@@ -389,7 +389,7 @@ module gameLogic {
       gameScore: {player1: 0, player2: 0},
       // queen starts off as not pocketed
       shouldCoverQueen: false,
-      queenCoverCheck: QueenCover.none,
+      // queenCoverCheck: QueenCover.none,
       shouldFlipBoard: true
     };
   }

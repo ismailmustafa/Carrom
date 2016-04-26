@@ -309,25 +309,25 @@ describe("In Carrom Game Logic", function() {
   });
   
   // Test if state is being modified correctly in preperation of next round
-  it("should ensure that state is being modified correctly for next round", function() {
-    let previousState = generateState(5,5,false,0,0,true);
-    let currentState = generateState(4,5,false,0,0,true);
-    let modifiedState = gameLogic.modifyStateForNextRound(previousState, currentState);
-    if (modifiedState.shouldCoverQueen === true) {
-      throw new Error("modified state should set 'shouldCoverQueen' to false");
-    }
-    if (!gameLogic.queenPocketed(modifiedState)) {
-      throw new Error("queen should not be on the board. It was correctly covered");
-    }
+  // it("should ensure that state is being modified correctly for next round", function() {
+  //   let previousState = generateState(5,5,false,0,0,true);
+  //   let currentState = generateState(4,5,false,0,0,true);
+  //   let modifiedState = gameLogic.modifyStateForNextRound(previousState, currentState);
+  //   if (modifiedState.shouldCoverQueen === true) {
+  //     throw new Error("modified state should set 'shouldCoverQueen' to false");
+  //   }
+  //   if (!gameLogic.queenPocketed(modifiedState)) {
+  //     throw new Error("queen should not be on the board. It was correctly covered");
+  //   }
     
-    let previousState2 = generateState(5,5,false,0,0,true);
-    let currentState2 = generateState(5,5,false,0,0,true);
-    let modifiedState2 = gameLogic.modifyStateForNextRound(previousState2, currentState2);
-    if (modifiedState2.shouldCoverQueen === true) {
-      throw new Error("modified state 2 should set 'shouldCoverQueen' to false");
-    }
-    if (gameLogic.queenPocketed(modifiedState2)) {
-      throw new Error("queen should be on the board. The player failed to correctly cover it");
-    }
-  });
+  //   let previousState2 = generateState(5,5,false,0,0,true);
+  //   let currentState2 = generateState(5,5,false,0,0,true);
+  //   let modifiedState2 = gameLogic.modifyStateForNextRound(previousState2, currentState2);
+  //   if (modifiedState2.shouldCoverQueen === true) {
+  //     throw new Error("modified state 2 should set 'shouldCoverQueen' to false");
+  //   }
+  //   if (gameLogic.queenPocketed(modifiedState2)) {
+  //     throw new Error("queen should be on the board. The player failed to correctly cover it");
+  //   }
+  // });
 });

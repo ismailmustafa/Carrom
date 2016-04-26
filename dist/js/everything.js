@@ -302,7 +302,7 @@ var gameLogic;
             gameScore: { player1: 0, player2: 0 },
             // queen starts off as not pocketed
             shouldCoverQueen: false,
-            queenCoverCheck: QueenCover.none,
+            // queenCoverCheck: QueenCover.none,
             shouldFlipBoard: true
         };
     }
@@ -910,7 +910,7 @@ var game;
                 allCoins.push(newCoin);
             }
         }
-        var returnedState = { board: allCoins, playerIndex: angular.copy(game.state.playerIndex), gameScore: angular.copy(game.state.gameScore), shouldCoverQueen: game.state.shouldCoverQueen, queenCoverCheck: game.state.queenCoverCheck, shouldFlipBoard: game.state.shouldFlipBoard };
+        var returnedState = { board: allCoins, playerIndex: angular.copy(game.state.playerIndex), gameScore: angular.copy(game.state.gameScore), shouldCoverQueen: game.state.shouldCoverQueen, shouldFlipBoard: game.state.shouldFlipBoard };
         return returnedState;
     }
     game.getBoardState = getBoardState;
