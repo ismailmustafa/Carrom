@@ -144,7 +144,10 @@ module game {
     didMakeMove = false;
     currentUpdateUI = params;
     state = params.move.stateAfterMove;
-    if (resetGame) state = null;
+    if (resetGame) {
+      resetGame = false;
+      state = null;
+    }
     console.log("STATE:-------------------------------------------------------------", state);
     
     console.log("PREV STATE:-------------------------------------------------------------", params.stateBeforeMove);
