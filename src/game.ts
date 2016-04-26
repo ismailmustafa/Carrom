@@ -165,11 +165,13 @@ module game {
       if (yourPlayerIndex() === 0 && firstTimePlayer1) {
         firstTimePlayer1 = false;
         updateInitialUI(undefined);
+        console.log("first player turn first time")
       }
       else if (yourPlayerIndex() === 1 && firstTimePlayer2) {
         firstTimePlayer2 = false;
         if (isFirstMove() && isMyTurn()) updateInitialUI(undefined);
         else updateInitialUI(state);
+        console.log("second player turn first time")
       }
     }
     

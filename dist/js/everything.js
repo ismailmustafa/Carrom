@@ -609,6 +609,7 @@ var game;
             if (yourPlayerIndex() === 0 && game.firstTimePlayer1) {
                 game.firstTimePlayer1 = false;
                 updateInitialUI(undefined);
+                console.log("first player turn first time");
             }
             else if (yourPlayerIndex() === 1 && game.firstTimePlayer2) {
                 game.firstTimePlayer2 = false;
@@ -616,6 +617,7 @@ var game;
                     updateInitialUI(undefined);
                 else
                     updateInitialUI(game.state);
+                console.log("second player turn first time");
             }
         }
         // Draw initially for both computer and pass and play
