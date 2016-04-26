@@ -259,8 +259,8 @@ module game {
     _objectsInMotion = 0;
 
     // BE SURE TO COMMENT OUT
-    var mouseConstraint = (<any>Matter.MouseConstraint).create(_engine);
-    Matter.World.add(_engine.world, mouseConstraint);
+//     var mouseConstraint = (<any>Matter.MouseConstraint).create(_engine);
+//     Matter.World.add(_engine.world, mouseConstraint);
 
     updateScene();
 
