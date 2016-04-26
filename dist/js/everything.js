@@ -592,8 +592,10 @@ var game;
         game.didMakeMove = false;
         game.currentUpdateUI = params;
         game.state = params.move.stateAfterMove;
-        if (game.resetGame)
+        if (game.resetGame) {
+            game.resetGame = false;
             game.state = null;
+        }
         console.log("STATE:-------------------------------------------------------------", game.state);
         console.log("PREV STATE:-------------------------------------------------------------", params.stateBeforeMove);
         $timeout(handleStateUpdate, 500);
