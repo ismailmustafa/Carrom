@@ -192,6 +192,7 @@ module game {
     // }
   }
   
+  export let realFirstMove = true;
   export let firstTimePlayer1 = true;
   export let firstTimePlayer2 = true;
   function handleStateUpdate() {
@@ -199,12 +200,19 @@ module game {
     if (currentMode === CurrentMode.Opponent && currentUpdateUI.yourPlayerIndex !== -2) {
       // Player one always goes first
       if (yourPlayerIndex() === 0 && firstTimePlayer1) {
+        realFirstMove = false;
         firstTimePlayer1 = false;
         updateInitialUI(undefined);
+        console.log("first player turn first time");
       }
       else if (yourPlayerIndex() === 1 && firstTimePlayer2) {
         firstTimePlayer2 = false;
-        updateInitialUI(state);
+        if (realFirstMove) {
+          realFirstMove = false;
+          updateInitialUI(undefined);
+        }
+        else updateInitialUI(state);
+        console.log("second player turn first time");
       }
     }
     
@@ -289,8 +297,8 @@ module game {
     _objectsInMotion = 0;
 
     // BE SURE TO COMMENT OUT
-    var mouseConstraint = (<any>Matter.MouseConstraint).create(_engine);
-    Matter.World.add(_engine.world, mouseConstraint);
+//     var mouseConstraint = (<any>Matter.MouseConstraint).create(_engine);
+//     Matter.World.add(_engine.world, mouseConstraint);
 
     updateScene();
 
