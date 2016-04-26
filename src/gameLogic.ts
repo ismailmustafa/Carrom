@@ -425,6 +425,47 @@ module gameLogic {
     return {endMatchScores: endMatchScores, turnIndexAfterMove: turnIndexAfterMove, stateAfterMove: nextState};
   }
   
+  // This function modifes the state in preperation for the next round
+  export function modifyStateForNextRound(previousState : IState, currentState : IState) : IState {
+    let newState = angular.copy(currentState);
+    let pocketedCoinCount = getPocketedCoinCount(previousState, currentState);
+    
+    // Account for covering queen
+    if (queenJustPocketed(previousState, currentState)) {
+      newState.shouldCoverQueen = true;
+      console.log("--------------------------------------------------------------------------------------------------------------QUEEN WAS JUST POCKETED");
+    }
+    
+    // Modify state to account for covering the queen
+    if (previousState.shouldCoverQueen) {
+      // if (previousState.queenCoverCheck === QueenCover.none) {
+      //   newState.queenCoverCheck = QueenCover.firstCheck;
+      // }
+      // else if (previousState.queenCoverCheck === QueenCover.firstCheck) {
+      //   newState.queenCoverCheck = QueenCover.secondCheck;
+      // }
+      // else if (previousState.queenCoverCheck === QueenCover.secondCheck) {
+      //   newState.queenCoverCheck = QueenCover.none;
+      //   newState.shouldCoverQueen = false;
+      // }
+      
+      // No coins pocketed to cover the queen so we place the queen on the center of the board
+      if (!coinsPocketed(pocketedCoinCount)) {
+        console.log("-----------------------------------------------------------------------------------------------------------------------UEEN BEING PLACED BACK ON THE BOARD");
+        // First we find the queen
+        let queen : Coin = angular.copy(currentState.board[0]);
+        queen.color = "pink";
+        // Now we set the center of that queen
+        // queen.coordinate = {xPos:game.centerOfBoard.xPos, yPos:game.centerOfBoard.yPos};
+        queen.coordinate = {xPos:200, yPos:200};
+        // Finally add the queen to the new state
+        newState.board.push(queen);
+      }
+    }
+    
+    return newState;
+  }
+  
   // GAME RULES
   
   // Check if game is over
@@ -481,46 +522,6 @@ module gameLogic {
     
     let pair : Pair = new Pair(gameScore, turnShouldSwitch);
     return pair;
-  }
-
-  // This function modifes the state in preperation for the next round
-  export function modifyStateForNextRound(previousState : IState, currentState : IState) : IState {
-    let newState = angular.copy(currentState);
-    let pocketedCoinCount = getPocketedCoinCount(previousState, currentState);
-    
-    // Account for covering queen
-    if (queenJustPocketed(previousState, currentState)) {
-      newState.shouldCoverQueen = true;
-    }
-    
-    // Modify state to account for covering the queen
-    if (previousState.shouldCoverQueen) {
-      // if (previousState.queenCoverCheck === QueenCover.none) {
-      //   newState.queenCoverCheck = QueenCover.firstCheck;
-      // }
-      // else if (previousState.queenCoverCheck === QueenCover.firstCheck) {
-      //   newState.queenCoverCheck = QueenCover.secondCheck;
-      // }
-      // else if (previousState.queenCoverCheck === QueenCover.secondCheck) {
-      //   newState.queenCoverCheck = QueenCover.none;
-      //   newState.shouldCoverQueen = false;
-      // }
-      
-      // No coins pocketed to cover the queen so we place the queen on the center of the board
-      if (!coinsPocketed(pocketedCoinCount)) {
-        console.log("---------QUEEN BEING PLACED BACK ON TEH BOARD");
-        // First we find the queen
-        let queen : Coin = angular.copy(currentState.board[0]);
-        queen.color = "pink";
-        // Now we set the center of that queen
-        // queen.coordinate = {xPos:game.centerOfBoard.xPos, yPos:game.centerOfBoard.yPos};
-        queen.coordinate = {xPos:200, yPos:200};
-        // Finally add the queen to the new state
-        newState.board.push(queen);
-      }
-    }
-    
-    return newState;
   }
   
   function coinsPocketed(pocketedCoinCount : PocketedCoinCount) : boolean {
