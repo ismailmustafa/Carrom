@@ -504,7 +504,7 @@ module gameLogic {
       else gameScore.player1 = gameScore.player1 + 5*pocketedCoinCount.black + 10*pocketedCoinCount.white + (pocketedCoinCount.pink ? 25 : 0);
     }
     // PLAYER 2
-    else {
+    else if (playerIndex === 1) {
       if (previousState.shouldCoverQueen) {
         if (coinsPocketed(pocketedCoinCount)) gameScore.player2 = gameScore.player2 + 5*pocketedCoinCount.black + 10*pocketedCoinCount.white;
         else gameScore.player2 -= 25;
