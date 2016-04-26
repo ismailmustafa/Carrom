@@ -34,11 +34,18 @@ interface GameScore {
   player2 : number
 }
 
+enum QueenCover {
+  firstCheck,
+  secondCheck,
+  none
+}
+
 interface IState {
   board: Board,
   playerIndex: PlayerIndex,
   gameScore: GameScore,
   shouldCoverQueen: boolean,
+  queenCoverCheck: QueenCover,
   shouldFlipBoard: boolean
 }
 
@@ -382,6 +389,7 @@ module gameLogic {
       gameScore: {player1: 0, player2: 0},
       // queen starts off as not pocketed
       shouldCoverQueen: false,
+      queenCoverCheck: QueenCover.none,
       shouldFlipBoard: true
     };
   }
@@ -482,13 +490,27 @@ module gameLogic {
     let newState = angular.copy(currentState);
     let pocketedCoinCount = getPocketedCoinCount(previousState, currentState);
     
+    // Account for covering queen
+    if (queenJustPocketed(previousState, currentState)) {
+      newState.shouldCoverQueen = true;
+    }
+    
     // Modify state to account for covering the queen
     if (previousState.shouldCoverQueen) {
-      // Always revert back to false 
-      newState.shouldCoverQueen = false;
+      // if (previousState.queenCoverCheck === QueenCover.none) {
+      //   newState.queenCoverCheck = QueenCover.firstCheck;
+      // }
+      // else if (previousState.queenCoverCheck === QueenCover.firstCheck) {
+      //   newState.queenCoverCheck = QueenCover.secondCheck;
+      // }
+      // else if (previousState.queenCoverCheck === QueenCover.secondCheck) {
+      //   newState.queenCoverCheck = QueenCover.none;
+      //   newState.shouldCoverQueen = false;
+      // }
       
       // No coins pocketed to cover the queen so we place the queen on the center of the board
       if (!coinsPocketed(pocketedCoinCount)) {
+        console.log("---------QUEEN BEING PLACED BACK ON TEH BOARD");
         // First we find the queen
         let queen : Coin = angular.copy(currentState.board[0]);
         queen.color = "pink";
@@ -499,12 +521,6 @@ module gameLogic {
         newState.board.push(queen);
       }
     }
-    
-    
-    // // Account for covering queen
-    // if (queenJustPocketed(previousState, currentState)) {
-    //   newState.shouldCoverQueen = true;
-    // }
     
     return newState;
   }
