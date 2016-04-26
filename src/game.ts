@@ -134,6 +134,7 @@ module game {
     didMakeMove = false;
     currentUpdateUI = params;
     state = params.move.stateAfterMove;
+    console.log("STATE:-------------------------------------------------------------", state);
     
     
     $timeout(handleStateUpdate, 500);
