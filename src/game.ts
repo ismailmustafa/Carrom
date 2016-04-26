@@ -115,6 +115,7 @@ module game {
     Matter.World.add(_engine.world, Matter.Bodies.circle(strikerX, strikerY, settings["strikerDiameter"]/2, <any>{isStatic: false, restitution: 1, angle: (6.0*Math.PI)/4.0, collisionFilter: {category: defaultCategory}, render: { fillStyle:'blue', strokeStyle:'black' }, label:'Striker'}));
   }
 
+  export let resetGame = false;
   // This gets called after every move
   export function updateUI(params : IUpdateUI) : void {
     // update score
@@ -127,13 +128,23 @@ module game {
     
 
     // SET CURRENT MODE
-    if (params.playMode === "passAndPlay") currentMode = CurrentMode.PassAndPlay;
-    else if (params.playMode === "playAgainstTheComputer") currentMode = CurrentMode.Practice;
-    else currentMode = CurrentMode.Opponent;
+    if (params.playMode === "passAndPlay") {
+      if (currentMode !== params.playMode) resetGame = true;
+      currentMode = CurrentMode.PassAndPlay;
+    }
+    else if (params.playMode === "playAgainstTheComputer") {
+      if (currentMode !== params.playMode) resetGame = true;
+      currentMode = CurrentMode.Practice;
+    }
+    else {
+      if (currentMode !== params.playMode) resetGame = true;
+      currentMode = CurrentMode.Opponent;
+    }
     
     didMakeMove = false;
     currentUpdateUI = params;
     state = params.move.stateAfterMove;
+    if (resetGame) state = null;
     console.log("STATE:-------------------------------------------------------------", state);
     
     console.log("PREV STATE:-------------------------------------------------------------", params.stateBeforeMove);
