@@ -600,6 +600,7 @@ var game;
         // }
     }
     game.updateUI = updateUI;
+    game.realFirstMove = true;
     game.firstTimePlayer1 = true;
     game.firstTimePlayer2 = true;
     function handleStateUpdate() {
@@ -607,14 +608,17 @@ var game;
         if (game.currentMode === CurrentMode.Opponent && game.currentUpdateUI.yourPlayerIndex !== -2) {
             // Player one always goes first
             if (yourPlayerIndex() === 0 && game.firstTimePlayer1) {
+                game.realFirstMove = false;
                 game.firstTimePlayer1 = false;
                 updateInitialUI(undefined);
                 console.log("first player turn first time");
             }
             else if (yourPlayerIndex() === 1 && game.firstTimePlayer2) {
                 game.firstTimePlayer2 = false;
-                if (isFirstMove() && isMyTurn())
+                if (game.realFirstMove) {
+                    game.realFirstMove = false;
                     updateInitialUI(undefined);
+                }
                 else
                     updateInitialUI(game.state);
                 console.log("second player turn first time");
