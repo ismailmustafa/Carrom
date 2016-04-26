@@ -168,7 +168,8 @@ module game {
       }
       else if (yourPlayerIndex() === 1 && firstTimePlayer2) {
         firstTimePlayer2 = false;
-        updateInitialUI(state);
+        if (isFirstMove() && isMyTurn()) updateInitialUI(undefined);
+        else updateInitialUI(state);
       }
     }
     
