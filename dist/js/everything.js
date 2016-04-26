@@ -409,7 +409,7 @@ var gameLogic;
             else
                 gameScore.player1 = gameScore.player1 + 5 * pocketedCoinCount.black + 10 * pocketedCoinCount.white + (pocketedCoinCount.pink ? 25 : 0);
         }
-        else {
+        else if (playerIndex === 1) {
             if (previousState.shouldCoverQueen) {
                 if (coinsPocketed(pocketedCoinCount))
                     gameScore.player2 = gameScore.player2 + 5 * pocketedCoinCount.black + 10 * pocketedCoinCount.white;
