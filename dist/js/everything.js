@@ -583,6 +583,7 @@ var game;
         game.currentUpdateUI = params;
         game.state = params.move.stateAfterMove;
         console.log("STATE:-------------------------------------------------------------", game.state);
+        console.log("PREV STATE:-------------------------------------------------------------", params.stateBeforeMove);
         $timeout(handleStateUpdate, 500);
         // if (isFirstMove()) { // FIXED BUG: This is called twice.
         //   updateInitialUI(); 
