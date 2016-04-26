@@ -564,7 +564,6 @@ var game;
         Matter.World.add(game._engine.world, Matter.Bodies.circle(strikerX, strikerY, game.settings["strikerDiameter"] / 2, { isStatic: false, restitution: 1, angle: (6.0 * Math.PI) / 4.0, collisionFilter: { category: game.defaultCategory }, render: { fillStyle: 'blue', strokeStyle: 'black' }, label: 'Striker' }));
     }
     game.drawObjects = drawObjects;
-    game.resetGame = false;
     // This gets called after every move
     function updateUI(params) {
         // update score
@@ -575,27 +574,17 @@ var game;
         }
         // SET CURRENT MODE
         if (params.playMode === "passAndPlay") {
-            if (game.currentMode !== params.playMode)
-                game.resetGame = true;
             game.currentMode = CurrentMode.PassAndPlay;
         }
         else if (params.playMode === "playAgainstTheComputer") {
-            if (game.currentMode !== params.playMode)
-                game.resetGame = true;
             game.currentMode = CurrentMode.Practice;
         }
         else {
-            if (game.currentMode !== params.playMode)
-                game.resetGame = true;
             game.currentMode = CurrentMode.Opponent;
         }
         game.didMakeMove = false;
         game.currentUpdateUI = params;
         game.state = params.move.stateAfterMove;
-        if (game.resetGame) {
-            game.resetGame = false;
-            game.state = null;
-        }
         console.log("STATE:-------------------------------------------------------------", game.state);
         console.log("PREV STATE:-------------------------------------------------------------", params.stateBeforeMove);
         $timeout(handleStateUpdate, 500);
