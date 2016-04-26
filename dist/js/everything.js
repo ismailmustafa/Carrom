@@ -612,7 +612,10 @@ var game;
             }
             else if (yourPlayerIndex() === 1 && game.firstTimePlayer2) {
                 game.firstTimePlayer2 = false;
-                updateInitialUI(game.state);
+                if (isFirstMove() && isMyTurn())
+                    updateInitialUI(undefined);
+                else
+                    updateInitialUI(game.state);
             }
         }
         // Draw initially for both computer and pass and play
