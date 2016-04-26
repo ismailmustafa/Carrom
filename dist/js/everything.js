@@ -364,7 +364,7 @@ var gameLogic;
                 queen.color = "pink";
                 // Now we set the center of that queen
                 // queen.coordinate = {xPos:game.centerOfBoard.xPos, yPos:game.centerOfBoard.yPos};
-                queen.coordinate = { xPos: 200, yPos: 200 };
+                queen.coordinate = { xPos: 500, yPos: 500 };
                 // Finally add the queen to the new state
                 newState.board.push(queen);
             }
