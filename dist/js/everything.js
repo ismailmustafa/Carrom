@@ -471,6 +471,35 @@ var gameLogic;
 ;
 var game;
 (function (game) {
+    function getTranslations() {
+        return {
+            "CARROM_RULES_TITLE": {
+                "en": "Rules of Carrom",
+                "zh": "卡罗姆规则",
+                "hi": "कैरम के नियम"
+            },
+            "CARROM_RULES_SLIDE1": {
+                "en": "You and your opponent take turns to flick the striker to get as many of the coins into the four corner pockets as possible.",
+                "zh": "你和你的对手轮流轻弹前锋尽可能多的硬币就可以进入四个角落的口袋越好",
+                "hi": "आप और अपने प्रतिद्वंद्वी ले स्ट्राइकर झटका करने के लिए संभव के रूप में चार कोने जेब में सिक्के के रूप में कई पाने के लिए बदल जाता है।"
+            },
+            "CARROM_RULES_SLIDE2": {
+                "en": "A Black coin is worth 5 points, a White is worth 10 and the Queen (pink) is worth 25.",
+                "zh": "黑色的硬币是值得5分，怀特是价值10和王后（粉红色）是值得25",
+                "hi": "एक काले सिक्का 5 अंक के लायक है , एक व्हाइट 10 के लायक है और रानी (गुलाबी ), 25 के लायक है।"
+            },
+            "CARROM_RULES_SLIDE3": {
+                "en": "If you hit a coin in, you get to repeat you turn. If you hit the Queen in you must get another coin in to cover the Queen otherwise it is returned to the board.",
+                "zh": "如果你在打一个硬币，你要重复你打开。如果你打的女王，你必须得到另一个硬币支付，否则返回到主板上的女王。",
+                "hi": "आप में एक सिक्का मारा, तो आप आप बारी दोहराने के लिए मिलता है। अगर आप रानी मारा आप रानी अन्यथा यह बोर्ड के लिए वापस आ रहा है को कवर करने के लिए एक और सिक्का मिलनी चाहिए में ।"
+            },
+            "CARROM_CLOSE": {
+                "en": "Close",
+                "zh": "继续游戏",
+                "hi": "बंद करे"
+            },
+        };
+    }
     (function (CurrentMode) {
         CurrentMode[CurrentMode["Practice"] = 0] = "Practice";
         CurrentMode[CurrentMode["PassAndPlay"] = 1] = "PassAndPlay";
@@ -661,6 +690,8 @@ var game;
             game.currentUpdateUI.yourPlayerIndex === game.currentUpdateUI.move.turnIndexAfterMove; // it's my turn
     }
     function init() {
+        translate.setTranslations(getTranslations());
+        translate.setLanguage('en');
         // resizeGameAreaService.setWidthToHeight(1);
         moveService.setGame({
             minNumberOfPlayers: 2,
