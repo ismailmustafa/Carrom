@@ -125,9 +125,6 @@ module game {
       centerOfBoard = {xPos: settings["outerBoardWidth"]/2, yPos: settings["outerBoardHeight"]/2};
     }
     
-    console.log("I AM IN THE UPDATE UI FUNCTION HELLO 3");
-    console.log(params);
-    
 
     // SET CURRENT MODE
     if (params.playMode === "passAndPlay") currentMode = CurrentMode.PassAndPlay;
@@ -155,7 +152,6 @@ module game {
   export let firstTimePlayer1 = true;
   export let firstTimePlayer2 = true;
   function handleStateUpdate() {
-    console.log("-----------------------------------------HANDLE UPDATE STATE");
     // Make sure to draw on both screens
     if (currentMode === CurrentMode.Opponent && currentUpdateUI.yourPlayerIndex !== -2) {
       // Player one always goes first
@@ -171,17 +167,14 @@ module game {
     
     // Draw initially for both computer and pass and play
     if (isFirstMove() && isMyTurn()) {
-      console.log("---------------------------------------UPDATE INITIAL UI INSIDE FOR SURE");
       updateInitialUI(undefined);
       makeComputerMove();
     }
     // HANDLE REDRAWING FOR OTHER TWO MODES (opponent + passAndPlay)
     if (currentMode === CurrentMode.PassAndPlay && currentUpdateUI.yourPlayerIndex !== -2) {
-      console.log("$$$$$$$$$$$$$$$$$$$CURRENT MODE IS PASS AND PLAY");
       setBoardState(state);
     }
     else if (currentMode === CurrentMode.Opponent && currentUpdateUI.yourPlayerIndex !== -2) {
-      console.log("$$$$$$$$$$$$$$$$$$$$$$$CURRENT MODE IS OPPONENT");
       // Only redraw and invert for current player
       if (isMyTurn()) {
         setBoardState(state);
@@ -212,8 +205,6 @@ module game {
   
   function isMyTurn() {
 
-    console.log("A:", currentUpdateUI.yourPlayerIndex, "B:",currentUpdateUI.move.turnIndexAfterMove, "C: ", didMakeMove);
-
     return !didMakeMove && // you can only make one move per updateUI.
       currentUpdateUI.move.turnIndexAfterMove >= 0 && // game is ongoing
       currentUpdateUI.yourPlayerIndex === currentUpdateUI.move.turnIndexAfterMove; // it's my turn
@@ -232,7 +223,6 @@ module game {
   // This should be only called once
   export function updateInitialUI(stateToDraw : IState) {
     // create a Matter.js engine
-    console.log("ONCE")
     _engine = Matter.Engine.create(document.getElementById("gameArea"), <any>{
       render: {
         options: {
@@ -361,7 +351,6 @@ module game {
 
         var isWorldStatic = true;
 
-        console.log("bodies length:", _engine.world.bodies.length);
         for (let bodyId in _engine.world.bodies) {
           if (!_engine.world.bodies[bodyId].isSleeping) {
             isWorldStatic = false;
@@ -402,7 +391,6 @@ module game {
   // Reset the position of the striker relative to the current player
   export function resetStrikerPosition() {
     if (!isHumanTurn()) return;
-    console.log("resetting striker normally");
     var strikerCenterX = (settings["bottomOuterStrikerPlacementLineStartX"] + settings["bottomOuterStrikerPlacementLineEndX"]) / 2;
     var strikerCenterY = settings["bottomOuterStrikerPlacementLineStartY"] - (settings["innerStrikerPlacementLineOffset"] / 2);
     var striker = getStriker();
@@ -419,7 +407,6 @@ module game {
   // Set striker position to top for computer
   export function resetStrikerPositionForComputer() {
     if (!isComputerTurn()) return;
-    console.log("reseting striker for computer");
     var strikerCenterX = (settings["bottomOuterStrikerPlacementLineStartX"] + settings["bottomOuterStrikerPlacementLineEndX"]) / 2;
     var strikerCenterY = settings["outerBoardHeight"] - (settings["bottomOuterStrikerPlacementLineStartY"] - (settings["innerStrikerPlacementLineOffset"] / 2));
     var striker = getStriker();
@@ -538,16 +525,13 @@ module game {
   
   // Simulate computer move 
   export function makeComputerMove() {
-    console.log(isComputerTurn());
     
     if (!isComputerTurn()) return;
     resetStrikerPositionForComputer();
-    console.log("BEFORE TIMEOUT");
     $timeout(makeComputerMoveHelper, 1000);
   }
   
   export function makeComputerMoveHelper() {
-    console.log("AFTER TIMEOUT");
     let move : Move = aiService.randomMove();
     // Do translation move
     for (let i = 0; i < move.translationCount; i++) {

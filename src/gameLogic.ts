@@ -350,8 +350,6 @@ module gameLogic {
   }
   
   export function checkMoveOk(stateTransition: IStateTransition) : void {
-    // Need to implement
-    console.log("checkMoveOk");
   }
 
   function createCoin(gameSettings : {[setting : string] : number}, c : Coordinate, coinColor : string) : Coin {

@@ -266,8 +266,6 @@ var gameLogic;
     }
     gameLogic.getInitialBoard = getInitialBoard;
     function checkMoveOk(stateTransition) {
-        // Need to implement
-        console.log("checkMoveOk");
     }
     gameLogic.checkMoveOk = checkMoveOk;
     function createCoin(gameSettings, c, coinColor) {
@@ -575,8 +573,6 @@ var game;
         if (game.centerOfBoard === undefined && game.settings !== undefined) {
             game.centerOfBoard = { xPos: game.settings["outerBoardWidth"] / 2, yPos: game.settings["outerBoardHeight"] / 2 };
         }
-        console.log("I AM IN THE UPDATE UI FUNCTION HELLO 3");
-        console.log(params);
         // SET CURRENT MODE
         if (params.playMode === "passAndPlay")
             game.currentMode = CurrentMode.PassAndPlay;
@@ -603,7 +599,6 @@ var game;
     game.firstTimePlayer1 = true;
     game.firstTimePlayer2 = true;
     function handleStateUpdate() {
-        console.log("-----------------------------------------HANDLE UPDATE STATE");
         // Make sure to draw on both screens
         if (game.currentMode === CurrentMode.Opponent && game.currentUpdateUI.yourPlayerIndex !== -2) {
             // Player one always goes first
@@ -618,17 +613,14 @@ var game;
         }
         // Draw initially for both computer and pass and play
         if (isFirstMove() && isMyTurn()) {
-            console.log("---------------------------------------UPDATE INITIAL UI INSIDE FOR SURE");
             updateInitialUI(undefined);
             makeComputerMove();
         }
         // HANDLE REDRAWING FOR OTHER TWO MODES (opponent + passAndPlay)
         if (game.currentMode === CurrentMode.PassAndPlay && game.currentUpdateUI.yourPlayerIndex !== -2) {
-            console.log("$$$$$$$$$$$$$$$$$$$CURRENT MODE IS PASS AND PLAY");
             setBoardState(game.state);
         }
         else if (game.currentMode === CurrentMode.Opponent && game.currentUpdateUI.yourPlayerIndex !== -2) {
-            console.log("$$$$$$$$$$$$$$$$$$$$$$$CURRENT MODE IS OPPONENT");
             // Only redraw and invert for current player
             if (isMyTurn()) {
                 setBoardState(game.state);
@@ -651,7 +643,6 @@ var game;
         return isMyTurn() && !isComputer();
     }
     function isMyTurn() {
-        console.log("A:", game.currentUpdateUI.yourPlayerIndex, "B:", game.currentUpdateUI.move.turnIndexAfterMove, "C: ", game.didMakeMove);
         return !game.didMakeMove &&
             game.currentUpdateUI.move.turnIndexAfterMove >= 0 &&
             game.currentUpdateUI.yourPlayerIndex === game.currentUpdateUI.move.turnIndexAfterMove; // it's my turn
@@ -669,7 +660,6 @@ var game;
     // This should be only called once
     function updateInitialUI(stateToDraw) {
         // create a Matter.js engine
-        console.log("ONCE");
         game._engine = Matter.Engine.create(document.getElementById("gameArea"), {
             render: {
                 options: {
@@ -772,7 +762,6 @@ var game;
                 var body = this;
                 game._objectsInMotion += body.isSleeping ? 1 : 0;
                 var isWorldStatic = true;
-                console.log("bodies length:", game._engine.world.bodies.length);
                 for (var bodyId in game._engine.world.bodies) {
                     if (!game._engine.world.bodies[bodyId].isSleeping) {
                         isWorldStatic = false;
@@ -811,7 +800,6 @@ var game;
     function resetStrikerPosition() {
         if (!isHumanTurn())
             return;
-        console.log("resetting striker normally");
         var strikerCenterX = (game.settings["bottomOuterStrikerPlacementLineStartX"] + game.settings["bottomOuterStrikerPlacementLineEndX"]) / 2;
         var strikerCenterY = game.settings["bottomOuterStrikerPlacementLineStartY"] - (game.settings["innerStrikerPlacementLineOffset"] / 2);
         var striker = getStriker();
@@ -828,7 +816,6 @@ var game;
     function resetStrikerPositionForComputer() {
         if (!isComputerTurn())
             return;
-        console.log("reseting striker for computer");
         var strikerCenterX = (game.settings["bottomOuterStrikerPlacementLineStartX"] + game.settings["bottomOuterStrikerPlacementLineEndX"]) / 2;
         var strikerCenterY = game.settings["outerBoardHeight"] - (game.settings["bottomOuterStrikerPlacementLineStartY"] - (game.settings["innerStrikerPlacementLineOffset"] / 2));
         var striker = getStriker();
@@ -950,16 +937,13 @@ var game;
     game.shootClick = shootClick;
     // Simulate computer move 
     function makeComputerMove() {
-        console.log(isComputerTurn());
         if (!isComputerTurn())
             return;
         resetStrikerPositionForComputer();
-        console.log("BEFORE TIMEOUT");
         $timeout(makeComputerMoveHelper, 1000);
     }
     game.makeComputerMove = makeComputerMove;
     function makeComputerMoveHelper() {
-        console.log("AFTER TIMEOUT");
         var move = aiService.randomMove();
         // Do translation move
         for (var i = 0; i < move.translationCount; i++) {
