@@ -453,12 +453,9 @@ module gameLogic {
       if (!coinsPocketed(pocketedCoinCount)) {
         console.log("-----------------------------------------------------------------------------------------------------------------------UEEN BEING PLACED BACK ON THE BOARD");
         // First we find the queen
-        let queen : Coin = angular.copy(currentState.board[0]);
-        queen.color = "pink";
-        // Now we set the center of that queen
-        // queen.coordinate = {xPos:game.centerOfBoard.xPos, yPos:game.centerOfBoard.yPos};
-        queen.coordinate = {xPos:500, yPos:500};
-        // Finally add the queen to the new state
+        let queen : Coin = {coordinate:{xPos:0.5, yPos:0.5},
+                            color: "pink",
+                            shouldRescale:true};
         newState.board.push(queen);
       }
     }
