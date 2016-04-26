@@ -1,3 +1,9 @@
+var QueenCover;
+(function (QueenCover) {
+    QueenCover[QueenCover["firstCheck"] = 0] = "firstCheck";
+    QueenCover[QueenCover["secondCheck"] = 1] = "secondCheck";
+    QueenCover[QueenCover["none"] = 2] = "none";
+})(QueenCover || (QueenCover = {}));
 var Pair = (function () {
     function Pair(fst, snd) {
         this.fstVal = fst;
@@ -296,6 +302,7 @@ var gameLogic;
             gameScore: { player1: 0, player2: 0 },
             // queen starts off as not pocketed
             shouldCoverQueen: false,
+            queenCoverCheck: QueenCover.none,
             shouldFlipBoard: true
         };
     }
@@ -391,12 +398,25 @@ var gameLogic;
     function modifyStateForNextRound(previousState, currentState) {
         var newState = angular.copy(currentState);
         var pocketedCoinCount = getPocketedCoinCount(previousState, currentState);
+        // Account for covering queen
+        if (queenJustPocketed(previousState, currentState)) {
+            newState.shouldCoverQueen = true;
+        }
         // Modify state to account for covering the queen
         if (previousState.shouldCoverQueen) {
-            // Always revert back to false 
-            newState.shouldCoverQueen = false;
+            // if (previousState.queenCoverCheck === QueenCover.none) {
+            //   newState.queenCoverCheck = QueenCover.firstCheck;
+            // }
+            // else if (previousState.queenCoverCheck === QueenCover.firstCheck) {
+            //   newState.queenCoverCheck = QueenCover.secondCheck;
+            // }
+            // else if (previousState.queenCoverCheck === QueenCover.secondCheck) {
+            //   newState.queenCoverCheck = QueenCover.none;
+            //   newState.shouldCoverQueen = false;
+            // }
             // No coins pocketed to cover the queen so we place the queen on the center of the board
             if (!coinsPocketed(pocketedCoinCount)) {
+                console.log("---------QUEEN BEING PLACED BACK ON TEH BOARD");
                 // First we find the queen
                 var queen = angular.copy(currentState.board[0]);
                 queen.color = "pink";
@@ -407,10 +427,6 @@ var gameLogic;
                 newState.board.push(queen);
             }
         }
-        // // Account for covering queen
-        // if (queenJustPocketed(previousState, currentState)) {
-        //   newState.shouldCoverQueen = true;
-        // }
         return newState;
     }
     gameLogic.modifyStateForNextRound = modifyStateForNextRound;
@@ -894,7 +910,7 @@ var game;
                 allCoins.push(newCoin);
             }
         }
-        var returnedState = { board: allCoins, playerIndex: angular.copy(game.state.playerIndex), gameScore: angular.copy(game.state.gameScore), shouldCoverQueen: game.state.shouldCoverQueen, shouldFlipBoard: game.state.shouldFlipBoard };
+        var returnedState = { board: allCoins, playerIndex: angular.copy(game.state.playerIndex), gameScore: angular.copy(game.state.gameScore), shouldCoverQueen: game.state.shouldCoverQueen, queenCoverCheck: game.state.queenCoverCheck, shouldFlipBoard: game.state.shouldFlipBoard };
         return returnedState;
     }
     game.getBoardState = getBoardState;
