@@ -693,8 +693,8 @@ var game;
         game._engine.world.gravity.x = 0;
         game._objectsInMotion = 0;
         // BE SURE TO COMMENT OUT
-        var mouseConstraint = Matter.MouseConstraint.create(game._engine);
-        Matter.World.add(game._engine.world, mouseConstraint);
+        //     var mouseConstraint = (<any>Matter.MouseConstraint).create(_engine);
+        //     Matter.World.add(_engine.world, mouseConstraint);
         updateScene();
         game.settings = gameLogic.drawBoard(game._sceneWidth, game._sceneHeight);
         if (stateToDraw === undefined)
