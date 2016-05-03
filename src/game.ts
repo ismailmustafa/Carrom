@@ -192,7 +192,6 @@ module game {
     // }
   }
   
-  export let realFirstMove = true;
   export let firstTimePlayer1 = true;
   export let firstTimePlayer2 = true;
   function handleStateUpdate() {
@@ -200,16 +199,16 @@ module game {
     if (currentMode === CurrentMode.Opponent && currentUpdateUI.yourPlayerIndex !== -2) {
       // Player one always goes first
       if (yourPlayerIndex() === 0 && firstTimePlayer1) {
-        realFirstMove = false;
+        state.realFirstMove = false;
         firstTimePlayer1 = false;
         updateInitialUI(undefined);
         console.log("first player turn first time");
       }
       else if (yourPlayerIndex() === 1 && firstTimePlayer2) {
         firstTimePlayer2 = false;
-        if (realFirstMove) {
+        if (state.realFirstMove) {
           console.log("-----------------------real first move not set to false");
-          realFirstMove = false;
+          state.realFirstMove = false;
           updateInitialUI(undefined);
         }
         else updateInitialUI(state);
@@ -542,7 +541,7 @@ module game {
         allCoins.push(newCoin);
       }
     }
-    var returnedState : IState = {board: allCoins, playerIndex: angular.copy(state.playerIndex), gameScore: angular.copy(state.gameScore), shouldCoverQueen: state.shouldCoverQueen, shouldFlipBoard: state.shouldFlipBoard};
+    var returnedState : IState = {board: allCoins, playerIndex: angular.copy(state.playerIndex), gameScore: angular.copy(state.gameScore), shouldCoverQueen: state.shouldCoverQueen, shouldFlipBoard: state.shouldFlipBoard, realFirstMove: state.realFirstMove};
     return returnedState;
   }
   

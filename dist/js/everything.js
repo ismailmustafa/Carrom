@@ -301,7 +301,8 @@ var gameLogic;
             // queen starts off as not pocketed
             shouldCoverQueen: false,
             // queenCoverCheck: QueenCover.none,
-            shouldFlipBoard: true
+            shouldFlipBoard: true,
+            realFirstMove: true
         };
     }
     gameLogic.getInitialState = getInitialState;
@@ -310,6 +311,7 @@ var gameLogic;
             stateBeforeMove = getInitialState(gameSettings);
         }
         var nextState = modifyStateForNextRound(stateBeforeMove, stateAfterMove);
+        nextState.realFirstMove = false;
         var endMatchScores;
         var turnIndexAfterMove;
         var pair = calculateScore(stateBeforeMove, stateAfterMove, turnIndexBeforeMove);
@@ -629,7 +631,6 @@ var game;
         // }
     }
     game.updateUI = updateUI;
-    game.realFirstMove = true;
     game.firstTimePlayer1 = true;
     game.firstTimePlayer2 = true;
     function handleStateUpdate() {
@@ -637,16 +638,16 @@ var game;
         if (game.currentMode === CurrentMode.Opponent && game.currentUpdateUI.yourPlayerIndex !== -2) {
             // Player one always goes first
             if (yourPlayerIndex() === 0 && game.firstTimePlayer1) {
-                game.realFirstMove = false;
+                game.state.realFirstMove = false;
                 game.firstTimePlayer1 = false;
                 updateInitialUI(undefined);
                 console.log("first player turn first time");
             }
             else if (yourPlayerIndex() === 1 && game.firstTimePlayer2) {
                 game.firstTimePlayer2 = false;
-                if (game.realFirstMove) {
+                if (game.state.realFirstMove) {
                     console.log("-----------------------real first move not set to false");
-                    game.realFirstMove = false;
+                    game.state.realFirstMove = false;
                     updateInitialUI(undefined);
                 }
                 else
@@ -945,7 +946,7 @@ var game;
                 allCoins.push(newCoin);
             }
         }
-        var returnedState = { board: allCoins, playerIndex: angular.copy(game.state.playerIndex), gameScore: angular.copy(game.state.gameScore), shouldCoverQueen: game.state.shouldCoverQueen, shouldFlipBoard: game.state.shouldFlipBoard };
+        var returnedState = { board: allCoins, playerIndex: angular.copy(game.state.playerIndex), gameScore: angular.copy(game.state.gameScore), shouldCoverQueen: game.state.shouldCoverQueen, shouldFlipBoard: game.state.shouldFlipBoard, realFirstMove: game.state.realFirstMove };
         return returnedState;
     }
     game.getBoardState = getBoardState;
