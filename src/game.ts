@@ -404,8 +404,8 @@ module game {
         var leftGuard = settings["bottomOuterStrikerPlacementLineStartX"];
         var rightGuard = settings["bottomOuterStrikerPlacementLineEndX"];
 
-        drawGuideLines(context, startPoint, endPoint);
-        
+        if(isWorldStatic && isMyTurn())
+          drawGuideLines(context, startPoint, endPoint);
       }
     });
 

@@ -805,7 +805,8 @@ var game;
                 /// Update check if striker is in reset position.
                 var leftGuard = game.settings["bottomOuterStrikerPlacementLineStartX"];
                 var rightGuard = game.settings["bottomOuterStrikerPlacementLineEndX"];
-                drawGuideLines(context, startPoint, endPoint);
+                if (isWorldStatic && isMyTurn())
+                    drawGuideLines(context, startPoint, endPoint);
             }
         });
         function drawGuideLines(context, startPoint, endPoint) {
