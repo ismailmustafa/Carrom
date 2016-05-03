@@ -189,12 +189,6 @@ module game {
   export let firstTimePlayer1 = true;
   export let firstTimePlayer2 = true;
   function handleStateUpdate() {
-    // Reset if mode switched
-    if (state.currentModeNow !== currentMode && state.currentModeNow !== undefined) {
-      updateInitialUI(undefined);
-      return;
-    }
-    
     // Make sure to draw on both screens
     if (currentMode === "Opponent" && currentUpdateUI.yourPlayerIndex !== -2) {
       // Player one always goes first
@@ -539,7 +533,7 @@ module game {
         allCoins.push(newCoin);
       }
     }
-    var returnedState : IState = {board: allCoins, playerIndex: angular.copy(state.playerIndex), gameScore: angular.copy(state.gameScore), shouldCoverQueen: state.shouldCoverQueen, shouldFlipBoard: state.shouldFlipBoard, realFirstMove: state.realFirstMove, currentModeNow: currentMode};
+    var returnedState : IState = {board: allCoins, playerIndex: angular.copy(state.playerIndex), gameScore: angular.copy(state.gameScore), shouldCoverQueen: state.shouldCoverQueen, shouldFlipBoard: state.shouldFlipBoard, realFirstMove: state.realFirstMove};
     return returnedState;
   }
   

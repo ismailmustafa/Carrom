@@ -308,8 +308,7 @@ var gameLogic;
             shouldCoverQueen: false,
             // queenCoverCheck: QueenCover.none,
             shouldFlipBoard: true,
-            realFirstMove: true,
-            currentModeNow: "None"
+            realFirstMove: true
         };
     }
     gameLogic.getInitialState = getInitialState;
@@ -636,11 +635,6 @@ var game;
     game.firstTimePlayer1 = true;
     game.firstTimePlayer2 = true;
     function handleStateUpdate() {
-        // Reset if mode switched
-        if (game.state.currentModeNow !== game.currentMode && game.state.currentModeNow !== undefined) {
-            updateInitialUI(undefined);
-            return;
-        }
         // Make sure to draw on both screens
         if (game.currentMode === "Opponent" && game.currentUpdateUI.yourPlayerIndex !== -2) {
             // Player one always goes first
@@ -951,7 +945,7 @@ var game;
                 allCoins.push(newCoin);
             }
         }
-        var returnedState = { board: allCoins, playerIndex: angular.copy(game.state.playerIndex), gameScore: angular.copy(game.state.gameScore), shouldCoverQueen: game.state.shouldCoverQueen, shouldFlipBoard: game.state.shouldFlipBoard, realFirstMove: game.state.realFirstMove, currentModeNow: game.currentMode };
+        var returnedState = { board: allCoins, playerIndex: angular.copy(game.state.playerIndex), gameScore: angular.copy(game.state.gameScore), shouldCoverQueen: game.state.shouldCoverQueen, shouldFlipBoard: game.state.shouldFlipBoard, realFirstMove: game.state.realFirstMove };
         return returnedState;
     }
     game.getBoardState = getBoardState;

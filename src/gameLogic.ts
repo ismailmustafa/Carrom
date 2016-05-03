@@ -49,8 +49,7 @@ interface IState {
   shouldCoverQueen: boolean,
   // queenCoverCheck: QueenCover,
   shouldFlipBoard: boolean,
-  realFirstMove: boolean,
-  currentModeNow: string
+  realFirstMove: boolean
 }
 
 interface PocketedCoinCount {
@@ -399,8 +398,7 @@ module gameLogic {
       shouldCoverQueen: false,
       // queenCoverCheck: QueenCover.none,
       shouldFlipBoard: true,
-      realFirstMove: true,
-      currentModeNow: "None"
+      realFirstMove: true
     };
   }
   
