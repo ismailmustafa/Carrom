@@ -697,6 +697,7 @@ var game;
             game.currentUpdateUI.yourPlayerIndex === game.currentUpdateUI.move.turnIndexAfterMove; // it's my turn
     }
     function init() {
+        game.currentMode = "None";
         translate.setTranslations(getTranslations());
         translate.setLanguage('en');
         // resizeGameAreaService.setWidthToHeight(1);
