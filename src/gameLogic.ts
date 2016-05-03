@@ -50,7 +50,7 @@ interface IState {
   // queenCoverCheck: QueenCover,
   shouldFlipBoard: boolean,
   realFirstMove: boolean,
-  currentMode: gameLogic.CurrentMode
+  currentMode: string
 }
 
 interface PocketedCoinCount {
@@ -75,12 +75,12 @@ class Pair {
 }
 
 module gameLogic {
-  export enum CurrentMode {
-    Practice,
-    PassAndPlay,
-    Opponent,
-    None
-  }
+  // export enum CurrentMode {
+  //   Practice,
+  //   PassAndPlay,
+  //   Opponent,
+  //   None
+  // }
   
   // game score global variable
   export let gameScoreGlobal : GameScore = {player1: 0, player2: 0};
@@ -400,7 +400,7 @@ module gameLogic {
       // queenCoverCheck: QueenCover.none,
       shouldFlipBoard: true,
       realFirstMove: true,
-      currentMode: CurrentMode.None
+      currentMode: "None"
     };
   }
   
