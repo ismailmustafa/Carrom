@@ -40,12 +40,7 @@ enum QueenCover {
   none
 }
 
-enum CurrentMode {
-    Practice,
-    PassAndPlay,
-    Opponent,
-    None
-  }
+
 
 interface IState {
   board: Board,
@@ -55,7 +50,7 @@ interface IState {
   // queenCoverCheck: QueenCover,
   shouldFlipBoard: boolean,
   realFirstMove: boolean,
-  currentMode: CurrentMode
+  currentMode: gameLogic.CurrentMode
 }
 
 interface PocketedCoinCount {
@@ -80,6 +75,12 @@ class Pair {
 }
 
 module gameLogic {
+  export enum CurrentMode {
+    Practice,
+    PassAndPlay,
+    Opponent,
+    None
+  }
   
   // game score global variable
   export let gameScoreGlobal : GameScore = {player1: 0, player2: 0};

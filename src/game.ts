@@ -40,13 +40,6 @@ module game {
       },
     };
   }
-
-  export enum CurrentMode {
-    Practice,
-    PassAndPlay,
-    Opponent,
-    None
-  }
   
   export enum RotateDirection {
     Left,
@@ -58,7 +51,7 @@ module game {
   export let didMakeMove: boolean = false;
   export let state: IState = null;
   export let isHelpModalShown: boolean = false;
-  export let currentMode : CurrentMode; // Current mode
+  export let currentMode : gameLogic.CurrentMode; // Current mode
   export let settings : any = undefined;
   export let enableButtons: boolean = true;
   export let centerOfBoard : Coordinate = undefined;
@@ -164,13 +157,13 @@ module game {
     
     // SET CURRENT MODE
     if (params.playMode === "passAndPlay") {
-      currentMode = CurrentMode.PassAndPlay;
+      currentMode = gameLogic.CurrentMode.PassAndPlay;
     }
     else if (params.playMode === "playAgainstTheComputer") {
-      currentMode = CurrentMode.Practice;
+      currentMode = gameLogic.CurrentMode.Practice;
     }
     else {
-      currentMode = CurrentMode.Opponent;
+      currentMode = gameLogic.CurrentMode.Opponent;
     }
     
     didMakeMove = false;
@@ -203,7 +196,7 @@ module game {
     }
     
     // Make sure to draw on both screens
-    if (currentMode === CurrentMode.Opponent && currentUpdateUI.yourPlayerIndex !== -2) {
+    if (currentMode === gameLogic.CurrentMode.Opponent && currentUpdateUI.yourPlayerIndex !== -2) {
       // Player one always goes first
       if (yourPlayerIndex() === 0 && firstTimePlayer1) {
         firstTimePlayer1 = false;
@@ -227,10 +220,10 @@ module game {
       makeComputerMove();
     }
     // HANDLE REDRAWING FOR OTHER TWO MODES (opponent + passAndPlay)
-    if (currentMode === CurrentMode.PassAndPlay && currentUpdateUI.yourPlayerIndex !== -2) {
+    if (currentMode === gameLogic.CurrentMode.PassAndPlay && currentUpdateUI.yourPlayerIndex !== -2) {
       setBoardState(state);
     }
-    else if (currentMode === CurrentMode.Opponent && currentUpdateUI.yourPlayerIndex !== -2) {
+    else if (currentMode === gameLogic.CurrentMode.Opponent && currentUpdateUI.yourPlayerIndex !== -2) {
       // Only redraw and invert for current player
       if (isMyTurn()) {
         setBoardState(state);
@@ -436,7 +429,7 @@ module game {
   // Handle next turn
   export function handlePracticeMode() {
     // Practice
-    if (currentMode === CurrentMode.Practice) {
+    if (currentMode === gameLogic.CurrentMode.Practice) {
       resetStrikerPosition();
       makeComputerMove();
     }
