@@ -199,7 +199,6 @@ module game {
     if (currentMode === CurrentMode.Opponent && currentUpdateUI.yourPlayerIndex !== -2) {
       // Player one always goes first
       if (yourPlayerIndex() === 0 && firstTimePlayer1) {
-        state.realFirstMove = false;
         firstTimePlayer1 = false;
         updateInitialUI(undefined);
         console.log("first player turn first time");
@@ -208,7 +207,6 @@ module game {
         firstTimePlayer2 = false;
         if (state.realFirstMove) {
           console.log("-----------------------real first move not set to false");
-          state.realFirstMove = false;
           updateInitialUI(undefined);
         }
         else updateInitialUI(state);
