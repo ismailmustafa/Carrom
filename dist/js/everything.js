@@ -951,9 +951,7 @@ var game;
                 allCoins.push(newCoin);
             }
         }
-        if (game.currentMode === undefined)
-            game.currentMode = "None";
-        var returnedState = { board: allCoins, playerIndex: angular.copy(game.state.playerIndex), gameScore: angular.copy(game.state.gameScore), shouldCoverQueen: game.state.shouldCoverQueen, shouldFlipBoard: game.state.shouldFlipBoard, realFirstMove: game.state.realFirstMove, currentMode: game.currentMode };
+        var returnedState = { board: allCoins, playerIndex: angular.copy(game.state.playerIndex), gameScore: angular.copy(game.state.gameScore), shouldCoverQueen: game.state.shouldCoverQueen, shouldFlipBoard: game.state.shouldFlipBoard, realFirstMove: game.state.realFirstMove, currentModeNow: game.currentMode };
         return returnedState;
     }
     game.getBoardState = getBoardState;
