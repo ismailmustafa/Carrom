@@ -1,4 +1,4 @@
-
+Event
 
 interface SupportedLanguages {
   en: string, hi: string,
@@ -66,7 +66,7 @@ module game {
   // Engine initial variables
   export let _engine: any, _objectsInMotion = 0, clickPromise : any,
              _world : any, _sceneWidth : any, _sceneHeight : any,
-             _globalSize : any;
+             _globalSize: any, _renderLength : any;
   export let defaultCategory = 0x0001,
              removedCategory = 0x0002,
              movableCategory = 0x0003;
@@ -297,8 +297,80 @@ module game {
     _objectsInMotion = 0;
 
     // BE SURE TO COMMENT OUT
-//     var mouseConstraint = (<any>Matter.MouseConstraint).create(_engine);
-//     Matter.World.add(_engine.world, mouseConstraint);
+    var mouseConstraint = (<any>Matter.MouseConstraint).create(_engine);
+    Matter.World.add(_engine.world, mouseConstraint);
+
+    // Matter.Events.on(mouseConstraint, 'mousedown', function(event) {
+    //   console.log("mousedown");
+      
+
+    //   _mousedownPosition = event.mouse.mousedownPosition;
+    //   console.log(_mousedownPosition);
+
+    // });
+
+    Matter.Events.on(mouseConstraint, 'mousemove', function(event) {
+      console.log("mousedown position");
+
+      var mouseDownPostion = event.mouse.mousedownPosition;
+      
+      console.log(mouseDownPostion);
+
+      console.log("mousemove");
+      
+      var mousePosition = event.mouse.position;
+      console.log(mousePosition);
+
+      var strikerPosition = getStriker().position;
+
+      if (mousePosition.y < (strikerPosition.y + settings["strikerDiameter"])) {
+
+        var posX = mousePosition.x;
+
+        if (posX < strikerPosition.x) {
+          // Moving Left
+          console.log("moving left")
+
+          if (!isHumanTurn()) return;
+
+          
+          var leftGuard = settings["bottomOuterStrikerPlacementLineStartX"];
+
+          if (posX  > leftGuard) 
+            Matter.Body.translate(getStriker(), { x: posX - strikerPosition.x, y: 0 });
+
+        } else if (posX > strikerPosition.x) {
+          // Moving Right
+          console.log("moving right");
+
+          if (!isHumanTurn()) return;
+          
+          var rightGuard = settings["bottomOuterStrikerPlacementLineEndX"];
+
+          if (posX < rightGuard) 
+            Matter.Body.translate(getStriker(), { x: posX - strikerPosition.x, y: 0 });
+
+        } 
+      } else {
+        // mouse drag below the striker.
+
+        var posX = mousePosition.x;
+        var horizontalDistance = strikerPosition.x - posX;
+        var verticalDistance = strikerPosition.y - mousePosition.y;
+
+        var angle = Math.atan2(verticalDistance, horizontalDistance);
+        
+        _renderLength = Math.sqrt(horizontalDistance * horizontalDistance + verticalDistance * verticalDistance);
+        Matter.Body.setAngle(getStriker(), angle);
+
+      }
+    });
+
+
+    Matter.Events.on(mouseConstraint, 'mouseup', function(event) {
+      shootClick();
+      _renderLength = 0;
+    });
 
     updateScene();
 
@@ -318,6 +390,7 @@ module game {
 
     _globalSize = _sceneWidth < _sceneHeight ? _sceneWidth : _sceneHeight;
 
+
     Matter.Events.on(_engine.render, 'afterRender', function() {
       var context = _engine.render.context,
         bodies = Matter.Composite.allBodies(_engine.world)
@@ -326,8 +399,8 @@ module game {
       if (striker != undefined) {
         var startPoint = { x: striker.position.x, y: striker.position.y },
           endPoint = {
-            x: striker.position.x + (_globalSize/5) * Math.cos(striker.angle),
-            y: striker.position.y + (_globalSize/5) * Math.sin(striker.angle)
+            x: striker.position.x + (_renderLength) * Math.cos(striker.angle),
+            y: striker.position.y + (_renderLength) * Math.sin(striker.angle)
           };
 
         var isWorldStatic = true;
@@ -348,16 +421,18 @@ module game {
         var leftGuard = settings["bottomOuterStrikerPlacementLineStartX"];
         var rightGuard = settings["bottomOuterStrikerPlacementLineEndX"];
 
-        if ( (striker.position.x >= leftGuard && striker.position.x <= rightGuard)
-          && striker.position.y === strikerCenterY) {
-          drawGuideLines(context, startPoint, endPoint);
+        // if ( (striker.position.x >= leftGuard && striker.position.x <= rightGuard)
+        //   && striker.position.y === strikerCenterY) {
+        //   drawGuideLines(context, startPoint, endPoint);
 
 
-        } else if (striker.position.x === strikerCenterComputerX
-          && striker.position.y === strikerCenterComputerY
-          ){
-          drawGuideLines(context, startPoint, endPoint);
-        }
+        // } else if (striker.position.x === strikerCenterComputerX
+        //   && striker.position.y === strikerCenterComputerY
+        //   ){
+          
+        // }
+
+        drawGuideLines(context, startPoint, endPoint);
         
       }
     });
@@ -568,13 +643,14 @@ module game {
         y: striker.position.y + 1.0 * Math.sin(striker.angle)
       };
     
-    var force : number = 0.05;
+    // console.log(_renderLength);
+    var force: number = _renderLength/_globalSize * 0.1;
 
     Matter.Body.applyForce(striker, 
       { x: position.x, y: position.y }, 
       {
-        x: (_globalSize / document.documentElement.clientWidth) * force * striker.mass * Math.cos(striker.angle), 
-        y: (_globalSize / document.documentElement.clientHeight) * force * striker.mass * Math.sin(striker.angle)
+        x: force * striker.mass * Math.cos(striker.angle), 
+        y: force * striker.mass * Math.sin(striker.angle)
       })
     
     _engine.enableSleeping = true;
