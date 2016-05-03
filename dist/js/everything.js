@@ -519,6 +519,7 @@ var game;
     game.didMakeMove = false;
     game.state = null;
     game.isHelpModalShown = false;
+    game.currentMode = "None";
     game.settings = undefined;
     game.enableButtons = true;
     game.centerOfBoard = undefined;
