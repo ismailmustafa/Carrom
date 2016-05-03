@@ -476,6 +476,7 @@ var gameLogic;
 })(gameLogic || (gameLogic = {}));
 //# sourceMappingURL=gameLogic.js.map
 ;
+Event;
 ;
 var game;
 (function (game) {
@@ -725,8 +726,56 @@ var game;
         game._engine.world.gravity.x = 0;
         game._objectsInMotion = 0;
         // BE SURE TO COMMENT OUT
-        //     var mouseConstraint = (<any>Matter.MouseConstraint).create(_engine);
-        //     Matter.World.add(_engine.world, mouseConstraint);
+        var mouseConstraint = Matter.MouseConstraint.create(game._engine);
+        Matter.World.add(game._engine.world, mouseConstraint);
+        // Matter.Events.on(mouseConstraint, 'mousedown', function(event) {
+        //   console.log("mousedown");
+        //   _mousedownPosition = event.mouse.mousedownPosition;
+        //   console.log(_mousedownPosition);
+        // });
+        Matter.Events.on(mouseConstraint, 'mousemove', function (event) {
+            console.log("mousedown position");
+            var mouseDownPostion = event.mouse.mousedownPosition;
+            console.log(mouseDownPostion);
+            console.log("mousemove");
+            var mousePosition = event.mouse.position;
+            console.log(mousePosition);
+            var strikerPosition = getStriker().position;
+            if (mousePosition.y < (strikerPosition.y + game.settings["strikerDiameter"])) {
+                var posX = mousePosition.x;
+                if (posX < strikerPosition.x) {
+                    // Moving Left
+                    console.log("moving left");
+                    if (!isHumanTurn())
+                        return;
+                    var leftGuard = game.settings["bottomOuterStrikerPlacementLineStartX"];
+                    if (posX > leftGuard)
+                        Matter.Body.translate(getStriker(), { x: posX - strikerPosition.x, y: 0 });
+                }
+                else if (posX > strikerPosition.x) {
+                    // Moving Right
+                    console.log("moving right");
+                    if (!isHumanTurn())
+                        return;
+                    var rightGuard = game.settings["bottomOuterStrikerPlacementLineEndX"];
+                    if (posX < rightGuard)
+                        Matter.Body.translate(getStriker(), { x: posX - strikerPosition.x, y: 0 });
+                }
+            }
+            else {
+                // mouse drag below the striker.
+                var posX = mousePosition.x;
+                var horizontalDistance = strikerPosition.x - posX;
+                var verticalDistance = strikerPosition.y - mousePosition.y;
+                var angle = Math.atan2(verticalDistance, horizontalDistance);
+                game._renderLength = Math.sqrt(horizontalDistance * horizontalDistance + verticalDistance * verticalDistance);
+                Matter.Body.setAngle(getStriker(), angle);
+            }
+        });
+        Matter.Events.on(mouseConstraint, 'mouseup', function (event) {
+            shootClick();
+            game._renderLength = 0;
+        });
         updateScene();
         game.settings = gameLogic.drawBoard(game._sceneWidth, game._sceneHeight);
         if (stateToDraw === undefined)
@@ -746,8 +795,8 @@ var game;
             var striker = getStriker();
             if (striker != undefined) {
                 var startPoint = { x: striker.position.x, y: striker.position.y }, endPoint = {
-                    x: striker.position.x + (game._globalSize / 5) * Math.cos(striker.angle),
-                    y: striker.position.y + (game._globalSize / 5) * Math.sin(striker.angle)
+                    x: striker.position.x + (game._renderLength) * Math.cos(striker.angle),
+                    y: striker.position.y + (game._renderLength) * Math.sin(striker.angle)
                 };
                 var isWorldStatic = true;
                 for (var bodyId in game._engine.world.bodies) {
@@ -762,14 +811,14 @@ var game;
                 /// Update check if striker is in reset position.
                 var leftGuard = game.settings["bottomOuterStrikerPlacementLineStartX"];
                 var rightGuard = game.settings["bottomOuterStrikerPlacementLineEndX"];
-                if ((striker.position.x >= leftGuard && striker.position.x <= rightGuard)
-                    && striker.position.y === strikerCenterY) {
-                    drawGuideLines(context, startPoint, endPoint);
-                }
-                else if (striker.position.x === strikerCenterComputerX
-                    && striker.position.y === strikerCenterComputerY) {
-                    drawGuideLines(context, startPoint, endPoint);
-                }
+                // if ( (striker.position.x >= leftGuard && striker.position.x <= rightGuard)
+                //   && striker.position.y === strikerCenterY) {
+                //   drawGuideLines(context, startPoint, endPoint);
+                // } else if (striker.position.x === strikerCenterComputerX
+                //   && striker.position.y === strikerCenterComputerY
+                //   ){
+                // }
+                drawGuideLines(context, startPoint, endPoint);
             }
         });
         function drawGuideLines(context, startPoint, endPoint) {
@@ -975,10 +1024,11 @@ var game;
             x: striker.position.x + 1.0 * Math.cos(striker.angle),
             y: striker.position.y + 1.0 * Math.sin(striker.angle)
         };
-        var force = 0.05;
+        // console.log(_renderLength);
+        var force = game._renderLength / game._globalSize * 0.1;
         Matter.Body.applyForce(striker, { x: position.x, y: position.y }, {
-            x: (game._globalSize / document.documentElement.clientWidth) * force * striker.mass * Math.cos(striker.angle),
-            y: (game._globalSize / document.documentElement.clientHeight) * force * striker.mass * Math.sin(striker.angle)
+            x: force * striker.mass * Math.cos(striker.angle),
+            y: force * striker.mass * Math.sin(striker.angle)
         });
         game._engine.enableSleeping = true;
     }
