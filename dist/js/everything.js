@@ -645,6 +645,7 @@ var game;
             else if (yourPlayerIndex() === 1 && game.firstTimePlayer2) {
                 game.firstTimePlayer2 = false;
                 if (game.realFirstMove) {
+                    console.log("-----------------------real first move not set to false");
                     game.realFirstMove = false;
                     updateInitialUI(undefined);
                 }
