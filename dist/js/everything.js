@@ -728,24 +728,15 @@ var game;
         // BE SURE TO COMMENT OUT
         var mouseConstraint = Matter.MouseConstraint.create(game._engine);
         Matter.World.add(game._engine.world, mouseConstraint);
-        // Matter.Events.on(mouseConstraint, 'mousedown', function(event) {
-        //   console.log("mousedown");
-        //   _mousedownPosition = event.mouse.mousedownPosition;
-        //   console.log(_mousedownPosition);
-        // });
+        mouseConstraint.collisionFilter.mask = game.defaultCategory;
         Matter.Events.on(mouseConstraint, 'mousemove', function (event) {
-            console.log("mousedown position");
             var mouseDownPostion = event.mouse.mousedownPosition;
-            console.log(mouseDownPostion);
-            console.log("mousemove");
             var mousePosition = event.mouse.position;
-            console.log(mousePosition);
             var strikerPosition = getStriker().position;
             if (mousePosition.y < (strikerPosition.y + game.settings["strikerDiameter"])) {
                 var posX = mousePosition.x;
                 if (posX < strikerPosition.x) {
                     // Moving Left
-                    console.log("moving left");
                     if (!isHumanTurn())
                         return;
                     var leftGuard = game.settings["bottomOuterStrikerPlacementLineStartX"];
@@ -754,7 +745,6 @@ var game;
                 }
                 else if (posX > strikerPosition.x) {
                     // Moving Right
-                    console.log("moving right");
                     if (!isHumanTurn())
                         return;
                     var rightGuard = game.settings["bottomOuterStrikerPlacementLineEndX"];
@@ -811,13 +801,6 @@ var game;
                 /// Update check if striker is in reset position.
                 var leftGuard = game.settings["bottomOuterStrikerPlacementLineStartX"];
                 var rightGuard = game.settings["bottomOuterStrikerPlacementLineEndX"];
-                // if ( (striker.position.x >= leftGuard && striker.position.x <= rightGuard)
-                //   && striker.position.y === strikerCenterY) {
-                //   drawGuideLines(context, startPoint, endPoint);
-                // } else if (striker.position.x === strikerCenterComputerX
-                //   && striker.position.y === strikerCenterComputerY
-                //   ){
-                // }
                 drawGuideLines(context, startPoint, endPoint);
             }
         });

@@ -291,27 +291,14 @@ module game {
     // BE SURE TO COMMENT OUT
     var mouseConstraint = (<any>Matter.MouseConstraint).create(_engine);
     Matter.World.add(_engine.world, mouseConstraint);
-
-    // Matter.Events.on(mouseConstraint, 'mousedown', function(event) {
-    //   console.log("mousedown");
-      
-
-    //   _mousedownPosition = event.mouse.mousedownPosition;
-    //   console.log(_mousedownPosition);
-
-    // });
+    
+    mouseConstraint.collisionFilter.mask = defaultCategory;
 
     Matter.Events.on(mouseConstraint, 'mousemove', function(event) {
-      console.log("mousedown position");
-
+      
       var mouseDownPostion = event.mouse.mousedownPosition;
-      
-      console.log(mouseDownPostion);
-
-      console.log("mousemove");
-      
+            
       var mousePosition = event.mouse.position;
-      console.log(mousePosition);
 
       var strikerPosition = getStriker().position;
 
@@ -321,7 +308,6 @@ module game {
 
         if (posX < strikerPosition.x) {
           // Moving Left
-          console.log("moving left")
 
           if (!isHumanTurn()) return;
 
@@ -333,7 +319,6 @@ module game {
 
         } else if (posX > strikerPosition.x) {
           // Moving Right
-          console.log("moving right");
 
           if (!isHumanTurn()) return;
           
@@ -412,17 +397,6 @@ module game {
         /// Update check if striker is in reset position.
         var leftGuard = settings["bottomOuterStrikerPlacementLineStartX"];
         var rightGuard = settings["bottomOuterStrikerPlacementLineEndX"];
-
-        // if ( (striker.position.x >= leftGuard && striker.position.x <= rightGuard)
-        //   && striker.position.y === strikerCenterY) {
-        //   drawGuideLines(context, startPoint, endPoint);
-
-
-        // } else if (striker.position.x === strikerCenterComputerX
-        //   && striker.position.y === strikerCenterComputerY
-        //   ){
-          
-        // }
 
         drawGuideLines(context, startPoint, endPoint);
         
