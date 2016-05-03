@@ -78,3 +78,23 @@ canvas:active {
   font-size: 12pt;
   font-family: Palatino, Arial, Helvetica, sans-serif;
 }
+
+.help-tip {
+  position: absolute;
+  bottom:5px;
+  left: 5px;
+  z-index:10;
+  text-align: center;
+  background-color: #BCDBEA;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 22px;
+  line-height: 42px;
+  cursor: default;
+}
+.help-tip:before {
+  content:'?';
+  font-weight: bold;
+  color:#fff;
+}
