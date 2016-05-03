@@ -47,6 +47,7 @@ interface IState {
   shouldCoverQueen: boolean,
   // queenCoverCheck: QueenCover,
   shouldFlipBoard: boolean
+  realFirstMove: boolean
 }
 
 interface PocketedCoinCount {
@@ -388,7 +389,8 @@ module gameLogic {
       // queen starts off as not pocketed
       shouldCoverQueen: false,
       // queenCoverCheck: QueenCover.none,
-      shouldFlipBoard: true
+      shouldFlipBoard: true,
+      realFirstMove: true
     };
   }
   
@@ -398,6 +400,7 @@ module gameLogic {
     }
     
     let nextState = modifyStateForNextRound(stateBeforeMove, stateAfterMove);
+    nextState.realFirstMove = false;
     let endMatchScores: number[];
     let turnIndexAfterMove: number;
     
