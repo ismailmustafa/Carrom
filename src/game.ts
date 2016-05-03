@@ -289,65 +289,65 @@ module game {
     _objectsInMotion = 0;
 
     // BE SURE TO COMMENT OUT
-    var mouseConstraint = (<any>Matter.MouseConstraint).create(_engine);
-    mouseConstraint.collisionFilter.mask = movableCategory;    
+    //var mouseConstraint = (<any>Matter.MouseConstraint).create(_engine);
+    // mouseConstraint.collisionFilter.mask = movableCategory;    
     
-    Matter.World.add(_engine.world, mouseConstraint);
+    //Matter.World.add(_engine.world, mouseConstraint);
     
-    Matter.Events.on(mouseConstraint, 'mousemove', function(event) {
+    // Matter.Events.on(mouseConstraint, 'mousemove', function(event) {
       
-      var mouseDownPostion = event.mouse.mousedownPosition;
+    //   var mouseDownPostion = event.mouse.mousedownPosition;
             
-      var mousePosition = event.mouse.position;
+    //   var mousePosition = event.mouse.position;
 
-      var strikerPosition = getStriker().position;
+    //   var strikerPosition = getStriker().position;
 
-      if (mousePosition.y < (strikerPosition.y + settings["strikerDiameter"])) {
+    //   if (mousePosition.y < (strikerPosition.y + settings["strikerDiameter"])) {
 
-        var posX = mousePosition.x;
+    //     var posX = mousePosition.x;
 
-        if (posX < strikerPosition.x) {
-          // Moving Left
+    //     if (posX < strikerPosition.x) {
+    //       // Moving Left
 
-          if (!isHumanTurn()) return;
+    //       if (!isHumanTurn()) return;
 
           
-          var leftGuard = settings["bottomOuterStrikerPlacementLineStartX"];
+    //       var leftGuard = settings["bottomOuterStrikerPlacementLineStartX"];
 
-          if (posX  > leftGuard) 
-            Matter.Body.translate(getStriker(), { x: posX - strikerPosition.x, y: 0 });
+    //       if (posX  > leftGuard) 
+    //         Matter.Body.translate(getStriker(), { x: posX - strikerPosition.x, y: 0 });
 
-        } else if (posX > strikerPosition.x) {
-          // Moving Right
+    //     } else if (posX > strikerPosition.x) {
+    //       // Moving Right
 
-          if (!isHumanTurn()) return;
+    //       if (!isHumanTurn()) return;
           
-          var rightGuard = settings["bottomOuterStrikerPlacementLineEndX"];
+    //       var rightGuard = settings["bottomOuterStrikerPlacementLineEndX"];
 
-          if (posX < rightGuard) 
-            Matter.Body.translate(getStriker(), { x: posX - strikerPosition.x, y: 0 });
+    //       if (posX < rightGuard) 
+    //         Matter.Body.translate(getStriker(), { x: posX - strikerPosition.x, y: 0 });
 
-        } 
-      } else {
-        // mouse drag below the striker.
+    //     } 
+    //   } else {
+    //     // mouse drag below the striker.
 
-        var posX = mousePosition.x;
-        var horizontalDistance = strikerPosition.x - posX;
-        var verticalDistance = strikerPosition.y - mousePosition.y;
+    //     var posX = mousePosition.x;
+    //     var horizontalDistance = strikerPosition.x - posX;
+    //     var verticalDistance = strikerPosition.y - mousePosition.y;
 
-        var angle = Math.atan2(verticalDistance, horizontalDistance);
+    //     var angle = Math.atan2(verticalDistance, horizontalDistance);
         
-        _renderLength = Math.sqrt(horizontalDistance * horizontalDistance + verticalDistance * verticalDistance);
-        Matter.Body.setAngle(getStriker(), angle);
+    //     _renderLength = Math.sqrt(horizontalDistance * horizontalDistance + verticalDistance * verticalDistance);
+    //     Matter.Body.setAngle(getStriker(), angle);
 
-      }
-    });
+    //   }
+    // });
 
 
-    Matter.Events.on(mouseConstraint, 'mouseup', function(event) {
-      shootClick();
-      _renderLength = 0;
-    });
+    // Matter.Events.on(mouseConstraint, 'mouseup', function(event) {
+    //   shootClick();
+    //   _renderLength = 0;
+    // });
 
     updateScene();
 

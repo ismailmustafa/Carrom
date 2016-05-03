@@ -726,46 +726,42 @@ var game;
         game._engine.world.gravity.x = 0;
         game._objectsInMotion = 0;
         // BE SURE TO COMMENT OUT
-        var mouseConstraint = Matter.MouseConstraint.create(game._engine);
-        mouseConstraint.collisionFilter.mask = game.movableCategory;
-        Matter.World.add(game._engine.world, mouseConstraint);
-        Matter.Events.on(mouseConstraint, 'mousemove', function (event) {
-            var mouseDownPostion = event.mouse.mousedownPosition;
-            var mousePosition = event.mouse.position;
-            var strikerPosition = getStriker().position;
-            if (mousePosition.y < (strikerPosition.y + game.settings["strikerDiameter"])) {
-                var posX = mousePosition.x;
-                if (posX < strikerPosition.x) {
-                    // Moving Left
-                    if (!isHumanTurn())
-                        return;
-                    var leftGuard = game.settings["bottomOuterStrikerPlacementLineStartX"];
-                    if (posX > leftGuard)
-                        Matter.Body.translate(getStriker(), { x: posX - strikerPosition.x, y: 0 });
-                }
-                else if (posX > strikerPosition.x) {
-                    // Moving Right
-                    if (!isHumanTurn())
-                        return;
-                    var rightGuard = game.settings["bottomOuterStrikerPlacementLineEndX"];
-                    if (posX < rightGuard)
-                        Matter.Body.translate(getStriker(), { x: posX - strikerPosition.x, y: 0 });
-                }
-            }
-            else {
-                // mouse drag below the striker.
-                var posX = mousePosition.x;
-                var horizontalDistance = strikerPosition.x - posX;
-                var verticalDistance = strikerPosition.y - mousePosition.y;
-                var angle = Math.atan2(verticalDistance, horizontalDistance);
-                game._renderLength = Math.sqrt(horizontalDistance * horizontalDistance + verticalDistance * verticalDistance);
-                Matter.Body.setAngle(getStriker(), angle);
-            }
-        });
-        Matter.Events.on(mouseConstraint, 'mouseup', function (event) {
-            shootClick();
-            game._renderLength = 0;
-        });
+        //var mouseConstraint = (<any>Matter.MouseConstraint).create(_engine);
+        // mouseConstraint.collisionFilter.mask = movableCategory;    
+        //Matter.World.add(_engine.world, mouseConstraint);
+        // Matter.Events.on(mouseConstraint, 'mousemove', function(event) {
+        //   var mouseDownPostion = event.mouse.mousedownPosition;
+        //   var mousePosition = event.mouse.position;
+        //   var strikerPosition = getStriker().position;
+        //   if (mousePosition.y < (strikerPosition.y + settings["strikerDiameter"])) {
+        //     var posX = mousePosition.x;
+        //     if (posX < strikerPosition.x) {
+        //       // Moving Left
+        //       if (!isHumanTurn()) return;
+        //       var leftGuard = settings["bottomOuterStrikerPlacementLineStartX"];
+        //       if (posX  > leftGuard) 
+        //         Matter.Body.translate(getStriker(), { x: posX - strikerPosition.x, y: 0 });
+        //     } else if (posX > strikerPosition.x) {
+        //       // Moving Right
+        //       if (!isHumanTurn()) return;
+        //       var rightGuard = settings["bottomOuterStrikerPlacementLineEndX"];
+        //       if (posX < rightGuard) 
+        //         Matter.Body.translate(getStriker(), { x: posX - strikerPosition.x, y: 0 });
+        //     } 
+        //   } else {
+        //     // mouse drag below the striker.
+        //     var posX = mousePosition.x;
+        //     var horizontalDistance = strikerPosition.x - posX;
+        //     var verticalDistance = strikerPosition.y - mousePosition.y;
+        //     var angle = Math.atan2(verticalDistance, horizontalDistance);
+        //     _renderLength = Math.sqrt(horizontalDistance * horizontalDistance + verticalDistance * verticalDistance);
+        //     Matter.Body.setAngle(getStriker(), angle);
+        //   }
+        // });
+        // Matter.Events.on(mouseConstraint, 'mouseup', function(event) {
+        //   shootClick();
+        //   _renderLength = 0;
+        // });
         updateScene();
         game.settings = gameLogic.drawBoard(game._sceneWidth, game._sceneHeight);
         if (stateToDraw === undefined)
