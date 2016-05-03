@@ -290,10 +290,10 @@ module game {
 
     // BE SURE TO COMMENT OUT
     var mouseConstraint = (<any>Matter.MouseConstraint).create(_engine);
-    Matter.World.add(_engine.world, mouseConstraint);
+    mouseConstraint.collisionFilter.mask = movableCategory;    
     
-    mouseConstraint.collisionFilter.mask = defaultCategory;
-
+    Matter.World.add(_engine.world, mouseConstraint);
+    
     Matter.Events.on(mouseConstraint, 'mousemove', function(event) {
       
       var mouseDownPostion = event.mouse.mousedownPosition;

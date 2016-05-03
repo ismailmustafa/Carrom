@@ -727,8 +727,8 @@ var game;
         game._objectsInMotion = 0;
         // BE SURE TO COMMENT OUT
         var mouseConstraint = Matter.MouseConstraint.create(game._engine);
+        mouseConstraint.collisionFilter.mask = game.movableCategory;
         Matter.World.add(game._engine.world, mouseConstraint);
-        mouseConstraint.collisionFilter.mask = game.defaultCategory;
         Matter.Events.on(mouseConstraint, 'mousemove', function (event) {
             var mouseDownPostion = event.mouse.mousedownPosition;
             var mousePosition = event.mouse.position;
