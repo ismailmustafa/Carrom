@@ -208,6 +208,7 @@ module game {
       else if (yourPlayerIndex() === 1 && firstTimePlayer2) {
         firstTimePlayer2 = false;
         if (realFirstMove) {
+          console.log("-----------------------real first move not set to false");
           realFirstMove = false;
           updateInitialUI(undefined);
         }
