@@ -260,6 +260,7 @@ module game {
   }
 
   export function init() {
+    currentMode = "None";
     translate.setTranslations(getTranslations());
     translate.setLanguage('en');
     // resizeGameAreaService.setWidthToHeight(1);
