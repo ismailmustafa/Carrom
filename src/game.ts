@@ -51,7 +51,7 @@ module game {
   export let didMakeMove: boolean = false;
   export let state: IState = null;
   export let isHelpModalShown: boolean = false;
-  export let currentMode : gameLogic.CurrentMode; // Current mode
+  export let currentMode : string; // Current mode
   export let settings : any = undefined;
   export let enableButtons: boolean = true;
   export let centerOfBoard : Coordinate = undefined;
