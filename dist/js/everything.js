@@ -4,6 +4,13 @@ var QueenCover;
     QueenCover[QueenCover["secondCheck"] = 1] = "secondCheck";
     QueenCover[QueenCover["none"] = 2] = "none";
 })(QueenCover || (QueenCover = {}));
+var CurrentMode;
+(function (CurrentMode) {
+    CurrentMode[CurrentMode["Practice"] = 0] = "Practice";
+    CurrentMode[CurrentMode["PassAndPlay"] = 1] = "PassAndPlay";
+    CurrentMode[CurrentMode["Opponent"] = 2] = "Opponent";
+    CurrentMode[CurrentMode["None"] = 3] = "None";
+})(CurrentMode || (CurrentMode = {}));
 var Pair = (function () {
     function Pair(fst, snd) {
         this.fstVal = fst;
@@ -303,7 +310,7 @@ var gameLogic;
             // queenCoverCheck: QueenCover.none,
             shouldFlipBoard: true,
             realFirstMove: true,
-            currentMode: game.CurrentMode.None
+            currentMode: CurrentMode.None
         };
     }
     gameLogic.getInitialState = getInitialState;

@@ -40,6 +40,13 @@ enum QueenCover {
   none
 }
 
+enum CurrentMode {
+    Practice,
+    PassAndPlay,
+    Opponent,
+    None
+  }
+
 interface IState {
   board: Board,
   playerIndex: PlayerIndex,
@@ -48,7 +55,7 @@ interface IState {
   // queenCoverCheck: QueenCover,
   shouldFlipBoard: boolean,
   realFirstMove: boolean,
-  currentMode: game.CurrentMode
+  currentMode: CurrentMode
 }
 
 interface PocketedCoinCount {
@@ -392,7 +399,7 @@ module gameLogic {
       // queenCoverCheck: QueenCover.none,
       shouldFlipBoard: true,
       realFirstMove: true,
-      currentMode: game.CurrentMode.None
+      currentMode: CurrentMode.None
     };
   }
   
