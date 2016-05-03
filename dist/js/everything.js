@@ -27,6 +27,12 @@ var Pair = (function () {
 })();
 var gameLogic;
 (function (gameLogic) {
+    // export enum CurrentMode {
+    //   Practice,
+    //   PassAndPlay,
+    //   Opponent,
+    //   None
+    // }
     // game score global variable
     gameLogic.gameScoreGlobal = { player1: 0, player2: 0 };
     // Create all dimensions for board
@@ -301,7 +307,8 @@ var gameLogic;
             // queen starts off as not pocketed
             shouldCoverQueen: false,
             // queenCoverCheck: QueenCover.none,
-            shouldFlipBoard: true
+            shouldFlipBoard: true,
+            realFirstMove: true
         };
     }
     gameLogic.getInitialState = getInitialState;
@@ -310,6 +317,7 @@ var gameLogic;
             stateBeforeMove = getInitialState(gameSettings);
         }
         var nextState = modifyStateForNextRound(stateBeforeMove, stateAfterMove);
+        nextState.realFirstMove = false;
         var endMatchScores;
         var turnIndexAfterMove;
         var pair = calculateScore(stateBeforeMove, stateAfterMove, turnIndexBeforeMove);
@@ -500,12 +508,6 @@ var game;
             },
         };
     }
-    (function (CurrentMode) {
-        CurrentMode[CurrentMode["Practice"] = 0] = "Practice";
-        CurrentMode[CurrentMode["PassAndPlay"] = 1] = "PassAndPlay";
-        CurrentMode[CurrentMode["Opponent"] = 2] = "Opponent";
-    })(game.CurrentMode || (game.CurrentMode = {}));
-    var CurrentMode = game.CurrentMode;
     (function (RotateDirection) {
         RotateDirection[RotateDirection["Left"] = 0] = "Left";
         RotateDirection[RotateDirection["Right"] = 1] = "Right";
@@ -516,6 +518,7 @@ var game;
     game.didMakeMove = false;
     game.state = null;
     game.isHelpModalShown = false;
+    game.currentMode = "None";
     game.settings = undefined;
     game.enableButtons = true;
     game.centerOfBoard = undefined;
@@ -603,13 +606,13 @@ var game;
         }
         // SET CURRENT MODE
         if (params.playMode === "passAndPlay") {
-            game.currentMode = CurrentMode.PassAndPlay;
+            game.currentMode = "PassAndPlay";
         }
         else if (params.playMode === "playAgainstTheComputer") {
-            game.currentMode = CurrentMode.Practice;
+            game.currentMode = "Practice";
         }
         else {
-            game.currentMode = CurrentMode.Opponent;
+            game.currentMode = "Opponent";
         }
         game.didMakeMove = false;
         game.currentUpdateUI = params;
@@ -629,23 +632,21 @@ var game;
         // }
     }
     game.updateUI = updateUI;
-    game.realFirstMove = true;
     game.firstTimePlayer1 = true;
     game.firstTimePlayer2 = true;
     function handleStateUpdate() {
         // Make sure to draw on both screens
-        if (game.currentMode === CurrentMode.Opponent && game.currentUpdateUI.yourPlayerIndex !== -2) {
+        if (game.currentMode === "Opponent" && game.currentUpdateUI.yourPlayerIndex !== -2) {
             // Player one always goes first
             if (yourPlayerIndex() === 0 && game.firstTimePlayer1) {
-                game.realFirstMove = false;
                 game.firstTimePlayer1 = false;
                 updateInitialUI(undefined);
                 console.log("first player turn first time");
             }
             else if (yourPlayerIndex() === 1 && game.firstTimePlayer2) {
                 game.firstTimePlayer2 = false;
-                if (game.realFirstMove) {
-                    game.realFirstMove = false;
+                if (game.state.realFirstMove) {
+                    console.log("-----------------------real first move not set to false");
                     updateInitialUI(undefined);
                 }
                 else
@@ -659,10 +660,10 @@ var game;
             makeComputerMove();
         }
         // HANDLE REDRAWING FOR OTHER TWO MODES (opponent + passAndPlay)
-        if (game.currentMode === CurrentMode.PassAndPlay && game.currentUpdateUI.yourPlayerIndex !== -2) {
+        if (game.currentMode === "PassAndPlay" && game.currentUpdateUI.yourPlayerIndex !== -2) {
             setBoardState(game.state);
         }
-        else if (game.currentMode === CurrentMode.Opponent && game.currentUpdateUI.yourPlayerIndex !== -2) {
+        else if (game.currentMode === "Opponent" && game.currentUpdateUI.yourPlayerIndex !== -2) {
             // Only redraw and invert for current player
             if (isMyTurn()) {
                 setBoardState(game.state);
@@ -829,7 +830,7 @@ var game;
     // Handle next turn
     function handlePracticeMode() {
         // Practice
-        if (game.currentMode === CurrentMode.Practice) {
+        if (game.currentMode === "Practice") {
             resetStrikerPosition();
             makeComputerMove();
         }
@@ -944,7 +945,7 @@ var game;
                 allCoins.push(newCoin);
             }
         }
-        var returnedState = { board: allCoins, playerIndex: angular.copy(game.state.playerIndex), gameScore: angular.copy(game.state.gameScore), shouldCoverQueen: game.state.shouldCoverQueen, shouldFlipBoard: game.state.shouldFlipBoard };
+        var returnedState = { board: allCoins, playerIndex: angular.copy(game.state.playerIndex), gameScore: angular.copy(game.state.gameScore), shouldCoverQueen: game.state.shouldCoverQueen, shouldFlipBoard: game.state.shouldFlipBoard, realFirstMove: game.state.realFirstMove };
         return returnedState;
     }
     game.getBoardState = getBoardState;

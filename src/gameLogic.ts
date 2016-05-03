@@ -40,13 +40,16 @@ enum QueenCover {
   none
 }
 
+
+
 interface IState {
   board: Board,
   playerIndex: PlayerIndex,
   gameScore: GameScore,
   shouldCoverQueen: boolean,
   // queenCoverCheck: QueenCover,
-  shouldFlipBoard: boolean
+  shouldFlipBoard: boolean,
+  realFirstMove: boolean
 }
 
 interface PocketedCoinCount {
@@ -71,6 +74,12 @@ class Pair {
 }
 
 module gameLogic {
+  // export enum CurrentMode {
+  //   Practice,
+  //   PassAndPlay,
+  //   Opponent,
+  //   None
+  // }
   
   // game score global variable
   export let gameScoreGlobal : GameScore = {player1: 0, player2: 0};
@@ -388,7 +397,8 @@ module gameLogic {
       // queen starts off as not pocketed
       shouldCoverQueen: false,
       // queenCoverCheck: QueenCover.none,
-      shouldFlipBoard: true
+      shouldFlipBoard: true,
+      realFirstMove: true
     };
   }
   
@@ -398,6 +408,7 @@ module gameLogic {
     }
     
     let nextState = modifyStateForNextRound(stateBeforeMove, stateAfterMove);
+    nextState.realFirstMove = false;
     let endMatchScores: number[];
     let turnIndexAfterMove: number;
     

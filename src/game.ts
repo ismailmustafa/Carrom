@@ -40,12 +40,6 @@ module game {
       },
     };
   }
-
-  export enum CurrentMode {
-    Practice,
-    PassAndPlay,
-    Opponent
-  }
   
   export enum RotateDirection {
     Left,
@@ -57,7 +51,7 @@ module game {
   export let didMakeMove: boolean = false;
   export let state: IState = null;
   export let isHelpModalShown: boolean = false;
-  export let currentMode : CurrentMode; // Current mode
+  export let currentMode : string = "None";
   export let settings : any = undefined;
   export let enableButtons: boolean = true;
   export let centerOfBoard : Coordinate = undefined;
@@ -163,13 +157,13 @@ module game {
     
     // SET CURRENT MODE
     if (params.playMode === "passAndPlay") {
-      currentMode = CurrentMode.PassAndPlay;
+      currentMode = "PassAndPlay";
     }
     else if (params.playMode === "playAgainstTheComputer") {
-      currentMode = CurrentMode.Practice;
+      currentMode = "Practice";
     }
     else {
-      currentMode = CurrentMode.Opponent;
+      currentMode = "Opponent";
     }
     
     didMakeMove = false;
@@ -192,23 +186,21 @@ module game {
     // }
   }
   
-  export let realFirstMove = true;
   export let firstTimePlayer1 = true;
   export let firstTimePlayer2 = true;
   function handleStateUpdate() {
     // Make sure to draw on both screens
-    if (currentMode === CurrentMode.Opponent && currentUpdateUI.yourPlayerIndex !== -2) {
+    if (currentMode === "Opponent" && currentUpdateUI.yourPlayerIndex !== -2) {
       // Player one always goes first
       if (yourPlayerIndex() === 0 && firstTimePlayer1) {
-        realFirstMove = false;
         firstTimePlayer1 = false;
         updateInitialUI(undefined);
         console.log("first player turn first time");
       }
       else if (yourPlayerIndex() === 1 && firstTimePlayer2) {
         firstTimePlayer2 = false;
-        if (realFirstMove) {
-          realFirstMove = false;
+        if (state.realFirstMove) {
+          console.log("-----------------------real first move not set to false");
           updateInitialUI(undefined);
         }
         else updateInitialUI(state);
@@ -222,10 +214,10 @@ module game {
       makeComputerMove();
     }
     // HANDLE REDRAWING FOR OTHER TWO MODES (opponent + passAndPlay)
-    if (currentMode === CurrentMode.PassAndPlay && currentUpdateUI.yourPlayerIndex !== -2) {
+    if (currentMode === "PassAndPlay" && currentUpdateUI.yourPlayerIndex !== -2) {
       setBoardState(state);
     }
-    else if (currentMode === CurrentMode.Opponent && currentUpdateUI.yourPlayerIndex !== -2) {
+    else if (currentMode === "Opponent" && currentUpdateUI.yourPlayerIndex !== -2) {
       // Only redraw and invert for current player
       if (isMyTurn()) {
         setBoardState(state);
@@ -506,7 +498,7 @@ module game {
   // Handle next turn
   export function handlePracticeMode() {
     // Practice
-    if (currentMode === CurrentMode.Practice) {
+    if (currentMode === "Practice") {
       resetStrikerPosition();
       makeComputerMove();
     }
@@ -616,7 +608,7 @@ module game {
         allCoins.push(newCoin);
       }
     }
-    var returnedState : IState = {board: allCoins, playerIndex: angular.copy(state.playerIndex), gameScore: angular.copy(state.gameScore), shouldCoverQueen: state.shouldCoverQueen, shouldFlipBoard: state.shouldFlipBoard};
+    var returnedState : IState = {board: allCoins, playerIndex: angular.copy(state.playerIndex), gameScore: angular.copy(state.gameScore), shouldCoverQueen: state.shouldCoverQueen, shouldFlipBoard: state.shouldFlipBoard, realFirstMove: state.realFirstMove};
     return returnedState;
   }
   
