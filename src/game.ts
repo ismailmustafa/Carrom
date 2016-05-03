@@ -289,8 +289,8 @@ module game {
     _objectsInMotion = 0;
 
     // BE SURE TO COMMENT OUT
-    //var mouseConstraint = (<any>Matter.MouseConstraint).create(_engine);
-    // mouseConstraint.collisionFilter.mask = movableCategory;    
+    var mouseConstraint = (<any>Matter.MouseConstraint).create(_engine);
+    mouseConstraint.collisionFilter.mask = removedCategory;    
     
     //Matter.World.add(_engine.world, mouseConstraint);
     
