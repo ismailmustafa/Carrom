@@ -637,7 +637,7 @@ var game;
     game.firstTimePlayer2 = true;
     function handleStateUpdate() {
         // Reset if mode switched
-        if (game.state.currentMode !== game.currentMode && game.state.currentMode !== undefined) {
+        if (game.state.currentModeNow !== game.currentMode && game.state.currentModeNow !== undefined) {
             updateInitialUI(undefined);
             return;
         }

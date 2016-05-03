@@ -190,7 +190,7 @@ module game {
   export let firstTimePlayer2 = true;
   function handleStateUpdate() {
     // Reset if mode switched
-    if (state.currentMode !== currentMode && state.currentMode !== undefined) {
+    if (state.currentModeNow !== currentMode && state.currentModeNow !== undefined) {
       updateInitialUI(undefined);
       return;
     }
