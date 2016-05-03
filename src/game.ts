@@ -539,6 +539,7 @@ module game {
         allCoins.push(newCoin);
       }
     }
+    if (currentMode === undefined) currentMode = "None";
     var returnedState : IState = {board: allCoins, playerIndex: angular.copy(state.playerIndex), gameScore: angular.copy(state.gameScore), shouldCoverQueen: state.shouldCoverQueen, shouldFlipBoard: state.shouldFlipBoard, realFirstMove: state.realFirstMove, currentMode: currentMode};
     return returnedState;
   }
