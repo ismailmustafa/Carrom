@@ -200,6 +200,7 @@ module.exports = function(grunt) {
             'css/materialize.min.css',
             'imgs/HelpSlide1.png',
             'imgs/HelpSlide2.png',
+            'imgs/HelpSlide3.png'
           ],
           network: [
             'js/everything.min.js.map',
