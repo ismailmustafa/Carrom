@@ -128,7 +128,7 @@
 
 <div class="pull-left" style="margin: 50px">
   
-      <img src="game.playerInfo[0].avatarImageUrl" alt="" class="img-circle">
+      <img ng-src="{{game.playerInfo[0].avatarImageUrl}}" alt="" class="img-circle">
         <span>{{game.gameScore.displayName}}</span> 
           : 
         <span>{{game.gameScore.player1}}</span> 
@@ -139,7 +139,7 @@
 
 <div class="pull-right" style="margin: 50px">
   
-      <img src="game.playerInfo[1].avatarImageUrl" alt="" class="img-circle">
+      <img ng-src="{{game.playerInfo[1].avatarImageUrl}}" alt="" class="img-circle">
         <span>{{game.gameScore.displayName}}</span> 
           : 
         <span>{{game.gameScore.player2}}</span> 
