@@ -524,6 +524,7 @@ var game;
     game.enableButtons = true;
     game.centerOfBoard = undefined;
     game.gameScore = { player1: 0, player2: 0 };
+    game.playerInfo = undefined;
     // Engine initial variables
     game._objectsInMotion = 0;
     game.defaultCategory = 0x0001, game.removedCategory = 0x0002, game.movableCategory = 0x0003;
@@ -599,6 +600,7 @@ var game;
     game.drawObjects = drawObjects;
     // This gets called after every move
     function updateUI(params) {
+        game.playerInfo = angular.copy(params.playersInfo);
         // update score
         game.gameScore = angular.copy(gameLogic.gameScoreGlobal);
         // Set center of board 
@@ -618,19 +620,7 @@ var game;
         game.didMakeMove = false;
         game.currentUpdateUI = params;
         game.state = params.move.stateAfterMove;
-        console.log("STATE:-------------------------------------------------------------", game.state);
-        console.log("PREV STATE:-------------------------------------------------------------", params.stateBeforeMove);
         $timeout(handleStateUpdate, 500);
-        // if (isFirstMove()) { // FIXED BUG: This is called twice.
-        //   updateInitialUI(); 
-        //   console.log("MAKE COMPUTER MOVE CALLED FROM UPDATE UI");
-        //   makeComputerMove();
-        // }
-        // else if (currentUpdateUI != null && 
-        //   currentUpdateUI != undefined && 
-        //   currentUpdateUI.yourPlayerIndex != -2) {
-        //   $timeout(handleStateUpdate, 500);
-        // }
     }
     game.updateUI = updateUI;
     game.firstTimePlayer1 = true;

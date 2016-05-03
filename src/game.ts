@@ -56,6 +56,7 @@ module game {
   export let enableButtons: boolean = true;
   export let centerOfBoard : Coordinate = undefined;
   export let gameScore : GameScore = {player1: 0, player2: 0};
+  export let playerInfo: any = undefined;
 
   // Engine initial variables
   export let _engine: any, _objectsInMotion = 0, clickPromise : any,
@@ -147,6 +148,8 @@ module game {
 
   // This gets called after every move
   export function updateUI(params : IUpdateUI) : void {
+    
+    playerInfo = angular.copy(params.playersInfo);
     // update score
     gameScore = angular.copy(gameLogic.gameScoreGlobal);
     
@@ -169,21 +172,9 @@ module game {
     didMakeMove = false;
     currentUpdateUI = params;
     state = params.move.stateAfterMove;
-    console.log("STATE:-------------------------------------------------------------", state);
     
-    console.log("PREV STATE:-------------------------------------------------------------", params.stateBeforeMove);
     
     $timeout(handleStateUpdate, 500);
-    // if (isFirstMove()) { // FIXED BUG: This is called twice.
-    //   updateInitialUI(); 
-    //   console.log("MAKE COMPUTER MOVE CALLED FROM UPDATE UI");
-    //   makeComputerMove();
-    // }
-    // else if (currentUpdateUI != null && 
-    //   currentUpdateUI != undefined && 
-    //   currentUpdateUI.yourPlayerIndex != -2) {
-    //   $timeout(handleStateUpdate, 500);
-    // }
   }
   
   export let firstTimePlayer1 = true;
