@@ -157,13 +157,13 @@ module game {
     
     // SET CURRENT MODE
     if (params.playMode === "passAndPlay") {
-      currentMode = gameLogic.CurrentMode.PassAndPlay;
+      currentMode = "PassAndPlay";
     }
     else if (params.playMode === "playAgainstTheComputer") {
-      currentMode = gameLogic.CurrentMode.Practice;
+      currentMode = "Practice";
     }
     else {
-      currentMode = gameLogic.CurrentMode.Opponent;
+      currentMode = "Opponent";
     }
     
     didMakeMove = false;
@@ -196,7 +196,7 @@ module game {
     }
     
     // Make sure to draw on both screens
-    if (currentMode === gameLogic.CurrentMode.Opponent && currentUpdateUI.yourPlayerIndex !== -2) {
+    if (currentMode === "Opponent" && currentUpdateUI.yourPlayerIndex !== -2) {
       // Player one always goes first
       if (yourPlayerIndex() === 0 && firstTimePlayer1) {
         firstTimePlayer1 = false;
@@ -220,10 +220,10 @@ module game {
       makeComputerMove();
     }
     // HANDLE REDRAWING FOR OTHER TWO MODES (opponent + passAndPlay)
-    if (currentMode === gameLogic.CurrentMode.PassAndPlay && currentUpdateUI.yourPlayerIndex !== -2) {
+    if (currentMode === "PassAndPlay" && currentUpdateUI.yourPlayerIndex !== -2) {
       setBoardState(state);
     }
-    else if (currentMode === gameLogic.CurrentMode.Opponent && currentUpdateUI.yourPlayerIndex !== -2) {
+    else if (currentMode === "Opponent" && currentUpdateUI.yourPlayerIndex !== -2) {
       // Only redraw and invert for current player
       if (isMyTurn()) {
         setBoardState(state);
@@ -429,7 +429,7 @@ module game {
   // Handle next turn
   export function handlePracticeMode() {
     // Practice
-    if (currentMode === gameLogic.CurrentMode.Practice) {
+    if (currentMode === "Practice") {
       resetStrikerPosition();
       makeComputerMove();
     }
