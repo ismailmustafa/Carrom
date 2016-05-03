@@ -44,7 +44,8 @@ module game {
   export enum CurrentMode {
     Practice,
     PassAndPlay,
-    Opponent
+    Opponent,
+    None
   }
   
   export enum RotateDirection {
@@ -195,6 +196,12 @@ module game {
   export let firstTimePlayer1 = true;
   export let firstTimePlayer2 = true;
   function handleStateUpdate() {
+    // Reset if mode switched
+    if (state.currentMode !== currentMode) {
+      updateInitialUI(undefined);
+      return;
+    }
+    
     // Make sure to draw on both screens
     if (currentMode === CurrentMode.Opponent && currentUpdateUI.yourPlayerIndex !== -2) {
       // Player one always goes first
@@ -539,7 +546,7 @@ module game {
         allCoins.push(newCoin);
       }
     }
-    var returnedState : IState = {board: allCoins, playerIndex: angular.copy(state.playerIndex), gameScore: angular.copy(state.gameScore), shouldCoverQueen: state.shouldCoverQueen, shouldFlipBoard: state.shouldFlipBoard, realFirstMove: state.realFirstMove};
+    var returnedState : IState = {board: allCoins, playerIndex: angular.copy(state.playerIndex), gameScore: angular.copy(state.gameScore), shouldCoverQueen: state.shouldCoverQueen, shouldFlipBoard: state.shouldFlipBoard, realFirstMove: state.realFirstMove, currentMode: currentMode};
     return returnedState;
   }
   

@@ -302,7 +302,8 @@ var gameLogic;
             shouldCoverQueen: false,
             // queenCoverCheck: QueenCover.none,
             shouldFlipBoard: true,
-            realFirstMove: true
+            realFirstMove: true,
+            currentMode: game.CurrentMode.None
         };
     }
     gameLogic.getInitialState = getInitialState;
@@ -506,6 +507,7 @@ var game;
         CurrentMode[CurrentMode["Practice"] = 0] = "Practice";
         CurrentMode[CurrentMode["PassAndPlay"] = 1] = "PassAndPlay";
         CurrentMode[CurrentMode["Opponent"] = 2] = "Opponent";
+        CurrentMode[CurrentMode["None"] = 3] = "None";
     })(game.CurrentMode || (game.CurrentMode = {}));
     var CurrentMode = game.CurrentMode;
     (function (RotateDirection) {
@@ -634,6 +636,11 @@ var game;
     game.firstTimePlayer1 = true;
     game.firstTimePlayer2 = true;
     function handleStateUpdate() {
+        // Reset if mode switched
+        if (game.state.currentMode !== game.currentMode) {
+            updateInitialUI(undefined);
+            return;
+        }
         // Make sure to draw on both screens
         if (game.currentMode === CurrentMode.Opponent && game.currentUpdateUI.yourPlayerIndex !== -2) {
             // Player one always goes first
@@ -944,7 +951,7 @@ var game;
                 allCoins.push(newCoin);
             }
         }
-        var returnedState = { board: allCoins, playerIndex: angular.copy(game.state.playerIndex), gameScore: angular.copy(game.state.gameScore), shouldCoverQueen: game.state.shouldCoverQueen, shouldFlipBoard: game.state.shouldFlipBoard, realFirstMove: game.state.realFirstMove };
+        var returnedState = { board: allCoins, playerIndex: angular.copy(game.state.playerIndex), gameScore: angular.copy(game.state.gameScore), shouldCoverQueen: game.state.shouldCoverQueen, shouldFlipBoard: game.state.shouldFlipBoard, realFirstMove: game.state.realFirstMove, currentMode: game.currentMode };
         return returnedState;
     }
     game.getBoardState = getBoardState;
