@@ -91,7 +91,7 @@ describe("In Carrom Game Logic", function() {
     // Set if queen is pocketed
     let shouldCoverQueen = setShouldCoverQueen;
     
-    return {board: allCoins, playerIndex: playerIndex, gameScore: gameScore, shouldCoverQueen: shouldCoverQueen, shouldFlipBoard: true, realFirstMove:true, currentMode: "None"};
+    return {board: allCoins, playerIndex: playerIndex, gameScore: gameScore, shouldCoverQueen: shouldCoverQueen, shouldFlipBoard: true, realFirstMove:true, currentModeNow: "None"};
   }
   
   // Test initial board state
