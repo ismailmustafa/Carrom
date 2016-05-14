@@ -723,7 +723,7 @@ var game;
             var mouseDownPostion = event.mouse.mousedownPosition;
             var mousePosition = event.mouse.position;
             var strikerPosition = getStriker().position;
-            if (mousePosition.y < (strikerPosition.y + game.settings["strikerDiameter"])) {
+            if (mousePosition.y < (strikerPosition.y + (1.5 * game.settings["strikerDiameter"]))) {
                 var posX = mousePosition.x;
                 if (posX < strikerPosition.x) {
                     // Moving Left
@@ -755,7 +755,7 @@ var game;
         Matter.Events.on(mouseConstraint, 'mouseup', function (event) {
             var mouseupPosition = event.mouse.mouseupPosition;
             var strikerPosition = getStriker().position;
-            if (mouseupPosition.y > strikerPosition.y) {
+            if (mouseupPosition.y > (strikerPosition.y + game.settings["strikerDiameter"])) {
                 shootClick();
                 game._renderLength = 0;
             }

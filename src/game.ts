@@ -293,7 +293,7 @@ module game {
 
       var strikerPosition = getStriker().position;
 
-      if (mousePosition.y < (strikerPosition.y + settings["strikerDiameter"])) {
+      if (mousePosition.y < (strikerPosition.y + (1.5 * settings["strikerDiameter"]))) {
 
         var posX = mousePosition.x;
 
@@ -339,7 +339,7 @@ module game {
       var mouseupPosition = event.mouse.mouseupPosition;
       var strikerPosition = getStriker().position;
 
-      if (mouseupPosition.y > strikerPosition.y){
+      if (mouseupPosition.y > (strikerPosition.y + settings["strikerDiameter"])) {
         shootClick();
         _renderLength = 0;  
       }
